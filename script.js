@@ -33,8 +33,8 @@ const state={
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',liked:false,reposted:false,replied:false},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',liked:false,reposted:false,replied:false}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',liked:false,reposted:false,replied:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',liked:false,reposted:false,replied:false}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -56,12 +56,12 @@ function loadTemplateProfile(){
   const p=state.profiles[state.template];
   if(state.template==='x'||state.template==='instagram'){
     state.name=p.name;state.handle=p.handle;state.avatar=p.avatar;
-    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;
+    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;$('#sidebarAvatarPreview').src=p.avatar;
   }else{
     state.theirName=p.name;state.myName=p.myName;state.chatBio=p.bio;
     
     state.theirAvatar=p.theirAvatar;state.myAvatar=p.myAvatar;
-    $('#theirNameInput').value=p.name;$('#myNameInput').value=p.myName;$('#chatBioInput').value=p.bio;
+    $('#theirNameInput').value=p.name;$('#myNameInput').value=p.myName;$('#chatBioInput').value=p.bio;$('#sidebarAvatarPreview').src=p.theirAvatar;
     
   }
 }
@@ -157,7 +157,7 @@ function xPost(post,i){
   const authorHandle=post.authorHandle??state.handle;
   const fmt=v=>String(Math.max(0,Number(String(v).replace(/\D/g,''))||0)).padStart(3,'0').slice(-3);
   return `<article class="x-post" data-index="${i}">
-    <div class="x-post-header"><div class="x-user"><img class="avatar sync-avatar" src="${state.avatar}" alt="" decoding="async"><div>
+    <div class="x-post-header"><div class="x-user"><img class="x-post-avatar" src="${post.authorAvatar||state.avatar}" alt="" decoding="async"><div>
     <div class="x-user-name"><span class="editable x-author-name" contenteditable="true">${esc(authorName)}</span></div>
     <div class="x-meta">@<span class="editable x-author-handle" contenteditable="true">${esc(authorHandle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
     </div></div>
@@ -172,6 +172,14 @@ function xPost(post,i){
           <label>이름<input class="x-author-menu-name" type="text" value="${esc(authorName)}"></label>
           <label>아이디<input class="x-author-menu-handle" type="text" value="${esc(authorHandle)}"></label>
         </div>
+        <button class="x-author-photo-toggle" type="button">작성자 프로필 사진 수정</button>
+        <div class="x-author-photo-editor" hidden>
+          <div class="x-author-photo-row">
+            <img class="x-author-photo-preview" src="${post.authorAvatar||state.avatar}" alt="">
+            <label class="x-author-photo-upload">사진 선택<input class="x-author-photo-input" type="file" accept="image/*"></label>
+          </div>
+          <button class="x-use-my-avatar" type="button">내 프로필 사진 사용</button>
+        </div>
       </div>
     </div></div>
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
@@ -181,7 +189,7 @@ function xPost(post,i){
       <span class="quote-meta">@<span class="editable quote-handle-edit" contenteditable="true">${esc(post.quoteHandle||'original')}</span></span></div></div>
       <div class="quote-body editable quote-body-edit" contenteditable="true">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
     </div>`:''}
-    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale||1}"><input type="file" accept="image/*" class="x-image-input">
+    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale||1};--media-bg:${post.imageBg||'#f5f4f1'}"><input type="file" accept="image/*" class="x-image-input">
       ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
       ${post.image?`<div class="x-media-scale-hint">휠로 사진 크기 조절</div>`:''}
@@ -339,11 +347,13 @@ function updateInspector(){
   $('#inspectBodyField').hidden=isTyping;
   $('#inspectSideField').hidden=isX;
   $('#inspectTimeField').hidden=isX||isTyping;
+  $('#inspectImageBgField').hidden=!(isX&&d.item.mediaEnabled);
   $('#duplicateSelectedBtn').hidden=isX;
   if(isX){
     $('#inspectName').value=d.item.authorName??state.name;
     $('#inspectHandle').value=d.item.authorHandle??state.handle;
     $('#inspectBody').value=d.item.body||'';
+    $('#inspectImageBg').value=d.item.imageBg||'#f5f4f1';
   }else{
     $('#inspectSide').value=d.item.side;
     if(!isTyping){
@@ -441,6 +451,22 @@ function bindPreview(){
         $('.x-author-handle',card).textContent=p.authorHandle;
         updateInspector();
       });
+      $('.x-author-photo-toggle',card)?.addEventListener('click',e=>{
+        e.stopPropagation();
+        const editor=$('.x-author-photo-editor',card);
+        editor.hidden=!editor.hidden;
+      });
+      $('.x-author-photo-input',card)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{
+        p.authorAvatar=src;
+        render();
+        requestAnimationFrame(()=>selectItem('x',i));
+      }));
+      $('.x-use-my-avatar',card)?.addEventListener('click',e=>{
+        e.stopPropagation();
+        p.authorAvatar=state.avatar;
+        render();
+        requestAnimationFrame(()=>selectItem('x',i));
+      });
       $('.x-time',card).addEventListener('input',e=>p.time=e.target.textContent);
       $('.x-author-name',card)?.addEventListener('focus',()=>selectItem('x',i));
       $('.x-author-name',card)?.addEventListener('input',e=>{p.authorName=e.target.textContent.trim();updateInspector()});
@@ -506,7 +532,7 @@ $('#brandSymbolSelect').addEventListener('change',e=>{state.brandSymbol=e.target
 $('#nameInput').addEventListener('input',e=>{state.name=e.target.value||'Dearlog';saveCurrentProfile();render()});
 $('#handleInput').addEventListener('input',e=>{state.handle=safeHandle(e.target.value);saveCurrentProfile();render()});
 $('#chatBioInput').addEventListener('input',e=>{state.chatBio=e.target.value;saveCurrentProfile();render()});
-$('#avatarInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.avatar=src;saveCurrentProfile();render()}));
+$('#avatarInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.avatar=src;$('#sidebarAvatarPreview').src=src;saveCurrentProfile();render()}));
 $('#theirNameInput').addEventListener('input',e=>{state.theirName=e.target.value||'상대방';saveCurrentProfile();render()});
 $('#myNameInput').addEventListener('input',e=>{state.myName=e.target.value||'나';saveCurrentProfile();render()});
 $('#theirAvatarInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.theirAvatar=src;saveCurrentProfile();render()}));
@@ -547,7 +573,7 @@ $('#addTypingBtn').addEventListener('click',()=>{
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,liked:false,reposted:false,replied:false});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,authorAvatar:state.avatar,imageBg:'#f5f4f1',liked:false,reposted:false,replied:false});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);}
   render();
 });
@@ -747,6 +773,11 @@ $('#inspectBody').addEventListener('input',e=>{
   const d=selectedData();if(!d)return;
   if(d.kind==='x')d.item.body=e.target.value;
   else d.item.text=e.target.value;
+  refreshSelected();
+});
+$('#inspectImageBg').addEventListener('input',e=>{
+  const d=selectedData();if(!d||d.kind!=='x')return;
+  d.item.imageBg=e.target.value;
   refreshSelected();
 });
 $('#inspectSide').addEventListener('change',e=>{

@@ -86,7 +86,10 @@
         </label>
         <label class="field">
           <span>기본 프로필 이미지</span>
-          <span class="file-button">이미지 선택<input id="avatarInput" type="file" accept="image/*"></span>
+          <div class="profile-image-control">
+            <img id="sidebarAvatarPreview" class="sidebar-avatar-preview" alt="현재 프로필 이미지">
+            <span class="file-button">이미지 선택<input id="avatarInput" type="file" accept="image/*"></span>
+          </div>
         </label>
       </section>
 
@@ -227,7 +230,7 @@
 
     <aside class="inspector" id="inspector">
       <div class="inspector-head">
-        <div><small>QUICK EDIT</small><b>본문 수정</b></div>
+        <div><small>QUICK EDIT</small><b>게시글 수정</b></div>
         <span id="inspectorType">선택 없음</span>
       </div>
 
@@ -262,6 +265,10 @@
           </select>
         </label>
         <label class="field" id="inspectTimeField"><span>시간</span><input id="inspectTime" type="text"></label>
+        <label class="field" id="inspectImageBgField" hidden>
+          <span>첨부 사진 배경색</span>
+          <input id="inspectImageBg" type="color" value="#f5f4f1">
+        </label>
         <div class="inspector-actions">
           <button class="btn btn-wide" id="duplicateSelectedBtn" type="button">같은 쪽에 하나 더 보내기</button>
           <button class="btn btn-wide btn-danger" id="deleteSelectedBtn" type="button">선택 항목 삭제</button>

@@ -1573,3 +1573,92 @@ body{
   }
   .inspector{border-top:1px solid var(--line)}
 }
+
+
+/* v19 left profile preview */
+.profile-image-control{
+  display:grid;
+  grid-template-columns:46px 1fr;
+  gap:10px;
+  align-items:center;
+}
+.sidebar-avatar-preview{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+  background:#ece9e3;
+  border:1px solid var(--line);
+}
+
+/* per-post avatar */
+.x-post .x-post-avatar{
+  width:39px;
+  height:39px;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+  background:#ece9e3;
+  border:1px solid var(--preview-line);
+}
+.x-author-photo-editor{
+  padding:8px;
+  border-top:1px solid var(--preview-line);
+  display:grid;
+  gap:7px;
+}
+.x-author-photo-editor[hidden]{display:none}
+.x-author-photo-preview{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ece9e3;
+  border:1px solid var(--preview-line);
+}
+.x-author-photo-row{
+  display:grid;
+  grid-template-columns:38px 1fr;
+  gap:8px;
+  align-items:center;
+}
+.x-author-photo-upload{
+  position:relative;
+  overflow:hidden;
+  min-height:30px;
+  border:1px solid var(--preview-line);
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  color:var(--preview-text);
+  background:var(--preview-card);
+}
+.x-author-photo-upload input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
+
+/* attachment background color */
+.x-media{
+  background:var(--media-bg,#f5f4f1) !important;
+}
+.x-media.has-image img{
+  background:transparent !important;
+}
+
+/* inspector image background color input */
+#inspectImageBg{
+  width:100%;
+  height:36px;
+  padding:3px;
+  border:1px solid var(--line-strong);
+  border-radius:9px;
+  background:#fff;
+}
