@@ -32,7 +32,7 @@
       <section class="tool-section">
         <div class="section-title">
           <span>템플릿</span>
-          <small>3 TYPES</small>
+          <small>4 TYPES</small>
         </div>
         <div class="template-grid" id="templateGrid">
           <button class="template-card active" data-template="x">
@@ -46,6 +46,10 @@
           <button class="template-card" data-template="dm">
             <span class="template-icon">◌</span>
             <span><b>DM형</b><small>MESSAGE / CHAT</small></span>
+          </button>
+          <button class="template-card" data-template="kakao">
+            <span class="template-icon">K</span>
+            <span><b>카카오톡형</b><small>KAKAO / CHAT</small></span>
           </button>
         </div>
       </section>
@@ -61,18 +65,47 @@
           <div class="prefix-input"><i>@</i><input id="handleInput" type="text" value="dearlog" maxlength="30"></div>
         </label>
         <label class="field">
-          <span>프로필 이미지</span>
+          <span>기본 프로필 이미지</span>
           <span class="file-button">이미지 선택<input id="avatarInput" type="file" accept="image/*"></span>
         </label>
       </section>
 
+      <section class="tool-section" id="chatProfileSection">
+        <div class="section-title"><span>메시지 프로필</span><small>DM / KAKAO</small></div>
+        <div class="chat-profile-grid">
+          <div class="chat-profile-card">
+            <b>상대</b>
+            <label class="field"><span>이름</span><input id="theirNameInput" type="text" value="상대방" maxlength="30"></label>
+            <label class="field"><span>프로필 사진</span><span class="file-button">상대 이미지<input id="theirAvatarInput" type="file" accept="image/*"></span></label>
+          </div>
+          <div class="chat-profile-card">
+            <b>나</b>
+            <label class="field"><span>이름</span><input id="myNameInput" type="text" value="나" maxlength="30"></label>
+            <label class="field"><span>프로필 사진</span><span class="file-button">내 이미지<input id="myAvatarInput" type="file" accept="image/*"></span></label>
+          </div>
+        </div>
+      </section>
+
       <section class="tool-section" id="appearanceSection">
         <div class="section-title"><span>화면 꾸미기</span></div>
+        <label class="field main-color-field">
+          <span>메인 색상</span>
+          <input id="mainColor" type="color" value="#7896c6">
+        </label>
+        <label class="toggle-row auto-palette-row">
+          <span><b>자동 추천 팔레트</b><small>메인 색상에 맞춰 배경·카드·포인트를 자동 조정</small></span>
+          <input id="autoPaletteToggle" type="checkbox" checked>
+        </label>
+        <div class="palette-preview" id="palettePreview">
+          <span data-swatch="bg"></span><span data-swatch="card"></span><span data-swatch="accent"></span>
+          <small>추천 색상</small>
+        </div>
         <div class="color-row">
           <label><span>배경</span><input id="bgColor" type="color" value="#f5f7fb"></label>
           <label><span>카드</span><input id="cardColor" type="color" value="#ffffff"></label>
           <label><span>포인트</span><input id="accentColor" type="color" value="#7896c6"></label>
         </div>
+        <p class="field-note">자동 추천을 꺼도 위 색상들은 직접 자유롭게 바꿀 수 있어요.</p>
         <label class="toggle-row">
           <span><b>다크 모드</b><small>미리보기만 어둡게 전환</small></span>
           <input id="darkToggle" type="checkbox">
@@ -83,6 +116,10 @@
         <div class="section-title"><span>콘텐츠</span></div>
         <div class="button-stack">
           <button class="btn btn-wide" id="addItemBtn">＋ 항목 추가</button>
+          <div class="chat-add-row" id="chatAddRow">
+            <button class="btn btn-wide" id="addTextMessageBtn">＋ 텍스트 메시지</button>
+            <button class="btn btn-wide" id="addPhotoMessageBtn">＋ 사진 메시지</button>
+          </div>
           <button class="btn btn-wide btn-danger" id="removeItemBtn">− 마지막 항목 삭제</button>
         </div>
       </section>
