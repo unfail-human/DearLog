@@ -1007,3 +1007,112 @@ button{cursor:pointer}
 .dm-body,.kakao-room{
   background-color:color-mix(in srgb,var(--chat-bg) 86%, transparent) !important;
 }
+
+
+/* v10 X fixed media frame + internal image transform */
+.x-media{
+  height:240px !important;
+  min-height:240px !important;
+  max-height:240px !important;
+  overflow:hidden !important;
+  position:relative;
+  background:rgba(120,150,198,.04);
+}
+.x-media.has-image img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center center;
+  transform:scale(var(--media-scale,1));
+  transform-origin:center center;
+  transition:none;
+}
+.x-media .image-placeholder{
+  min-height:240px !important;
+}
+.x-media-scale-hint{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  z-index:5;
+  padding:4px 7px;
+  border-radius:999px;
+  background:rgba(20,27,38,.55);
+  color:#fff;
+  font-size:8px;
+  pointer-events:none;
+}
+.capture.clean-output .x-media-scale-hint{display:none!important}
+
+/* Instagram avatar better quality / crop */
+.ig-profile > .image-picker{
+  background:var(--preview-card) !important;
+}
+.ig-profile > .image-picker .avatar{
+  image-rendering:auto !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  transform:none !important;
+  backface-visibility:hidden;
+}
+
+/* DM sender name on bubbles */
+.dm-sender-name{
+  font-size:9px;
+  color:var(--preview-muted);
+  margin:0 0 3px 2px;
+}
+.bubble-row.mine .dm-sender-name{
+  text-align:right;
+  margin:0 2px 3px 0;
+}
+
+/* typing indicator */
+.typing-row{
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
+}
+.typing-row.mine{flex-direction:row-reverse}
+.typing-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  max-width:84%;
+}
+.typing-name{
+  font-size:9px;
+  color:var(--preview-muted);
+  padding:0 2px;
+}
+.typing-bubble{
+  display:flex;
+  gap:4px;
+  align-items:center;
+  justify-content:center;
+  min-width:46px;
+  height:30px;
+  padding:0 10px;
+  border-radius:15px;
+  background:var(--preview-card);
+  border:1px solid var(--preview-line);
+}
+.typing-row.mine .typing-bubble{
+  background:var(--preview-accent);
+  border-color:var(--preview-accent);
+}
+.typing-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--preview-muted);
+  opacity:.75;
+}
+.typing-row.mine .typing-dot{background:#fff}
+.kakao-page .typing-bubble{
+  background:#fff;
+  border:0;
+  border-radius:5px 15px 15px 15px;
+}
+.kakao-page .typing-row.mine .typing-bubble{
+  background:#fee500;
+}
+.kakao-page .typing-row.mine .typing-dot{background:#4b4b4b}

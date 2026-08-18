@@ -11,7 +11,7 @@ const DEFAULT_AVATAR=(fill='#7896c6',bg='#edf3fc')=>`data:image/svg+xml;charset=
 </svg>`)}`
 const state={
   template:'x',
-  name:'Dearlog',handle:'dearlog',chatBio:'오늘도 기록 중',
+  name:'Dearlog',handle:'dearlog',chatBio:'집에 가고 싶다...',
   avatar:DEFAULT_AVATAR(),
   theirName:'상대방',myName:'나',
   theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),
@@ -19,8 +19,8 @@ const state={
   profiles:{
     x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
     instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
-    dm:{name:'상대방',myName:'나',bio:'오늘도 기록 중',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
-    kakao:{name:'상대방',myName:'나',bio:'오늘도 기록 중',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
+    dm:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
+    kakao:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
   },
   backgrounds:{
     x:{color:'#ffffff',image:'',scale:100},
@@ -31,8 +31,8 @@ const state={
   main:'#7896c6',bg:'#f5f7fb',card:'#ffffff',accent:'#7896c6',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -144,7 +144,7 @@ function sharedTop(title='Dearlog'){
 
 function xPost(post,i){
   return `<article class="x-post" data-index="${i}">
-    <div class="x-post-header"><div class="x-user"><img class="avatar sync-avatar" src="${state.avatar}" alt=""><div>
+    <div class="x-post-header"><div class="x-user"><img class="avatar sync-avatar" src="${state.avatar}" alt="" decoding="async"><div>
     <div class="x-user-name editable sync-name" contenteditable="true">${esc(state.name)}</div>
     <div class="x-meta">@<span class="editable sync-handle" contenteditable="true">${esc(state.handle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
     </div></div>
@@ -166,9 +166,10 @@ function xPost(post,i){
       </div>
       <div class="quote-body editable quote-body-edit" contenteditable="true">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
     </div>`:''}
-    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}"><input type="file" accept="image/*" class="x-image-input">
+    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale||1}"><input type="file" accept="image/*" class="x-image-input">
     ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
     ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
+    ${post.image?`<div class="x-media-scale-hint">휠로 사진 크기 조절</div>`:''}
     <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
     </label>`:''}
     <div class="x-actions">
@@ -211,14 +212,30 @@ function chatMedia(m, cls){
   </label>`;
 }
 function dmBubble(m,i){
+  if(m.type==='typing') return dmTyping(m,i);
   const avatar=m.side==='theirs'?state.theirAvatar:state.myAvatar;
+  const sender=m.side==='theirs'?state.theirName:state.myName;
   const readClass=m.read?'':' off';
   return `<div class="bubble-row ${m.side}" data-index="${i}">
     <img class="avatar chat-side-avatar" src="${avatar}" alt="">
     <div class="chat-message-stack">
-      <div class="chat-click-target">${chatMedia(m,'dm-photo')}</div>
+      <div>
+        <div class="dm-sender-name">${esc(sender)}</div>
+        <div class="chat-click-target">${chatMedia(m,'dm-photo')}</div>
+      </div>
       <div class="dm-time editable chat-time" contenteditable="true">${esc(m.time)}</div>
       <div class="dm-read${readClass}" title="클릭해서 읽음 표시 전환">${m.read?'읽음':'안 읽음'}</div>
+    </div>
+  </div>`;
+}
+function dmTyping(m,i){
+  const avatar=m.side==='theirs'?state.theirAvatar:state.myAvatar;
+  const sender=m.side==='theirs'?state.theirName:state.myName;
+  return `<div class="typing-row ${m.side}" data-index="${i}">
+    <img class="avatar chat-side-avatar" src="${avatar}" alt="">
+    <div class="typing-wrap">
+      <div class="typing-name">${esc(sender)}</div>
+      <div class="typing-bubble"><i class="typing-dot"></i><i class="typing-dot"></i><i class="typing-dot"></i></div>
     </div>
   </div>`;
 }
@@ -245,12 +262,24 @@ function kakaoBubble(m,i){
     </div>
   </div>`;
 }
+function kakaoTyping(m,i){
+  const mine=m.side==='mine', avatar=mine?state.myAvatar:state.theirAvatar;
+  const sender=mine?state.myName:state.theirName;
+  return `<div class="typing-row ${m.side}" data-index="${i}">
+    <img class="avatar kakao-avatar" src="${avatar}" alt="">
+    <div class="typing-wrap">
+      <div class="typing-name">${esc(sender)}</div>
+      <div class="typing-bubble"><i class="typing-dot"></i><i class="typing-dot"></i><i class="typing-dot"></i></div>
+    </div>
+  </div>`;
+}
+
 function renderKakao(){
   $('#stageTitle').textContent='카카오톡 템플릿';$('#stageDesc').textContent='상대와 내 프로필, 텍스트·사진 메시지를 함께 만들 수 있어요.';
   capture.innerHTML=`<div class="kakao-page">
     <header class="kakao-head"><button>‹</button><div><b class="editable their-name" contenteditable="true">${esc(state.theirName)}</b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
     <div class="kakao-room"><div class="kakao-date editable" contenteditable="true">2026년 8월 19일 수요일</div>
-    ${state.kakao.map(kakaoBubble).join('')}</div>
+    ${state.kakao.map((m,i)=>m.type==='typing'?kakaoTyping(m,i):kakaoBubble(m,i)).join('')}</div>
     <footer class="kakao-compose"><span>＋</span><div class="kakao-input editable" contenteditable="true">메시지 입력</div><span>☺　♯</span></footer>
   </div>`;
 }
@@ -286,7 +315,8 @@ function bindNames(){
 function bindChat(listName){
   const arr=state[listName];
   $$(`[data-index]`,capture).forEach(row=>{
-    if(!row.matches('.bubble-row,.kakao-message'))return;
+    if(!row.matches('.bubble-row,.kakao-message,.typing-row'))return;
+    if(m.type==='typing')return;
     const i=+row.dataset.index,m=arr[i];
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
@@ -331,6 +361,13 @@ function bindPreview(){
       });
       $('.x-image-input',card)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{p.image=src;render()}));
       $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
+      $('.x-media',card)?.addEventListener('wheel',e=>{
+        if(!p.image)return;
+        e.preventDefault();
+        e.stopPropagation();
+        p.mediaScale=Math.max(1,Math.min(3,(p.mediaScale||1)+(e.deltaY<0?.08:-.08)));
+        card.querySelector('.x-media')?.style.setProperty('--media-scale',p.mediaScale);
+      },{passive:false});
     });
   }else if(state.template==='instagram'){
     $$('.ig-tile',capture).forEach(tile=>{
@@ -387,9 +424,14 @@ function addChatMessage(type){
 }
 $('#addTextMessageBtn').addEventListener('click',()=>addChatMessage('text'));
 $('#addPhotoMessageBtn').addEventListener('click',()=>addChatMessage('photo'));
+$('#addTypingBtn').addEventListener('click',()=>{
+  const arr=state.template==='kakao'?state.kakao:state.dm;
+  arr.push({side:nextSide(arr),type:'typing',text:'',time:'',image:'',read:true,video:false});
+  render();
+});
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);}
   render();
 });
