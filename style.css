@@ -1888,3 +1888,74 @@ body{
     margin:0 auto !important;
   }
 }
+
+
+/* v28 — restore centered fixed workspace */
+.stage{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:18px 18px 28px !important;
+}
+
+/* Header text stays at left, LIVE EDIT goes to the far right */
+.stage-top{
+  position:absolute !important;
+  top:14px !important;
+  left:18px !important;
+  right:18px !important;
+  z-index:20 !important;
+  margin:0 !important;
+  padding:0 0 10px 0 !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  background:linear-gradient(to bottom,#f5f4f1 82%,rgba(245,244,241,0)) !important;
+}
+.stage-top > div{
+  margin:0 !important;
+}
+.stage-top .editing-badge,
+.stage-top > span:last-child{
+  margin-left:auto !important;
+  margin-right:0 !important;
+  flex:0 0 auto !important;
+}
+
+/* Main template is always centered in the available work area */
+.capture-shell{
+  position:absolute !important;
+  top:68px !important;
+  left:18px !important;
+  right:18px !important;
+  bottom:18px !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+}
+.capture{
+  margin:0 !important;
+  transform-origin:top center !important;
+  flex:0 0 auto !important;
+}
+
+/* Narrow layouts continue to use normal flow */
+@media(max-width:900px){
+  .stage{
+    position:relative !important;
+    overflow:visible !important;
+  }
+  .stage-top{
+    position:relative !important;
+    inset:auto !important;
+  }
+  .capture-shell{
+    position:relative !important;
+    inset:auto !important;
+    justify-content:center !important;
+  }
+  .capture{
+    transform:none !important;
+    margin:0 auto !important;
+  }
+}
