@@ -1,9 +1,12 @@
-# Dearlog v10
+# Dearlog v11
 
-- X 사진 첨부 영역 크기 240px로 고정
-- X 사진 자체는 해당 영역 안에서 마우스 휠로 1x~3x 확대/축소
-- Instagram 프로필 사진 슬롯/크롭 렌더링 안정화
-- DM 각 메시지에 상대/내 이름 표시
-- DM 기본 한줄소개를 `집에 가고 싶다...`로 변경
-- DM / 카카오톡 콘텐츠 추가에 `입력중 표시` 추가
-- 입력중 표시는 상대/내 쪽에 번갈아 추가되며 말풍선 점 3개 형태로 표시
+- X 작성창에 이미지 / GIF / 숨김 / 옵션 / 이모지 / 일정 / 위치 / 플래그 장식 아이콘 추가
+- X 답글·리트윗·마음·공유 영역 크기를 키우고 가운데 정렬
+- My Editor 기본 베이지 팔레트 공유
+  - #f5f4f1 / #ffffff / #faf9f7 / #292826 / #8c8982 / #e7e4de / #5d5a55 / #ece9e3
+- 프로필 이름 옆 기호를 템플릿별로 선택하거나 제거 가능
+- 공유 링크 이미지 `og-image.png` 추가
+- `favicon.png` 추가
+- Open Graph / Twitter Card 메타 태그 연결
+
+GitHub에는 index.html, style.css, script.js, notice.js, og-image.png, favicon.png 를 올리세요.

@@ -13,22 +13,22 @@ const state={
   template:'x',
   name:'Dearlog',handle:'dearlog',chatBio:'집에 가고 싶다...',
   avatar:DEFAULT_AVATAR(),
-  theirName:'상대방',myName:'나',
+  theirName:'상대방',myName:'나',nameSymbol:'',theirSymbol:'',mySymbol:'',
   theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),
   myAvatar:DEFAULT_AVATAR('#667085','#eef1f5'),
   profiles:{
-    x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
-    instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
-    dm:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
-    kakao:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
+    x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR(),symbol:''},
+    instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR(),symbol:''},
+    dm:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirSymbol:'',mySymbol:'',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
+    kakao:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirSymbol:'',mySymbol:'',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
   },
   backgrounds:{
-    x:{color:'#ffffff',image:'',scale:100},
-    instagram:{color:'#ffffff',image:'',scale:100},
-    dm:{color:'#ffffff',image:'',scale:100},
-    kakao:{color:'#ffffff',image:'',scale:100}
+    x:{color:'#f5f4f1',image:'',scale:100},
+    instagram:{color:'#f5f4f1',image:'',scale:100},
+    dm:{color:'#f5f4f1',image:'',scale:100},
+    kakao:{color:'#f5f4f1',image:'',scale:100}
   },
-  main:'#7896c6',bg:'#f5f7fb',card:'#ffffff',accent:'#7896c6',autoPalette:true,dark:false,
+  main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'},
@@ -53,20 +53,23 @@ const capture=$('#captureArea');
 function loadTemplateProfile(){
   const p=state.profiles[state.template];
   if(state.template==='x'||state.template==='instagram'){
-    state.name=p.name;state.handle=p.handle;state.avatar=p.avatar;
-    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;
+    state.name=p.name;state.handle=p.handle;state.avatar=p.avatar;state.nameSymbol=p.symbol||'';
+    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;$('#nameSymbolSelect').value=state.nameSymbol;
   }else{
     state.theirName=p.name;state.myName=p.myName;state.chatBio=p.bio;
+    state.theirSymbol=p.theirSymbol||'';state.mySymbol=p.mySymbol||'';
     state.theirAvatar=p.theirAvatar;state.myAvatar=p.myAvatar;
     $('#theirNameInput').value=p.name;$('#myNameInput').value=p.myName;$('#chatBioInput').value=p.bio;
+    $('#theirSymbolSelect').value=state.theirSymbol;$('#mySymbolSelect').value=state.mySymbol;
   }
 }
 function saveCurrentProfile(){
   const p=state.profiles[state.template];
   if(state.template==='x'||state.template==='instagram'){
-    p.name=state.name;p.handle=state.handle;p.avatar=state.avatar;
+    p.name=state.name;p.handle=state.handle;p.avatar=state.avatar;p.symbol=state.nameSymbol||'';
   }else{
     p.name=state.theirName;p.myName=state.myName;p.bio=state.chatBio;
+    p.theirSymbol=state.theirSymbol||'';p.mySymbol=state.mySymbol||'';
     p.theirAvatar=state.theirAvatar;p.myAvatar=state.myAvatar;
   }
 }
@@ -77,6 +80,7 @@ function syncTemplateBackgroundControls(){
 }
 
 
+function symbolHtml(s=''){return s?`<span class="name-symbol">${esc(s)}</span>`:''}
 function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function safeHandle(s=''){return String(s).replace(/^@+/,'').trim()||'dearlog'}
 function fileToData(file,cb){if(!file)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file)}
@@ -100,6 +104,7 @@ function luminance(hex){
   return .2126*v[0]+.7152*v[1]+.0722*v[2]
 }
 function recommendPalette(main){
+  if(main.toLowerCase()==='#5d5a55') return {bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55'};
   const lum=luminance(main);
   const bg=mix(main,'#ffffff',lum<.3?.93:.955);
   const card=mix(main,'#ffffff',.985);
@@ -145,7 +150,7 @@ function sharedTop(title='Dearlog'){
 function xPost(post,i){
   return `<article class="x-post" data-index="${i}">
     <div class="x-post-header"><div class="x-user"><img class="avatar sync-avatar" src="${state.avatar}" alt="" decoding="async"><div>
-    <div class="x-user-name editable sync-name" contenteditable="true">${esc(state.name)}</div>
+    <div class="x-user-name"><span class="editable sync-name" contenteditable="true">${esc(state.name)}</span>${symbolHtml(state.nameSymbol)}</div>
     <div class="x-meta">@<span class="editable sync-handle" contenteditable="true">${esc(state.handle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
     </div></div>
     <div class="x-more-wrap"><button class="x-more-btn" type="button">•••</button>
@@ -185,7 +190,16 @@ function renderX(){
   capture.innerHTML=`<div class="x-page">${sharedTop('Dearlog')}
     <section class="x-compose"><img class="avatar sync-avatar" src="${state.avatar}" alt=""><div class="x-compose-main">
     <div class="x-compose-text editable" contenteditable="true">무슨 일이 일어나고 있나요?</div>
-    <div class="x-compose-bottom"><span class="x-compose-tools">⊞ ◇ ♡</span><button class="x-post-btn">게시</button></div></div></section>
+    <div class="x-compose-bottom"><span class="x-compose-tools" aria-hidden="true">
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m5 17 4-4 3 3 2-2 5 5"/></svg></i>
+  <i class="x-tool-icon x-tool-gif">GIF</i>
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 20 20 4"/></svg></i>
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><path d="M11 7h8"/><circle cx="6" cy="17" r="2"/><path d="M11 17h8"/></svg></i>
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14c1 2 2.5 3 4 3s3-1 4-3"/><path d="M9 9h.01M15 9h.01"/></svg></i>
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/><circle cx="16" cy="16" r="3"/></svg></i>
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2"/></svg></i>
+  <i class="x-tool-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h12l-2 4 2 4H5"/></svg></i>
+</span><button class="x-post-btn">게시</button></div></div></section>
     <div id="xFeed">${state.xPosts.map(xPost).join('')}</div></div>`;
 }
 function renderInstagram(){
@@ -195,7 +209,7 @@ function renderInstagram(){
     <img class="avatar sync-avatar" src="${state.avatar}" alt=""></label><div>
     <div class="ig-name-row"><span class="ig-handle editable sync-handle" contenteditable="true">${esc(state.handle)}</span><button class="ig-follow editable" contenteditable="true">팔로우</button></div>
     <div class="ig-counts"><span>게시물 <b class="editable" contenteditable="true">${state.igTiles.length}</b></span><span>팔로워 <b class="editable" contenteditable="true">1.2K</b></span><span>팔로잉 <b class="editable" contenteditable="true">87</b></span></div>
-    <div class="ig-bio"><b class="editable sync-name" contenteditable="true">${esc(state.name)}</b><br><span class="editable" contenteditable="true">좋아하는 순간들을 작은 기록으로 남겨요.</span></div>
+    <div class="ig-bio"><b><span class="editable sync-name" contenteditable="true">${esc(state.name)}</span>${symbolHtml(state.nameSymbol)}</b><br><span class="editable" contenteditable="true">좋아하는 순간들을 작은 기록으로 남겨요.</span></div>
     </div></section><div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
     <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}">
     <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
@@ -220,7 +234,7 @@ function dmBubble(m,i){
     <img class="avatar chat-side-avatar" src="${avatar}" alt="">
     <div class="chat-message-stack">
       <div>
-        <div class="dm-sender-name">${esc(sender)}</div>
+        <div class="dm-sender-name">${esc(sender)}${symbolHtml(m.side==='theirs'?state.theirSymbol:state.mySymbol)}</div>
         <div class="chat-click-target">${chatMedia(m,'dm-photo')}</div>
       </div>
       <div class="dm-time editable chat-time" contenteditable="true">${esc(m.time)}</div>
@@ -234,7 +248,7 @@ function dmTyping(m,i){
   return `<div class="typing-row ${m.side}" data-index="${i}">
     <img class="avatar chat-side-avatar" src="${avatar}" alt="">
     <div class="typing-wrap">
-      <div class="typing-name">${esc(sender)}</div>
+      <div class="typing-name">${esc(sender)}${symbolHtml(m.side==='theirs'?state.theirSymbol:state.mySymbol)}</div>
       <div class="typing-bubble"><i class="typing-dot"></i><i class="typing-dot"></i><i class="typing-dot"></i></div>
     </div>
   </div>`;
@@ -242,7 +256,7 @@ function dmTyping(m,i){
 function renderDM(){
   $('#stageTitle').textContent='DM 템플릿';$('#stageDesc').textContent='양쪽 프로필과 사진 메시지까지 포함한 DM을 만들어보세요.';
   capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
-    <img class="avatar" src="${state.theirAvatar}" alt=""><div><div class="dm-name editable their-name" contenteditable="true">${esc(state.theirName)}</div>
+    <img class="avatar" src="${state.theirAvatar}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span>${symbolHtml(state.theirSymbol)}</div>
     <div class="chat-bio-preview editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</div></div></div><span>☎　ⓘ</span></header>
     <main class="dm-body chat-wallpaper"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
     <footer class="dm-compose"><span>＋</span><div class="dm-input editable" contenteditable="true">메시지 입력...</div><button class="dm-send">보내기</button></footer></div>`;
@@ -253,7 +267,7 @@ function kakaoBubble(m,i){
   return `<div class="kakao-message ${m.side}" data-index="${i}">
     <img class="avatar kakao-avatar" src="${avatar}" alt="">
     <div class="kakao-message-main">
-      <div class="kakao-sender editable ${mine?'my-name':'their-name'}" contenteditable="true">${esc(mine?state.myName:state.theirName)}</div>
+      <div class="kakao-sender"><span class="editable ${mine?'my-name':'their-name'}" contenteditable="true">${esc(mine?state.myName:state.theirName)}</span>${symbolHtml(mine?state.mySymbol:state.theirSymbol)}</div>
       <div class="kakao-content-row">
         <div class="chat-click-target">${chatMedia(m,'kakao-photo')}</div>
         <span class="kakao-read-one${readClass}" title="클릭해서 숫자 1 표시 전환">1</span>
@@ -268,7 +282,7 @@ function kakaoTyping(m,i){
   return `<div class="typing-row ${m.side}" data-index="${i}">
     <img class="avatar kakao-avatar" src="${avatar}" alt="">
     <div class="typing-wrap">
-      <div class="typing-name">${esc(sender)}</div>
+      <div class="typing-name">${esc(sender)}${symbolHtml(m.side==='theirs'?state.theirSymbol:state.mySymbol)}</div>
       <div class="typing-bubble"><i class="typing-dot"></i><i class="typing-dot"></i><i class="typing-dot"></i></div>
     </div>
   </div>`;
@@ -277,7 +291,7 @@ function kakaoTyping(m,i){
 function renderKakao(){
   $('#stageTitle').textContent='카카오톡 템플릿';$('#stageDesc').textContent='상대와 내 프로필, 텍스트·사진 메시지를 함께 만들 수 있어요.';
   capture.innerHTML=`<div class="kakao-page">
-    <header class="kakao-head"><button>‹</button><div><b class="editable their-name" contenteditable="true">${esc(state.theirName)}</b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
+    <header class="kakao-head"><button>‹</button><div><b><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span>${symbolHtml(state.theirSymbol)}</b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
     <div class="kakao-room"><div class="kakao-date editable" contenteditable="true">2026년 8월 19일 수요일</div>
     ${state.kakao.map((m,i)=>m.type==='typing'?kakaoTyping(m,i):kakaoBubble(m,i)).join('')}</div>
     <footer class="kakao-compose"><span>＋</span><div class="kakao-input editable" contenteditable="true">메시지 입력</div><span>☺　♯</span></footer>
@@ -391,6 +405,11 @@ $$('.template-card').forEach(btn=>btn.addEventListener('click',()=>{
   $$('.template-card').forEach(b=>b.classList.toggle('active',b===btn));
   render();
 }));
+
+$('#nameSymbolSelect').addEventListener('change',e=>{state.nameSymbol=e.target.value;saveCurrentProfile();render()});
+$('#theirSymbolSelect').addEventListener('change',e=>{state.theirSymbol=e.target.value;saveCurrentProfile();render()});
+$('#mySymbolSelect').addEventListener('change',e=>{state.mySymbol=e.target.value;saveCurrentProfile();render()});
+
 $('#nameInput').addEventListener('input',e=>{state.name=e.target.value||'Dearlog';saveCurrentProfile();render()});
 $('#handleInput').addEventListener('input',e=>{state.handle=safeHandle(e.target.value);saveCurrentProfile();render()});
 $('#chatBioInput').addEventListener('input',e=>{state.chatBio=e.target.value;saveCurrentProfile();render()});

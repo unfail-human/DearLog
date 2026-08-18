@@ -6,6 +6,14 @@
   <meta name="theme-color" content="#f5f7fb">
   <title>Dearlog — SNS Maker</title>
   <meta name="description" content="창작 캐릭터와 이야기용 SNS 이미지 메이커 Dearlog">
+  <meta property="og:title" content="Dearlog — SNS Maker">
+  <meta property="og:description" content="나만의 가상 SNS 화면을 자유롭게 만들어보세요.">
+  <meta property="og:image" content="./og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dearlog — SNS Maker">
+  <meta name="twitter:description" content="나만의 가상 SNS 화면을 자유롭게 만들어보세요.">
+  <meta name="twitter:image" content="./og-image.png">
+  <link rel="icon" href="./favicon.png">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -61,6 +69,28 @@
           <span>이름</span>
           <input id="nameInput" type="text" value="Dearlog" maxlength="30">
         </label>
+        <label class="field">
+          <span>이름 옆 기호</span>
+          <select id="nameSymbolSelect" class="symbol-select">
+            <option value="">없음</option>
+            <option value="✦">✦</option>
+            <option value="✧">✧</option>
+            <option value="◆">◆</option>
+            <option value="◇">◇</option>
+            <option value="❖">❖</option>
+            <option value="❈">❈</option>
+            <option value="❉">❉</option>
+            <option value="✿">✿</option>
+            <option value="♡">♡</option>
+            <option value="♥">♥</option>
+            <option value="☆">☆</option>
+            <option value="★">★</option>
+            <option value="☾">☾</option>
+            <option value="☼">☼</option>
+            <option value="•">•</option>
+            <option value="·">·</option>
+          </select>
+        </label>
         <label class="field" id="handleField">
           <span>아이디</span>
           <div class="prefix-input"><i>@</i><input id="handleInput" type="text" value="dearlog" maxlength="30"></div>
@@ -81,11 +111,17 @@
           <div class="chat-profile-card">
             <b>상대</b>
             <label class="field"><span>이름</span><input id="theirNameInput" type="text" value="상대방" maxlength="30"></label>
+            <label class="field"><span>이름 옆 기호</span><select id="theirSymbolSelect" class="symbol-select">
+              <option value="">없음</option><option>✦</option><option>✧</option><option>◆</option><option>◇</option><option>❖</option><option>♡</option><option>♥</option><option>☆</option><option>★</option><option>☾</option><option>•</option>
+            </select></label>
             <label class="field"><span>프로필 사진</span><span class="file-button">상대 이미지<input id="theirAvatarInput" type="file" accept="image/*"></span></label>
           </div>
           <div class="chat-profile-card">
             <b>나</b>
             <label class="field"><span>이름</span><input id="myNameInput" type="text" value="나" maxlength="30"></label>
+            <label class="field"><span>이름 옆 기호</span><select id="mySymbolSelect" class="symbol-select">
+              <option value="">없음</option><option>✦</option><option>✧</option><option>◆</option><option>◇</option><option>❖</option><option>♡</option><option>♥</option><option>☆</option><option>★</option><option>☾</option><option>•</option>
+            </select></label>
             <label class="field"><span>프로필 사진</span><span class="file-button">내 이미지<input id="myAvatarInput" type="file" accept="image/*"></span></label>
           </div>
         </div>
@@ -114,7 +150,7 @@
         <div class="section-title"><span>화면 꾸미기</span></div>
         <label class="field main-color-field">
           <span>메인 색상</span>
-          <input id="mainColor" type="color" value="#7896c6">
+          <input id="mainColor" type="color" value="#5d5a55">
         </label>
         <label class="toggle-row auto-palette-row">
           <span><b>자동 추천 팔레트</b><small>메인 색상에 맞춰 배경·카드·포인트를 자동 조정</small></span>
@@ -125,9 +161,9 @@
           <small>추천 색상</small>
         </div>
         <div class="color-row">
-          <label><span>배경</span><input id="bgColor" type="color" value="#f5f7fb"></label>
+          <label><span>배경</span><input id="bgColor" type="color" value="#f5f4f1"></label>
           <label><span>카드</span><input id="cardColor" type="color" value="#ffffff"></label>
-          <label><span>포인트</span><input id="accentColor" type="color" value="#7896c6"></label>
+          <label><span>포인트</span><input id="accentColor" type="color" value="#5d5a55"></label>
         </div>
         <p class="field-note">자동 추천을 꺼도 위 색상들은 직접 자유롭게 바꿀 수 있어요.</p>
         <label class="toggle-row">

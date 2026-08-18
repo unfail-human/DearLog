@@ -1116,3 +1116,118 @@ button{cursor:pointer}
   background:#fee500;
 }
 .kakao-page .typing-row.mine .typing-dot{background:#4b4b4b}
+
+
+/* v11 My Editor shared beige palette */
+:root{
+  --app-bg:#f5f4f1;
+  --panel:#ffffff;
+  --panel-soft:#faf9f7;
+  --line:#e7e4de;
+  --line-strong:#d8d4cc;
+  --text:#292826;
+  --muted:#8c8982;
+  --accent:#5d5a55;
+  --accent-strong:#5d5a55;
+  --accent-soft:#ece9e3;
+  --shadow:0 10px 35px rgba(45,42,37,.06);
+}
+html,body{background:#f5f4f1}
+.stage{background:#f5f4f1}
+.sidebar{background:#ffffff}
+.template-card.active{
+  border-color:#d8d4cc;
+  background:#faf9f7;
+}
+.brand-mark{
+  background:#f8f7f4;
+  color:#5d5a55;
+  border:1px solid #d8d4cc;
+}
+.btn-primary{
+  background:#292826;
+  border-color:#292826;
+}
+.btn-primary:hover{
+  background:#413f3a;
+  border-color:#413f3a;
+}
+.symbol-select{
+  width:100%;
+  padding:10px 11px;
+  border:1px solid var(--line-strong);
+  border-radius:10px;
+  background:#fbfaf8;
+  color:var(--text);
+  font-size:12px;
+  outline:none;
+}
+.name-symbol{
+  margin-left:4px;
+  color:var(--preview-muted);
+  font-weight:500;
+}
+
+/* X composer decorative toolbar */
+.x-compose-tools{
+  display:flex !important;
+  align-items:center;
+  gap:13px;
+  color:#8a9a9d !important;
+  letter-spacing:0 !important;
+}
+.x-tool-icon{
+  width:17px;
+  height:17px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.x-tool-icon svg{
+  width:17px;
+  height:17px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.65;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.x-tool-gif{
+  font-size:7px;
+  font-weight:800;
+  border:1.5px solid currentColor;
+  border-radius:4px;
+  width:18px;
+  height:15px;
+}
+
+/* X reactions larger + centered */
+.x-actions{
+  margin-top:5px;
+  padding:12px 8px 2px !important;
+  align-items:center;
+}
+.x-actions span{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:12px !important;
+  min-height:24px;
+}
+.x-actions span:nth-child(4){
+  justify-content:center !important;
+}
+.x-actions .editable{
+  font-size:11px;
+}
+
+/* beige X surfaces */
+.capture{
+  --preview-bg:#f5f4f1;
+  --preview-card:#ffffff;
+  --preview-accent:#5d5a55;
+  --preview-text:#292826;
+  --preview-muted:#8c8982;
+  --preview-line:#e7e4de;
+}
