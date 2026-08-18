@@ -292,3 +292,107 @@ button{cursor:pointer}
   .chat-photo,.kakao-photo{width:155px}
   .chat-photo img,.kakao-photo img{height:150px}
 }
+
+
+/* v4 phone canvas */
+.capture-shell{display:flex;justify-content:center}
+.capture{
+  width:390px;
+  min-width:390px;
+  max-width:390px;
+  min-height:844px;
+  border-radius:30px;
+  overflow:hidden;
+}
+@media(max-width:520px){
+  .capture-shell{overflow-x:auto;justify-content:flex-start;padding-bottom:4px}
+  .capture{transform-origin:top left}
+}
+
+/* chat background */
+.chat-wallpaper{
+  background-color:var(--chat-bg,#dfe8ef);
+  background-image:var(--chat-bg-image,none);
+  background-size:cover;
+  background-position:center;
+}
+
+/* better DM phone layout */
+.dm-page{min-height:844px;height:844px}
+.dm-head{flex:0 0 auto}
+.dm-body{
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+  padding:22px 15px;
+  background-color:var(--chat-bg,#eef3f8);
+  background-image:var(--chat-bg-image,none);
+  background-size:cover;
+  background-position:center;
+}
+.dm-compose{flex:0 0 auto}
+.bubble-row{
+  width:100%;
+  display:flex;
+  gap:7px;
+  align-items:flex-end;
+}
+.bubble-row.mine{justify-content:flex-start;flex-direction:row-reverse}
+.bubble-row.theirs{justify-content:flex-start}
+.chat-message-stack{max-width:74%}
+.dm-read{
+  font-size:8px;
+  color:var(--preview-accent);
+  min-width:22px;
+  text-align:center;
+  cursor:pointer;
+}
+.dm-read.off{color:transparent}
+.chat-click-target{cursor:pointer}
+
+/* Kakao fixed phone */
+.kakao-page{
+  min-height:844px;
+  height:844px;
+  background-color:var(--chat-bg,#dfe8ef);
+  background-image:var(--chat-bg-image,none);
+  background-size:cover;
+  background-position:center;
+}
+.kakao-room{min-height:0;overflow:hidden}
+.kakao-read-one{
+  font-size:9px;
+  font-weight:700;
+  color:#f0a500;
+  min-width:8px;
+  text-align:center;
+  cursor:pointer;
+}
+.kakao-read-one.off{color:transparent}
+
+/* X actions */
+.x-actions{grid-template-columns:repeat(4,1fr);gap:2px}
+.x-actions span{white-space:nowrap}
+.x-actions .editable{font-weight:600}
+
+/* notice */
+.notice-backdrop{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(33,42,55,.34);
+  backdrop-filter:blur(5px);
+  display:grid;place-items:center;padding:20px;
+}
+.notice-modal{
+  width:min(440px,100%);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 28px 80px rgba(40,55,80,.22);
+  padding:24px;
+}
+.notice-kicker{font-size:9px;letter-spacing:.16em;font-weight:800;color:var(--accent-strong);margin-bottom:7px}
+.notice-modal h2{font-size:20px;margin:0 0 14px}
+.notice-content{font-size:12px;line-height:1.7;color:#5f6978}
+.notice-content p{margin:7px 0}
+.notice-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--line)}
+.notice-actions label{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px}

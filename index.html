@@ -16,6 +16,7 @@
       <span class="brand-sub">SNS MAKER</span>
     </a>
     <div class="top-actions">
+      <button class="btn btn-subtle" id="noticeBtn">공지</button>
       <button class="btn btn-subtle" id="resetBtn">초기화</button>
       <button class="btn btn-primary" id="exportBtn">PNG 저장</button>
     </div>
@@ -112,6 +113,19 @@
         </label>
       </section>
 
+      <section class="tool-section" id="chatBackgroundSection" hidden>
+        <div class="section-title"><span>채팅 배경</span><small>DM / KAKAO</small></div>
+        <label class="field">
+          <span>배경색</span>
+          <input id="chatBgColor" type="color" value="#dfe8ef">
+        </label>
+        <label class="field">
+          <span>배경 이미지</span>
+          <span class="file-button">배경 이미지 선택<input id="chatBgImageInput" type="file" accept="image/*"></span>
+        </label>
+        <button class="btn btn-wide" id="clearChatBgBtn" type="button">배경 이미지 지우기</button>
+      </section>
+
       <section class="tool-section" id="contentControls">
         <div class="section-title"><span>콘텐츠</span></div>
         <div class="button-stack">
@@ -147,7 +161,20 @@
 
   <input id="avatarHidden" type="file" accept="image/*" hidden>
 
+  <div class="notice-backdrop" id="noticeBackdrop" hidden>
+    <section class="notice-modal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+      <div class="notice-kicker">DEARLOG NOTICE</div>
+      <h2 id="noticeTitle">Dearlog 안내</h2>
+      <div class="notice-content" id="noticeContent"></div>
+      <div class="notice-actions">
+        <label><input type="checkbox" id="noticeSessionCheck"> 이번 접속 중 다시 보지 않기</label>
+        <button class="btn btn-primary" id="noticeCloseBtn" type="button">확인</button>
+      </div>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="./notice.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>

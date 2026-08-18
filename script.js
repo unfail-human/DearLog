@@ -17,20 +17,21 @@ const state={
   theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),
   myAvatar:DEFAULT_AVATAR('#667085','#eef1f5'),
   main:'#7896c6',bg:'#f5f7fb',card:'#ffffff',accent:'#7896c6',autoPalette:true,dark:false,
+  chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'24',image:''},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'86',replies:'11',image:''}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'24',reposts:'16',shares:'3',image:''},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'86',replies:'11',reposts:'7',shares:'2',image:''}
   ],
   igTiles:Array(9).fill(''),
   dm:[
-    {side:'theirs',type:'text',text:'오늘 기록은 다 했어?',time:'11:42',image:''},
-    {side:'mine',type:'text',text:'응. 마지막 한 줄만 남았어.',time:'11:43',image:''},
-    {side:'theirs',type:'text',text:'그럼 다 쓰고 보여줘 ☺',time:'11:43',image:''}
+    {side:'theirs',type:'text',text:'오늘 기록은 다 했어?',time:'11:42',image:'',read:true},
+    {side:'mine',type:'text',text:'응. 마지막 한 줄만 남았어.',time:'11:43',image:'',read:true},
+    {side:'theirs',type:'text',text:'그럼 다 쓰고 보여줘 ☺',time:'11:43',image:'',read:true}
   ],
   kakao:[
-    {side:'theirs',type:'text',text:'오늘은 뭐 하고 있었어?',time:'오전 11:42',image:''},
-    {side:'mine',type:'text',text:'기록 정리하고 있었어.',time:'오전 11:43',image:''},
-    {side:'theirs',type:'text',text:'완성하면 보여줘!',time:'오전 11:43',image:''}
+    {side:'theirs',type:'text',text:'오늘은 뭐 하고 있었어?',time:'오전 11:42',image:'',read:false},
+    {side:'mine',type:'text',text:'기록 정리하고 있었어.',time:'오전 11:43',image:'',read:false},
+    {side:'theirs',type:'text',text:'완성하면 보여줘!',time:'오전 11:43',image:'',read:false}
   ]
 };
 
@@ -80,11 +81,14 @@ function syncVars(){
   capture.style.setProperty('--preview-card',state.card);
   capture.style.setProperty('--preview-accent',state.accent);
   capture.classList.toggle('dark',state.dark);
+  capture.style.setProperty('--chat-bg',state.chatBg);
+  capture.style.setProperty('--chat-bg-image',state.chatBgImage ? `url("${state.chatBgImage}")` : 'none');
   updatePalettePreview();
 }
 function setChatControls(){
   const chat=['dm','kakao'].includes(state.template);
   $('#chatProfileSection').hidden=!chat;
+  $('#chatBackgroundSection').hidden=!chat;
   $('#chatAddRow').hidden=!chat;
   $('#addItemBtn').hidden=chat;
 }
@@ -101,8 +105,12 @@ function xPost(post,i){
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
     <label class="x-media image-picker"><input type="file" accept="image/*" class="x-image-input">
     ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}</label>
-    <div class="x-actions"><span>♡ <b class="editable x-likes" contenteditable="true">${esc(post.likes)}</b></span>
-    <span>◌ <b class="editable x-replies" contenteditable="true">${esc(post.replies)}</b></span><span>↗</span><span>⌑</span></div>
+    <div class="x-actions">
+      <span>◌ <b class="editable x-replies" contenteditable="true">${esc(post.replies)}</b></span>
+      <span>↻ <b class="editable x-reposts" contenteditable="true">${esc(post.reposts ?? '0')}</b></span>
+      <span>♡ <b class="editable x-likes" contenteditable="true">${esc(post.likes)}</b></span>
+      <span>↗ <b class="editable x-shares" contenteditable="true">${esc(post.shares ?? '0')}</b></span>
+    </div>
   </article>`;
 }
 function renderX(){
@@ -133,9 +141,14 @@ function chatMedia(m, cls){
 }
 function dmBubble(m,i){
   const avatar=m.side==='theirs'?state.theirAvatar:state.myAvatar;
+  const readClass=m.read?'':' off';
   return `<div class="bubble-row ${m.side}" data-index="${i}">
     <img class="avatar chat-side-avatar" src="${avatar}" alt="">
-    <div class="chat-message-stack">${chatMedia(m,'dm-photo')}<div class="dm-time editable chat-time" contenteditable="true">${esc(m.time)}</div></div>
+    <div class="chat-message-stack">
+      <div class="chat-click-target">${chatMedia(m,'dm-photo')}</div>
+      <div class="dm-time editable chat-time" contenteditable="true">${esc(m.time)}</div>
+      <div class="dm-read${readClass}" title="클릭해서 읽음 표시 전환">${m.read?'읽음':'읽음'}</div>
+    </div>
   </div>`;
 }
 function renderDM(){
@@ -143,16 +156,21 @@ function renderDM(){
   capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
     <img class="avatar" src="${state.theirAvatar}" alt=""><div><div class="dm-name editable their-name" contenteditable="true">${esc(state.theirName)}</div>
     <div class="dm-status">@<span class="editable sync-handle" contenteditable="true">${esc(state.handle)}</span> · 온라인</div></div></div><span>☎　ⓘ</span></header>
-    <main class="dm-body"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
+    <main class="dm-body chat-wallpaper"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
     <footer class="dm-compose"><span>＋</span><div class="dm-input editable" contenteditable="true">메시지 입력...</div><button class="dm-send">보내기</button></footer></div>`;
 }
 function kakaoBubble(m,i){
   const mine=m.side==='mine', avatar=mine?state.myAvatar:state.theirAvatar;
+  const readClass=m.read?' off':'';
   return `<div class="kakao-message ${m.side}" data-index="${i}">
     <img class="avatar kakao-avatar" src="${avatar}" alt="">
     <div class="kakao-message-main">
       <div class="kakao-sender editable ${mine?'my-name':'their-name'}" contenteditable="true">${esc(mine?state.myName:state.theirName)}</div>
-      <div class="kakao-content-row">${chatMedia(m,'kakao-photo')}<span class="kakao-time editable chat-time" contenteditable="true">${esc(m.time)}</span></div>
+      <div class="kakao-content-row">
+        <div class="chat-click-target">${chatMedia(m,'kakao-photo')}</div>
+        <span class="kakao-read-one${readClass}" title="클릭해서 숫자 1 표시 전환">1</span>
+        <span class="kakao-time editable chat-time" contenteditable="true">${esc(m.time)}</span>
+      </div>
     </div>
   </div>`;
 }
@@ -198,6 +216,17 @@ function bindChat(listName){
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
     $('.chat-photo-input',row)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{m.image=src;render()}));
+    const toggle=()=>{
+      m.read=!m.read;
+      render();
+    };
+    $('.chat-click-target',row)?.addEventListener('click',e=>{
+      if(e.target.closest('input'))return;
+      if(m.type==='photo' && !m.image)return;
+      toggle();
+    });
+    $('.dm-read',row)?.addEventListener('click',toggle);
+    $('.kakao-read-one',row)?.addEventListener('click',toggle);
   });
 }
 function bindPreview(){
@@ -210,6 +239,8 @@ function bindPreview(){
       $('.x-time',card).addEventListener('input',e=>p.time=e.target.textContent);
       $('.x-likes',card).addEventListener('input',e=>p.likes=e.target.textContent);
       $('.x-replies',card).addEventListener('input',e=>p.replies=e.target.textContent);
+      $('.x-reposts',card).addEventListener('input',e=>p.reposts=e.target.textContent);
+      $('.x-shares',card).addEventListener('input',e=>p.shares=e.target.textContent);
       $('.x-image-input',card).addEventListener('change',e=>fileToData(e.target.files[0],src=>{p.image=src;render()}));
     });
   }else if(state.template==='instagram'){
@@ -251,14 +282,14 @@ $('#darkToggle').addEventListener('change',e=>{state.dark=e.target.checked;syncV
 function nextSide(arr){return arr.length&&arr[arr.length-1].side==='mine'?'theirs':'mine'}
 function addChatMessage(type){
   const arr=state.template==='kakao'?state.kakao:state.dm;
-  arr.push({side:nextSide(arr),type,text:type==='text'?'새 메시지를 입력하세요.':'',time:'now',image:''});
+  arr.push({side:nextSide(arr),type,text:type==='text'?'새 메시지를 입력하세요.':'',time:'now',image:'',read:false});
   render();
 }
 $('#addTextMessageBtn').addEventListener('click',()=>addChatMessage('text'));
 $('#addPhotoMessageBtn').addEventListener('click',()=>addChatMessage('photo'));
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'0',replies:'0',image:''});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'0',replies:'0',reposts:'0',shares:'0',image:''});
   else if(state.template==='instagram')state.igTiles.push('');
   render();
 });
@@ -267,6 +298,11 @@ $('#removeItemBtn').addEventListener('click',()=>{
   if(target.length<=1)return alert('항목은 최소 1개가 필요해요.');
   target.pop();render();
 });
+
+$('#chatBgColor').addEventListener('input',e=>{state.chatBg=e.target.value;syncVars()});
+$('#chatBgImageInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.chatBgImage=src;syncVars()}));
+$('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chatBgImageInput').value='';syncVars()});
+
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
 $('#exportBtn').addEventListener('click',async()=>{
   const btn=$('#exportBtn'),old=btn.textContent;btn.disabled=true;btn.textContent='저장 중…';
@@ -279,5 +315,23 @@ $('#exportBtn').addEventListener('click',async()=>{
   finally{btn.disabled=false;btn.textContent=old}
 });
 
+
+function openNotice(){
+  const cfg=window.DEARLOG_NOTICE;
+  if(!cfg?.enabled)return;
+  $('#noticeTitle').textContent=cfg.title||'Dearlog 안내';
+  $('#noticeContent').innerHTML=cfg.html||'';
+  $('#noticeBackdrop').hidden=false;
+}
+function closeNotice(){
+  if($('#noticeSessionCheck').checked)sessionStorage.setItem('dearlogNoticeHidden','1');
+  $('#noticeBackdrop').hidden=true;
+}
+$('#noticeBtn').addEventListener('click',openNotice);
+$('#noticeCloseBtn').addEventListener('click',closeNotice);
+$('#noticeBackdrop').addEventListener('click',e=>{if(e.target===$('#noticeBackdrop'))closeNotice()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#noticeBackdrop').hidden)closeNotice()});
+
 applyRecommendedPalette();
 render();
+if(window.DEARLOG_NOTICE?.enabled && !sessionStorage.getItem('dearlogNoticeHidden')) openNotice();
