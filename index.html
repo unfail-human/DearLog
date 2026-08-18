@@ -1,200 +1,114 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#fffafc" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
   <title>Dearlog — SNS Maker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css" />
+  <meta name="description" content="창작 캐릭터와 이야기용 SNS 이미지 메이커 Dearlog">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <a class="brand" href="#" aria-label="Dearlog home">
-        <span class="brand-spark">✦</span>
-        <span>Dearlog</span>
-      </a>
-      <div class="top-actions">
-        <button class="ghost-btn" id="resetBtn" type="button">초기화</button>
-        <button class="primary-btn" id="saveBtn" type="button">PNG 저장</button>
-      </div>
-    </header>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Dearlog">
+      <span class="brand-mark">✦</span>
+      <span class="brand-name">Dearlog</span>
+      <span class="brand-sub">SNS MAKER</span>
+    </a>
+    <div class="top-actions">
+      <button class="btn btn-subtle" id="resetBtn">초기화</button>
+      <button class="btn btn-primary" id="exportBtn">PNG 저장</button>
+    </div>
+  </header>
 
-    <main class="workspace">
-      <aside class="panel controls" aria-label="편집 도구">
-        <div class="panel-head">
-          <p class="eyebrow">SOCIAL MAKER</p>
-          <h1>나만의 SNS 화면 만들기</h1>
-          <p class="subcopy">미리보기 안의 글자를 눌러 바로 수정하고, 사진을 교체해보세요.</p>
+  <main class="app">
+    <aside class="sidebar">
+      <section class="intro">
+        <div class="kicker">DEARLOG MAKER</div>
+        <h1>가상의 SNS를<br>자유롭게 만들어보세요.</h1>
+        <p>템플릿을 고른 뒤 이름, 아이디, 글, 사진을 원하는 대로 바꿀 수 있어요.</p>
+      </section>
+
+      <section class="tool-section">
+        <div class="section-title">
+          <span>템플릿</span>
+          <small>3 TYPES</small>
         </div>
-
-        <section class="control-group">
-          <h2>프로필</h2>
-          <label>
-            이름
-            <input id="nameInput" type="text" value="Dearlog" maxlength="24" />
-          </label>
-          <label>
-            아이디
-            <div class="input-prefix"><span>@</span><input id="handleInput" type="text" value="dearlog" maxlength="24" /></div>
-          </label>
-          <label>
-            프로필 이미지
-            <input id="avatarInput" type="file" accept="image/*" />
-          </label>
-        </section>
-
-        <section class="control-group">
-          <h2>화면</h2>
-          <label>
-            배경색
-            <input id="bgColor" type="color" value="#fffafd" />
-          </label>
-          <label>
-            카드색
-            <input id="cardColor" type="color" value="#ffffff" />
-          </label>
-          <label>
-            강조색
-            <input id="accentColor" type="color" value="#ef9fba" />
-          </label>
-          <label class="row-toggle">
-            <span>다크 모드</span>
-            <input id="darkToggle" type="checkbox" />
-          </label>
-        </section>
-
-        <section class="control-group">
-          <h2>게시물</h2>
-          <button class="wide-btn" id="addPostBtn" type="button">＋ 게시물 추가</button>
-          <button class="wide-btn danger" id="removePostBtn" type="button">− 마지막 게시물 삭제</button>
-        </section>
-
-        <section class="mini-tip">
-          <strong>TIP</strong>
-          <span>미리보기의 본문, 이름, 숫자, 시간은 직접 클릭해서 수정할 수 있어요.</span>
-        </section>
-      </aside>
-
-      <section class="stage">
-        <div class="capture-wrap">
-          <div class="phone-canvas" id="captureArea">
-            <div class="sns-header">
-              <div>
-                <div class="mini-title">Dearlog</div>
-                <div class="mini-sub">my little social diary</div>
-              </div>
-              <div class="sparkles">✦ ⋆</div>
-            </div>
-
-            <div class="profile-card">
-              <div class="avatar-wrap">
-                <img id="avatarPreview" alt="프로필 이미지" />
-                <button type="button" class="avatar-overlay" id="avatarOverlay">사진 변경</button>
-              </div>
-              <div class="profile-text">
-                <div class="profile-name editable" id="profileName" contenteditable="true">Dearlog</div>
-                <div class="profile-handle">@<span class="editable" id="profileHandle" contenteditable="true">dearlog</span></div>
-                <div class="profile-bio editable" contenteditable="true">좋아하는 순간들을 작은 기록으로 남겨요.</div>
-              </div>
-              <button class="follow-pill editable" contenteditable="true" spellcheck="false">following</button>
-            </div>
-
-            <div class="tabs">
-              <button class="tab active" type="button">posts</button>
-              <button class="tab" type="button">media</button>
-              <button class="tab" type="button">likes</button>
-            </div>
-
-            <div class="feed" id="feed">
-              <article class="post-card">
-                <div class="post-top">
-                  <div class="post-user">
-                    <img class="post-avatar sync-avatar" alt="" />
-                    <div>
-                      <div class="post-name sync-name editable" contenteditable="true">Dearlog</div>
-                      <div class="post-meta">@<span class="sync-handle editable" contenteditable="true">dearlog</span> · <span class="editable" contenteditable="true">2m</span></div>
-                    </div>
-                  </div>
-                  <button class="more-btn" type="button" aria-label="more">•••</button>
-                </div>
-                <div class="post-body editable" contenteditable="true">오늘의 작은 이야기를 이곳에 적어보세요. ✦</div>
-                <label class="media-box">
-                  <input class="post-image-input" type="file" accept="image/*" />
-                  <div class="media-placeholder">
-                    <span>＋</span>
-                    <p>사진 추가</p>
-                  </div>
-                  <img class="post-image" alt="" hidden />
-                </label>
-                <div class="post-actions">
-                  <button type="button">♡ <span class="editable" contenteditable="true">128</span></button>
-                  <button type="button">◌ <span class="editable" contenteditable="true">24</span></button>
-                  <button type="button">↗</button>
-                  <button type="button" class="bookmark">⌑</button>
-                </div>
-              </article>
-
-              <article class="post-card">
-                <div class="post-top">
-                  <div class="post-user">
-                    <img class="post-avatar sync-avatar" alt="" />
-                    <div>
-                      <div class="post-name sync-name editable" contenteditable="true">Dearlog</div>
-                      <div class="post-meta">@<span class="sync-handle editable" contenteditable="true">dearlog</span> · <span class="editable" contenteditable="true">1h</span></div>
-                    </div>
-                  </div>
-                  <button class="more-btn" type="button" aria-label="more">•••</button>
-                </div>
-                <div class="post-body editable" contenteditable="true">무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.</div>
-                <div class="post-actions">
-                  <button type="button">♡ <span class="editable" contenteditable="true">86</span></button>
-                  <button type="button">◌ <span class="editable" contenteditable="true">11</span></button>
-                  <button type="button">↗</button>
-                  <button type="button" class="bookmark">⌑</button>
-                </div>
-              </article>
-            </div>
-          </div>
+        <div class="template-grid" id="templateGrid">
+          <button class="template-card active" data-template="x">
+            <span class="template-icon">𝕏</span>
+            <span><b>X형</b><small>POST / REPLY</small></span>
+          </button>
+          <button class="template-card" data-template="instagram">
+            <span class="template-icon">◎</span>
+            <span><b>Instagram형</b><small>FEED / PHOTO</small></span>
+          </button>
+          <button class="template-card" data-template="dm">
+            <span class="template-icon">◌</span>
+            <span><b>DM형</b><small>MESSAGE / CHAT</small></span>
+          </button>
         </div>
       </section>
-    </main>
-  </div>
 
-  <template id="postTemplate">
-    <article class="post-card">
-      <div class="post-top">
-        <div class="post-user">
-          <img class="post-avatar sync-avatar" alt="" />
-          <div>
-            <div class="post-name sync-name editable" contenteditable="true">Dearlog</div>
-            <div class="post-meta">@<span class="sync-handle editable" contenteditable="true">dearlog</span> · <span class="editable" contenteditable="true">now</span></div>
-          </div>
-        </div>
-        <button class="more-btn" type="button" aria-label="more">•••</button>
-      </div>
-      <div class="post-body editable" contenteditable="true">새 게시물 내용을 입력하세요.</div>
-      <label class="media-box">
-        <input class="post-image-input" type="file" accept="image/*" />
-        <div class="media-placeholder">
-          <span>＋</span>
-          <p>사진 추가</p>
-        </div>
-        <img class="post-image" alt="" hidden />
-      </label>
-      <div class="post-actions">
-        <button type="button">♡ <span class="editable" contenteditable="true">0</span></button>
-        <button type="button">◌ <span class="editable" contenteditable="true">0</span></button>
-        <button type="button">↗</button>
-        <button type="button" class="bookmark">⌑</button>
-      </div>
-    </article>
-  </template>
+      <section class="tool-section">
+        <div class="section-title"><span>프로필</span></div>
+        <label class="field">
+          <span>이름</span>
+          <input id="nameInput" type="text" value="Dearlog" maxlength="30">
+        </label>
+        <label class="field">
+          <span>아이디</span>
+          <div class="prefix-input"><i>@</i><input id="handleInput" type="text" value="dearlog" maxlength="30"></div>
+        </label>
+        <label class="field">
+          <span>프로필 이미지</span>
+          <span class="file-button">이미지 선택<input id="avatarInput" type="file" accept="image/*"></span>
+        </label>
+      </section>
 
-  <input id="hiddenAvatarInput" type="file" accept="image/*" hidden />
+      <section class="tool-section" id="appearanceSection">
+        <div class="section-title"><span>화면 꾸미기</span></div>
+        <div class="color-row">
+          <label><span>배경</span><input id="bgColor" type="color" value="#f5f7fb"></label>
+          <label><span>카드</span><input id="cardColor" type="color" value="#ffffff"></label>
+          <label><span>포인트</span><input id="accentColor" type="color" value="#7896c6"></label>
+        </div>
+        <label class="toggle-row">
+          <span><b>다크 모드</b><small>미리보기만 어둡게 전환</small></span>
+          <input id="darkToggle" type="checkbox">
+        </label>
+      </section>
+
+      <section class="tool-section" id="contentControls">
+        <div class="section-title"><span>콘텐츠</span></div>
+        <div class="button-stack">
+          <button class="btn btn-wide" id="addItemBtn">＋ 항목 추가</button>
+          <button class="btn btn-wide btn-danger" id="removeItemBtn">− 마지막 항목 삭제</button>
+        </div>
+      </section>
+
+      <div class="tip">
+        <b>TIP</b>
+        <span>미리보기 안의 글자를 클릭하면 대부분 바로 수정할 수 있어요.</span>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div class="stage-top">
+        <div>
+          <b id="stageTitle">X형 템플릿</b>
+          <span id="stageDesc">게시물과 답글을 만들어보세요.</span>
+        </div>
+        <span class="editing-badge">LIVE EDIT</span>
+      </div>
+
+      <div class="capture-shell">
+        <div class="capture" id="captureArea"></div>
+      </div>
+    </section>
+  </main>
+
+  <input id="avatarHidden" type="file" accept="image/*" hidden>
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="./script.js"></script>

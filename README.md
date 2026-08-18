@@ -1,24 +1,27 @@
-# Dearlog
+# Dearlog v2
 
-캐릭터나 창작용 SNS 화면을 만들 수 있는 정적 웹사이트입니다.
+창작 캐릭터 / 관계성 / 이야기용 SNS 이미지 메이커.
 
-## 기능
-- 이름 / 아이디 / 소개글 / 게시물 직접 수정
-- 프로필 이미지 교체
-- 게시물 이미지 업로드
-- 게시물 추가 / 삭제
-- 배경색 / 카드색 / 강조색 변경
+## v2 변경점
+- My Editor 계열의 밝은 화이트·연회색 + 블루 포인트 팔레트로 전면 변경
+- X형 템플릿
+- Instagram형 템플릿
+- DM형 템플릿
+- 템플릿 즉시 전환
+- 프로필 이름 / 아이디 / 이미지 공통 편집
+- 미리보기 안에서 직접 텍스트 편집
+- X 게시물 추가 / 삭제 / 이미지 첨부
+- Instagram 사진 칸 추가 / 삭제 / 이미지 첨부
+- DM 메시지 추가 / 삭제
+- 배경 / 카드 / 포인트 색상 변경
 - 다크 모드
-- 완성 화면 PNG 저장
+- PNG 저장
 - 모바일 대응
 
-## GitHub Pages 배포
-1. GitHub에서 새 저장소를 만듭니다. 예: `dearlog`
-2. 이 폴더 안의 `index.html`, `style.css`, `script.js`를 저장소 최상단에 업로드합니다.
-3. 저장소의 **Settings → Pages**로 이동합니다.
-4. **Build and deployment → Source**를 `Deploy from a branch`로 설정합니다.
-5. Branch를 `main`, 폴더를 `/(root)`로 선택한 뒤 Save 합니다.
-6. 잠시 후 `https://아이디.github.io/dearlog/` 형태의 주소로 접속할 수 있습니다.
+## GitHub Pages
+ZIP을 풀어서 `index.html`, `style.css`, `script.js`를 GitHub 저장소 최상단에 올립니다.
 
-## 참고
-PNG 저장에는 CDN의 html2canvas를 사용합니다.
+Settings → Pages → Deploy from a branch → `main` / `(root)` → Save
+
+예시:
+`https://YOUR-ID.github.io/dearlog/`
