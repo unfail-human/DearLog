@@ -372,20 +372,23 @@ function refreshSelected(){
 
 
 function fitCaptureToStage(){
-  if(window.innerWidth<=900){
-    capture.style.transform='';
-    return;
-  }
   const shell=document.querySelector('.capture-shell');
   if(!shell||!capture.offsetWidth||!capture.offsetHeight)return;
 
-  // Fit the entire current template inside the fixed center workspace.
-  const availableW=Math.max(100,shell.clientWidth);
-  const availableH=Math.max(100,shell.clientHeight);
   const naturalW=capture.offsetWidth;
   const naturalH=capture.offsetHeight;
 
-  // Never enlarge above 100%; only shrink enough to show the whole template.
+  if(window.innerWidth<=900){
+    const availableW=Math.max(280,shell.clientWidth-4);
+    const scale=Math.min(1,availableW/naturalW);
+    capture.style.transform=`scale(${scale})`;
+    shell.style.minHeight=`${naturalH*scale}px`;
+    return;
+  }
+
+  shell.style.minHeight='';
+  const availableW=Math.max(100,shell.clientWidth);
+  const availableH=Math.max(100,shell.clientHeight);
   const scale=Math.min(1,availableW/naturalW,availableH/naturalH);
   capture.style.transform=`scale(${scale})`;
 }
