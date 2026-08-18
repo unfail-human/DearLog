@@ -1662,3 +1662,85 @@ body{
   border-radius:9px;
   background:#fff;
 }
+
+
+/* v22 exact My Editor favicon is provided as file; UI changes below */
+
+/* larger left profile preview */
+.profile-image-control{
+  grid-template-columns:72px 1fr !important;
+  gap:12px !important;
+}
+.sidebar-avatar-preview{
+  width:72px !important;
+  height:72px !important;
+  border-radius:50% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  border:1px solid var(--line) !important;
+  background:#ece9e3 !important;
+}
+
+/* right inspector post avatar editor */
+.inspect-post-avatar{
+  display:grid;
+  gap:7px;
+}
+.inspect-label{
+  font-size:9px;
+  color:var(--muted);
+}
+.inspect-post-avatar-row{
+  display:grid;
+  grid-template-columns:58px 1fr;
+  gap:10px;
+  align-items:center;
+}
+#inspectPostAvatarPreview{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+  background:#ece9e3;
+  border:1px solid var(--line);
+}
+.inspect-post-avatar-actions{
+  display:grid;
+  gap:6px;
+}
+
+/* X fixed frame, image itself freely adjustable */
+.x-media{
+  height:240px !important;
+  min-height:240px !important;
+  max-height:240px !important;
+  overflow:hidden !important;
+  position:relative !important;
+  cursor:grab;
+}
+.x-media.is-dragging{cursor:grabbing}
+.x-media.has-image img{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  max-width:none !important;
+  max-height:none !important;
+  transform:
+    translate(calc(-50% + var(--media-x,0px)),calc(-50% + var(--media-y,0px)))
+    scale(var(--media-scale,1)) !important;
+  transform-origin:center center !important;
+  user-select:none !important;
+  pointer-events:none !important;
+}
+.x-media-scale-hint{
+  left:10px !important;
+  right:auto !important;
+  bottom:10px !important;
+}
+.capture.clean-output .x-media-scale-hint{display:none!important}

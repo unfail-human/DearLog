@@ -33,8 +33,8 @@ const state={
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',liked:false,reposted:false,replied:false},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',liked:false,reposted:false,replied:false}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -189,10 +189,10 @@ function xPost(post,i){
       <span class="quote-meta">@<span class="editable quote-handle-edit" contenteditable="true">${esc(post.quoteHandle||'original')}</span></span></div></div>
       <div class="quote-body editable quote-body-edit" contenteditable="true">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
     </div>`:''}
-    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale||1};--media-bg:${post.imageBg||'#f5f4f1'}"><input type="file" accept="image/*" class="x-image-input">
+    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale??1};--media-x:${post.mediaX??0}px;--media-y:${post.mediaY??0}px;--media-bg:${post.imageBg||'#f5f4f1'}"><input type="file" accept="image/*" class="x-image-input">
       ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
-      ${post.image?`<div class="x-media-scale-hint">휠로 사진 크기 조절</div>`:''}
+      ${post.image?`<div class="x-media-scale-hint">휠 확대·축소 · 드래그 위치 조절</div>`:''}
       <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
     </label>`:''}
     <div class="x-actions">
@@ -344,6 +344,7 @@ function updateInspector(){
   $('#inspectorType').textContent=isX?'X 게시물':isTyping?'입력중 표시':'메시지';
   $('#inspectNameField').hidden=!isX;
   $('#inspectHandleField').hidden=!isX;
+  $('#inspectPostAvatarField').hidden=!isX;
   $('#inspectBodyField').hidden=isTyping;
   $('#inspectSideField').hidden=isX;
   $('#inspectTimeField').hidden=isX||isTyping;
@@ -352,6 +353,7 @@ function updateInspector(){
   if(isX){
     $('#inspectName').value=d.item.authorName??state.name;
     $('#inspectHandle').value=d.item.authorHandle??state.handle;
+    $('#inspectPostAvatarPreview').src=d.item.authorAvatar||state.avatar;
     $('#inspectBody').value=d.item.body||'';
     $('#inspectImageBg').value=d.item.imageBg||'#f5f4f1';
   }else{
@@ -495,13 +497,37 @@ function bindPreview(){
       });
       $('.x-image-input',card)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{p.image=src;render()}));
       $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
-      $('.x-media',card)?.addEventListener('wheel',e=>{
+      const media=$('.x-media',card);
+      media?.addEventListener('wheel',e=>{
         if(!p.image)return;
         e.preventDefault();
         e.stopPropagation();
-        p.mediaScale=Math.max(1,Math.min(3,(p.mediaScale||1)+(e.deltaY<0?.08:-.08)));
-        card.querySelector('.x-media')?.style.setProperty('--media-scale',p.mediaScale);
+        p.mediaScale=Math.max(.5,Math.min(4,(p.mediaScale??1)+(e.deltaY<0?.08:-.08)));
+        media.style.setProperty('--media-scale',p.mediaScale);
       },{passive:false});
+      media?.addEventListener('pointerdown',e=>{
+        if(!p.image||e.button!==0)return;
+        if(e.target.closest('button,input'))return;
+        e.preventDefault();
+        media.classList.add('is-dragging');
+        const startX=e.clientX,startY=e.clientY;
+        const baseX=p.mediaX??0,baseY=p.mediaY??0;
+        media.setPointerCapture(e.pointerId);
+        const move=ev=>{
+          p.mediaX=baseX+(ev.clientX-startX);
+          p.mediaY=baseY+(ev.clientY-startY);
+          media.style.setProperty('--media-x',`${p.mediaX}px`);
+          media.style.setProperty('--media-y',`${p.mediaY}px`);
+        };
+        const up=ev=>{
+          media.classList.remove('is-dragging');
+          media.removeEventListener('pointermove',move);
+          media.removeEventListener('pointerup',up);
+          try{media.releasePointerCapture(ev.pointerId)}catch{}
+        };
+        media.addEventListener('pointermove',move);
+        media.addEventListener('pointerup',up);
+      });
     });
   }else if(state.template==='instagram'){
     $$('.ig-tile',capture).forEach(tile=>{
@@ -573,7 +599,7 @@ $('#addTypingBtn').addEventListener('click',()=>{
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,authorAvatar:state.avatar,imageBg:'#f5f4f1',liked:false,reposted:false,replied:false});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,authorAvatar:state.avatar,imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);}
   render();
 });
@@ -775,6 +801,18 @@ $('#inspectBody').addEventListener('input',e=>{
   else d.item.text=e.target.value;
   refreshSelected();
 });
+$('#inspectPostAvatarInput').addEventListener('change',e=>{
+  const d=selectedData();if(!d||d.kind!=='x')return;
+  fileToData(e.target.files[0],src=>{
+    d.item.authorAvatar=src;
+    refreshSelected();
+  });
+});
+$('#inspectUseMyAvatarBtn').addEventListener('click',()=>{
+  const d=selectedData();if(!d||d.kind!=='x')return;
+  d.item.authorAvatar=state.avatar;
+  refreshSelected();
+});
 $('#inspectImageBg').addEventListener('input',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
   d.item.imageBg=e.target.value;
@@ -802,6 +840,7 @@ $('#deleteSelectedBtn').addEventListener('click',()=>{
 
 applyRecommendedPalette();
 loadTemplateProfile();
+$('#sidebarAvatarPreview').src=state.template==='x'||state.template==='instagram'?state.avatar:state.theirAvatar;
 $('#brandSymbolSelect').value=state.brandSymbol;
 syncTemplateBackgroundControls();
 render();

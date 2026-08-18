@@ -256,6 +256,16 @@
       <div class="inspector-fields" id="inspectorFields" hidden>
         <label class="field" id="inspectNameField"><span>이름</span><input id="inspectName" type="text"></label>
         <label class="field" id="inspectHandleField"><span>아이디</span><input id="inspectHandle" type="text"></label>
+        <div class="inspect-post-avatar" id="inspectPostAvatarField" hidden>
+          <span class="inspect-label">게시물 프로필 사진</span>
+          <div class="inspect-post-avatar-row">
+            <img id="inspectPostAvatarPreview" alt="게시물 프로필 사진">
+            <div class="inspect-post-avatar-actions">
+              <label class="mini-upload-btn">이미지 선택<input id="inspectPostAvatarInput" type="file" accept="image/*"></label>
+              <button class="mini-ghost-btn" id="inspectUseMyAvatarBtn" type="button">내 프로필 사진 사용</button>
+            </div>
+          </div>
+        </div>
         <label class="field" id="inspectBodyField"><span>본문</span><textarea id="inspectBody" rows="7"></textarea></label>
         <label class="field" id="inspectSideField">
           <span>보내는 사람</span>
