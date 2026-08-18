@@ -39,19 +39,19 @@
         <div class="template-grid" id="templateGrid">
           <button class="template-card active" data-template="x">
             <span class="template-icon">𝕏</span>
-            <span><b>X형</b><small>POST / REPLY</small></span>
+            <span><b>X</b><small>POST / REPLY</small></span>
           </button>
           <button class="template-card" data-template="instagram">
             <span class="template-icon">◎</span>
-            <span><b>Instagram형</b><small>FEED / PHOTO</small></span>
+            <span><b>Instagram</b><small>FEED / PHOTO</small></span>
           </button>
           <button class="template-card" data-template="dm">
             <span class="template-icon">◌</span>
-            <span><b>DM형</b><small>MESSAGE / CHAT</small></span>
+            <span><b>DM</b><small>MESSAGE / CHAT</small></span>
           </button>
           <button class="template-card" data-template="kakao">
             <span class="template-icon">K</span>
-            <span><b>카카오톡형</b><small>KAKAO / CHAT</small></span>
+            <span><b>카카오톡</b><small>KAKAO / CHAT</small></span>
           </button>
         </div>
       </section>
@@ -62,9 +62,13 @@
           <span>이름</span>
           <input id="nameInput" type="text" value="Dearlog" maxlength="30">
         </label>
-        <label class="field">
+        <label class="field" id="handleField">
           <span>아이디</span>
           <div class="prefix-input"><i>@</i><input id="handleInput" type="text" value="dearlog" maxlength="30"></div>
+        </label>
+        <label class="field" id="chatBioField" hidden>
+          <span>한줄소개</span>
+          <input id="chatBioInput" type="text" value="오늘도 기록 중" maxlength="60">
         </label>
         <label class="field">
           <span>기본 프로필 이미지</span>

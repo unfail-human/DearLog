@@ -798,3 +798,146 @@ button{cursor:pointer}
 
 /* preview header */
 .preview-head-actions{display:flex;gap:7px}
+
+
+/* v8 X polish */
+.x-actions{
+  grid-template-columns:repeat(4,1fr) !important;
+}
+.x-actions span:nth-child(4){
+  text-align:right;
+}
+.x-actions .x-shares{
+  display:none !important;
+}
+.x-more-wrap{position:relative}
+.x-more-btn{
+  border:0;
+  background:transparent;
+  color:var(--preview-muted);
+  letter-spacing:2px;
+  font-size:11px;
+}
+.x-more-menu{
+  position:absolute;
+  top:22px;
+  right:0;
+  z-index:12;
+  min-width:126px;
+  padding:6px;
+  background:var(--preview-card);
+  border:1px solid var(--preview-line);
+  border-radius:10px;
+  box-shadow:0 10px 28px rgba(43,57,78,.14);
+}
+.x-more-menu button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:var(--preview-text);
+  padding:8px 9px;
+  border-radius:7px;
+  font-size:10px;
+  text-align:left;
+}
+.x-more-menu button:hover{
+  background:rgba(120,150,198,.10);
+}
+.capture.clean-output .x-more-menu{display:none!important}
+
+.quote-card{
+  margin:10px 0 12px;
+  border:1px solid color-mix(in srgb,var(--preview-line) 82%, transparent);
+  border-radius:14px;
+  padding:11px 12px;
+  background:color-mix(in srgb,var(--preview-card) 97%, var(--preview-bg));
+}
+.quote-user{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+.quote-user .avatar{
+  width:26px;
+  height:26px;
+}
+.quote-user-main{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+}
+.quote-name{
+  font-size:10px;
+  font-weight:700;
+}
+.quote-meta{
+  font-size:9px;
+  color:var(--preview-muted);
+}
+.quote-body{
+  font-size:11px;
+  line-height:1.55;
+}
+
+/* softer rendering lines */
+.capture{
+  border-color:#edf0f4 !important;
+}
+.preview-top,.x-compose,.x-post,.ig-profile,.ig-tabs,.dm-head,.dm-compose{
+  border-color:#edf0f4 !important;
+}
+.capture.clean-output{
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+.capture.clean-output .x-post,
+.capture.clean-output .x-compose,
+.capture.clean-output .preview-top,
+.capture.clean-output .ig-profile,
+.capture.clean-output .ig-tabs,
+.capture.clean-output .dm-head,
+.capture.clean-output .dm-compose{
+  border-color:#f1f3f6 !important;
+}
+
+/* bigger chat media */
+.dm-page .chat-photo,
+.kakao-page .chat-photo,
+.kakao-page .kakao-photo{
+  width:min(292px,100%) !important;
+}
+.dm-page .chat-photo:not(.has-image) .image-placeholder,
+.kakao-page .chat-photo:not(.has-image) .image-placeholder,
+.kakao-page .kakao-photo:not(.has-image) .image-placeholder{
+  min-height:180px !important;
+}
+.dm-page .chat-photo img,
+.kakao-page .chat-photo img,
+.kakao-page .kakao-photo img{
+  width:100% !important;
+  height:auto !important;
+  max-height:380px !important;
+  object-fit:contain !important;
+}
+
+/* DM read state */
+.dm-read{
+  min-width:34px !important;
+  white-space:nowrap;
+}
+.dm-read.off{
+  color:var(--preview-muted) !important;
+  opacity:.72;
+}
+
+/* chat bio */
+.chat-bio-preview{
+  font-size:9px;
+  color:var(--preview-muted);
+  max-width:210px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
