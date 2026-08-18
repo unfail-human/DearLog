@@ -514,3 +514,197 @@ button{cursor:pointer}
   top:7px;
   right:7px;
 }
+
+
+/* v6 image fitting */
+.x-media{
+  min-height:0;
+  height:auto;
+  background:rgba(120,150,198,.04);
+}
+.x-media.has-image{
+  border-style:solid;
+}
+.x-media img{
+  width:100%;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  object-position:center center;
+  display:block;
+  background:var(--preview-card);
+}
+.x-media:not(.has-image){
+  min-height:210px;
+}
+.x-media:not(.has-image) .image-placeholder{
+  min-height:210px;
+}
+.chat-photo{
+  width:min(250px,100%);
+  height:auto;
+  min-height:0;
+  background:rgba(255,255,255,.38);
+}
+.chat-photo.has-image{
+  min-height:0;
+}
+.chat-photo img,
+.kakao-photo img{
+  width:100%;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  object-position:center;
+  display:block;
+}
+.chat-photo:not(.has-image) .image-placeholder,
+.kakao-photo:not(.has-image) .image-placeholder{
+  min-height:145px;
+}
+
+/* Instagram: always keep clean 3-column square feed and never clip */
+.ig-page{
+  height:auto !important;
+  min-height:844px;
+  overflow:visible !important;
+}
+.ig-grid{
+  width:100%;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-auto-rows:auto;
+  overflow:visible;
+}
+.ig-tile{
+  width:100%;
+  aspect-ratio:1 / 1;
+  min-width:0;
+  overflow:hidden;
+}
+.ig-tile img{
+  width:100%;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center center;
+}
+.ig-tile .image-placeholder{
+  position:absolute;
+  inset:0;
+}
+
+/* wider / more readable DM and Kakao */
+.dm-body,.kakao-room{
+  padding-left:11px !important;
+  padding-right:11px !important;
+}
+.bubble-row{
+  gap:5px;
+}
+.chat-message-stack{
+  max-width:84% !important;
+}
+.bubble{
+  max-width:none !important;
+}
+.dm-page .bubble{
+  font-size:12px;
+  line-height:1.55;
+}
+.dm-page .chat-side-avatar{
+  width:24px !important;
+  height:24px !important;
+}
+.kakao-message{
+  gap:6px;
+}
+.kakao-message-main{
+  max-width:84% !important;
+}
+.kakao-content-row{
+  max-width:100%;
+}
+.kakao-message .bubble{
+  max-width:100%;
+  font-size:12px;
+  line-height:1.55;
+}
+.kakao-avatar{
+  width:32px;
+  height:32px;
+}
+.kakao-photo{
+  width:min(250px,100%);
+}
+
+/* output-only cleanup */
+.capture.clean-output .media-play-toggle{
+  display:none !important;
+}
+.capture.clean-output .image-picker:not(.has-image) .image-placeholder{
+  display:none !important;
+}
+.capture.clean-output .x-media:not(.has-image),
+.capture.clean-output .chat-photo:not(.has-image),
+.capture.clean-output .kakao-photo:not(.has-image){
+  display:none !important;
+}
+.capture.clean-output .ig-tile:not(.has-image){
+  background:var(--preview-card);
+}
+.capture.clean-output .ig-tile:not(.has-image) .image-placeholder{
+  display:none !important;
+}
+
+/* preview modal */
+.preview-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:950;
+  background:rgba(30,39,52,.38);
+  backdrop-filter:blur(6px);
+  padding:24px;
+  overflow:auto;
+}
+.preview-modal{
+  width:min(520px,100%);
+  margin:0 auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 30px 90px rgba(31,45,67,.24);
+  overflow:hidden;
+}
+.preview-modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 18px;
+  border-bottom:1px solid var(--line);
+}
+.preview-modal-head>div{
+  display:grid;
+  gap:3px;
+}
+.preview-modal-head b{
+  font-size:13px;
+}
+.preview-modal-head span{
+  font-size:9px;
+  color:var(--muted);
+}
+.preview-modal-body{
+  padding:20px;
+  display:flex;
+  justify-content:center;
+  background:#eef2f7;
+  overflow:auto;
+}
+.preview-modal-body .capture{
+  box-shadow:0 16px 50px rgba(42,58,83,.13);
+}
+
+/* compact responsive preview */
+@media(max-width:460px){
+  .preview-backdrop{padding:8px}
+  .preview-modal-body{padding:8px;justify-content:flex-start}
+}

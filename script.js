@@ -104,7 +104,7 @@ function xPost(post,i){
     <div class="x-meta">@<span class="editable sync-handle" contenteditable="true">${esc(state.handle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
     </div></div><span class="x-meta">•••</span></div>
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
-    <label class="x-media image-picker"><input type="file" accept="image/*" class="x-image-input">
+    <label class="x-media image-picker ${post.image?'has-image':''}"><input type="file" accept="image/*" class="x-image-input">
     ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
     ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
     <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
@@ -134,7 +134,7 @@ function renderInstagram(){
     <div class="ig-counts"><span>게시물 <b class="editable" contenteditable="true">${state.igTiles.length}</b></span><span>팔로워 <b class="editable" contenteditable="true">1.2K</b></span><span>팔로잉 <b class="editable" contenteditable="true">87</b></span></div>
     <div class="ig-bio"><b class="editable sync-name" contenteditable="true">${esc(state.name)}</b><br><span class="editable" contenteditable="true">좋아하는 순간들을 작은 기록으로 남겨요.</span></div>
     </div></section><div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
-    <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker" data-index="${i}">
+    <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}">
     <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
     ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
     <button class="media-play-toggle ig-video-toggle" type="button">${state.igVideos?.[i]?'ON':'▶'}</button>
@@ -142,7 +142,7 @@ function renderInstagram(){
 }
 function chatMedia(m, cls){
   if(m.type!=='photo') return `<div class="bubble editable chat-text" contenteditable="true">${esc(m.text)}</div>`;
-  return `<label class="${cls} chat-photo image-picker"><input type="file" accept="image/*" class="chat-photo-input">
+  return `<label class="${cls} chat-photo image-picker ${m.image?'has-image':''}"><input type="file" accept="image/*" class="chat-photo-input">
     ${m.image?`<img src="${m.image}" alt="메시지 사진">`:`<div class="image-placeholder"><b>＋</b><span>사진 메시지</span></div>`}
     ${m.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
     <button class="media-play-toggle chat-video-toggle" type="button">${m.video?'동영상 ON':'▶'}</button>
@@ -319,16 +319,68 @@ $('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chat
 
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
 $('#exportBtn').addEventListener('click',async()=>{
-  const btn=$('#exportBtn'),old=btn.textContent;btn.disabled=true;btn.textContent='저장 중…';
+  const btn=$('#exportBtn'),old=btn.textContent;
+  btn.disabled=true;btn.textContent='저장 중…';
   $$('[contenteditable=true]',capture).forEach(e=>e.blur());
+  let tempWrap=null;
   try{
-    const canvas=await html2canvas(capture,{scale:Math.min(3,window.devicePixelRatio||2),backgroundColor:null,useCORS:true,logging:false});
-    const a=document.createElement('a'),d=new Date(),stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
-    a.download=`dearlog-${state.template}-${stamp}.png`;a.href=canvas.toDataURL('image/png');a.click();
-  }catch(err){console.error(err);alert('PNG 저장에 실패했어요. 직접 업로드한 이미지를 사용했는지 확인해 주세요.')}
-  finally{btn.disabled=false;btn.textContent=old}
+    tempWrap=document.createElement('div');
+    tempWrap.style.position='fixed';
+    tempWrap.style.left='-99999px';
+    tempWrap.style.top='0';
+    tempWrap.style.zIndex='-1';
+    const clean=createCleanPreviewClone();
+    tempWrap.appendChild(clean);
+    document.body.appendChild(tempWrap);
+
+    const canvas=await html2canvas(clean,{
+      scale:Math.min(3,window.devicePixelRatio||2),
+      backgroundColor:null,
+      useCORS:true,
+      logging:false
+    });
+    const a=document.createElement('a'),d=new Date(),
+      stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+    a.download=`dearlog-${state.template}-${stamp}.png`;
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+  }catch(err){
+    console.error(err);
+    alert('PNG 저장에 실패했어요. 직접 업로드한 이미지를 사용했는지 확인해 주세요.');
+  }finally{
+    tempWrap?.remove();
+    btn.disabled=false;
+    btn.textContent=old;
+  }
 });
 
+
+
+function createCleanPreviewClone(){
+  const clone=capture.cloneNode(true);
+  clone.id='previewCapture';
+  clone.classList.add('clean-output');
+  clone.querySelectorAll('[contenteditable="true"]').forEach(el=>{
+    el.removeAttribute('contenteditable');
+  });
+  clone.querySelectorAll('input').forEach(el=>el.remove());
+  return clone;
+}
+function openPreview(){
+  const mount=$('#previewMount');
+  mount.innerHTML='';
+  mount.appendChild(createCleanPreviewClone());
+  $('#previewBackdrop').hidden=false;
+}
+function closePreview(){
+  $('#previewBackdrop').hidden=true;
+  $('#previewMount').innerHTML='';
+}
+$('#previewBtn').addEventListener('click',openPreview);
+$('#previewCloseBtn').addEventListener('click',closePreview);
+$('#previewBackdrop').addEventListener('click',e=>{
+  if(e.target===$('#previewBackdrop'))closePreview();
+});
 
 function openNotice(){
   const cfg=window.DEARLOG_NOTICE;
@@ -344,7 +396,11 @@ function closeNotice(){
 $('#noticeBtn').addEventListener('click',openNotice);
 $('#noticeCloseBtn').addEventListener('click',closeNotice);
 $('#noticeBackdrop').addEventListener('click',e=>{if(e.target===$('#noticeBackdrop'))closeNotice()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#noticeBackdrop').hidden)closeNotice()});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(!$('#noticeBackdrop').hidden)closeNotice();
+  if(!$('#previewBackdrop').hidden)closePreview();
+});
 
 applyRecommendedPalette();
 render();
