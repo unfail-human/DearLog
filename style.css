@@ -708,3 +708,93 @@ button{cursor:pointer}
   .preview-backdrop{padding:8px}
   .preview-modal-body{padding:8px;justify-content:flex-start}
 }
+
+
+/* v7 compact vertical sizing */
+.capture{
+  min-height:0 !important;
+  height:auto !important;
+}
+.x-page,.ig-page{
+  min-height:0 !important;
+  height:auto !important;
+}
+.dm-page,.kakao-page{
+  min-height:700px !important;
+  height:auto !important;
+}
+.dm-body,.kakao-room{
+  min-height:560px !important;
+}
+
+/* Instagram rebuilt layout */
+.ig-profile{
+  grid-template-columns:72px 1fr !important;
+  gap:14px !important;
+  padding:16px 18px !important;
+}
+.ig-profile .avatar{
+  width:68px !important;
+  height:68px !important;
+}
+.ig-name-row{margin-bottom:7px !important}
+.ig-counts{
+  display:grid !important;
+  grid-template-columns:repeat(3,max-content);
+  gap:12px !important;
+  margin-bottom:7px !important;
+  align-items:center;
+}
+.ig-bio{line-height:1.45 !important}
+.ig-tabs span{padding:9px !important}
+.ig-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:1px !important;
+  width:390px !important;
+  background:var(--preview-line);
+}
+.ig-tile{
+  width:129.33px !important;
+  height:129.33px !important;
+  aspect-ratio:auto !important;
+  position:relative;
+}
+.ig-tile img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+}
+.ig-tile .image-placeholder{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+
+/* X media optional controls */
+.x-media-row{
+  margin:7px 0 2px;
+  display:flex;
+  justify-content:flex-end;
+}
+.x-media-enable{
+  border:1px solid var(--preview-line);
+  background:transparent;
+  color:var(--preview-muted);
+  border-radius:999px;
+  padding:5px 8px;
+  font-size:9px;
+}
+.x-media-enable.active{
+  color:var(--preview-accent);
+  border-color:color-mix(in srgb,var(--preview-accent) 45%, var(--preview-line));
+}
+.capture.clean-output .x-media-row{
+  display:none !important;
+}
+
+/* preview header */
+.preview-head-actions{display:flex;gap:7px}

@@ -19,8 +19,8 @@ const state={
   main:'#7896c6',bg:'#f5f7fb',card:'#ffffff',accent:'#7896c6',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'24',reposts:'16',shares:'3',image:'',video:false},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'86',replies:'11',reposts:'7',shares:'2',image:'',video:false}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'24',reposts:'16',shares:'3',image:'',video:false,mediaEnabled:true},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'86',replies:'11',reposts:'7',shares:'2',image:'',video:false,mediaEnabled:false}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -104,11 +104,12 @@ function xPost(post,i){
     <div class="x-meta">@<span class="editable sync-handle" contenteditable="true">${esc(state.handle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
     </div></div><span class="x-meta">•••</span></div>
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
-    <label class="x-media image-picker ${post.image?'has-image':''}"><input type="file" accept="image/*" class="x-image-input">
+    <div class="x-media-row"><button class="x-media-enable ${post.mediaEnabled?'active':''}" type="button">${post.mediaEnabled?'사진 첨부 ON':'사진 첨부'}</button></div>
+    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}"><input type="file" accept="image/*" class="x-image-input">
     ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
     ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
     <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
-    </label>
+    </label>`:''}
     <div class="x-actions">
       <span>◌ <b class="editable x-replies" contenteditable="true">${esc(post.replies)}</b></span>
       <span>↻ <b class="editable x-reposts" contenteditable="true">${esc(post.reposts ?? '0')}</b></span>
@@ -251,7 +252,12 @@ function bindPreview(){
       $('.x-replies',card).addEventListener('input',e=>p.replies=e.target.textContent);
       $('.x-reposts',card).addEventListener('input',e=>p.reposts=e.target.textContent);
       $('.x-shares',card).addEventListener('input',e=>p.shares=e.target.textContent);
-      $('.x-image-input',card).addEventListener('change',e=>fileToData(e.target.files[0],src=>{p.image=src;render()}));
+      $('.x-media-enable',card)?.addEventListener('click',e=>{
+        e.preventDefault();e.stopPropagation();
+        p.mediaEnabled=!p.mediaEnabled;
+        render();
+      });
+      $('.x-image-input',card)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{p.image=src;render()}));
       $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
     });
   }else if(state.template==='instagram'){
@@ -301,7 +307,7 @@ $('#addTextMessageBtn').addEventListener('click',()=>addChatMessage('text'));
 $('#addPhotoMessageBtn').addEventListener('click',()=>addChatMessage('photo'));
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'0',replies:'0',reposts:'0',shares:'0',image:'',video:false});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'0',replies:'0',reposts:'0',shares:'0',image:'',video:false,mediaEnabled:false});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);}
   render();
 });
@@ -318,10 +324,7 @@ $('#chatBgImageInput').addEventListener('change',e=>fileToData(e.target.files[0]
 $('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chatBgImageInput').value='';syncVars()});
 
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
-$('#exportBtn').addEventListener('click',async()=>{
-  const btn=$('#exportBtn'),old=btn.textContent;
-  btn.disabled=true;btn.textContent='저장 중…';
-  $$('[contenteditable=true]',capture).forEach(e=>e.blur());
+async function saveCleanCapture(sourceNode=null){
   let tempWrap=null;
   try{
     tempWrap=document.createElement('div');
@@ -329,28 +332,46 @@ $('#exportBtn').addEventListener('click',async()=>{
     tempWrap.style.left='-99999px';
     tempWrap.style.top='0';
     tempWrap.style.zIndex='-1';
-    const clean=createCleanPreviewClone();
+    let clean;
+    if(sourceNode){
+      clean=sourceNode.cloneNode(true);
+      clean.classList.add('clean-output');
+      clean.querySelectorAll('[contenteditable="true"]').forEach(el=>el.removeAttribute('contenteditable'));
+      clean.querySelectorAll('input').forEach(el=>el.remove());
+    }else{
+      clean=createCleanPreviewClone();
+    }
     tempWrap.appendChild(clean);
     document.body.appendChild(tempWrap);
 
     const canvas=await html2canvas(clean,{
-      scale:Math.min(3,window.devicePixelRatio||2),
+      scale:4,
       backgroundColor:null,
       useCORS:true,
-      logging:false
+      logging:false,
+      imageTimeout:0
     });
     const a=document.createElement('a'),d=new Date(),
       stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
     a.download=`dearlog-${state.template}-${stamp}.png`;
-    a.href=canvas.toDataURL('image/png');
+    a.href=canvas.toDataURL('image/png',1.0);
     a.click();
-  }catch(err){
-    console.error(err);
-    alert('PNG 저장에 실패했어요. 직접 업로드한 이미지를 사용했는지 확인해 주세요.');
   }finally{
     tempWrap?.remove();
-    btn.disabled=false;
-    btn.textContent=old;
+  }
+}
+
+$('#exportBtn').addEventListener('click',async()=>{
+  const btn=$('#exportBtn'),old=btn.textContent;
+  btn.disabled=true;btn.textContent='고화질 저장 중…';
+  $$('[contenteditable=true]',capture).forEach(e=>e.blur());
+  try{
+    await saveCleanCapture();
+  }catch(err){
+    console.error(err);
+    alert('PNG 저장에 실패했어요.');
+  }finally{
+    btn.disabled=false;btn.textContent=old;
   }
 });
 
@@ -378,6 +399,19 @@ function closePreview(){
 }
 $('#previewBtn').addEventListener('click',openPreview);
 $('#previewCloseBtn').addEventListener('click',closePreview);
+$('#previewSaveBtn').addEventListener('click',async()=>{
+  const btn=$('#previewSaveBtn'),old=btn.textContent;
+  btn.disabled=true;btn.textContent='저장 중…';
+  try{
+    const node=$('#previewMount .capture');
+    if(node)await saveCleanCapture(node);
+  }catch(err){
+    console.error(err);
+    alert('PNG 저장에 실패했어요.');
+  }finally{
+    btn.disabled=false;btn.textContent=old;
+  }
+});
 $('#previewBackdrop').addEventListener('click',e=>{
   if(e.target===$('#previewBackdrop'))closePreview();
 });
