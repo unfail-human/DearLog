@@ -9,52 +9,7 @@ window.addEventListener('error',e=>{
 const $=(s,p=document)=>p.querySelector(s);
 const $$=(s,p=document)=>[...p.querySelectorAll(s)];
 
-const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
-<rect width="300" height="300" rx="150" fill="${bg}"/>
-<circle cx="150" cy="119" r="58" fill="${fill}"/>
-<path d="M52 290c10-72 47-108 98-108s88 36 98 108" fill="${fill}"/>
-<circle cx="128" cy="115" r="5" fill="white"/><circle cx="172" cy="115" r="5" fill="white"/>
-<path d="M134 145c10 7 22 7 32 0" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
-</svg>`)}`
-const state={
-  template:'x',brandSymbol:'✦',
-  name:'Dearlog',handle:'dearlog',chatBio:'너와의 추억을 기록하는 중',
-  avatar:DEFAULT_AVATAR(),
-  theirName:'상대방',myName:'나',
-  theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),
-  myAvatar:DEFAULT_AVATAR('#667085','#eef1f5'),
-  profiles:{
-    x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
-    instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
-    dm:{name:'상대방',myName:'나',bio:'너와의 추억을 기록하는 중',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
-    kakao:{name:'상대방',myName:'나',bio:'너와의 추억을 기록하는 중',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
-  },
-  backgrounds:{
-    x:{color:'#f5f4f1',image:'',scale:100},
-    instagram:{color:'#f5f4f1',image:'',scale:100},
-    dm:{color:'#f5f4f1',image:'',scale:100},
-    kakao:{color:'#f5f4f1',image:'',scale:100}
-  },
-  main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
-  chatBg:'#dfe8ef',chatBgImage:'',
-  xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',liked:false,reposted:false,replied:false},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',liked:false,reposted:false,replied:false}
-  ],
-  igTiles:Array(9).fill(''),
-  igVideos:Array(9).fill(false),
-  dm:[
-    {side:'theirs',type:'text',text:'오늘 기록은 다 했어?',time:'11:42',image:'',read:true},
-    {side:'mine',type:'text',text:'응. 마지막 한 줄만 남았어.',time:'11:43',image:'',read:true},
-    {side:'theirs',type:'text',text:'그럼 다 쓰고 보여줘 ☺',time:'11:43',image:'',read:true}
-  ],
-  kakao:[
-    {side:'theirs',type:'text',text:'오늘은 뭐 하고 있었어?',time:'오전 11:42',image:'',read:true},
-    {side:'mine',type:'text',text:'기록 정리하고 있었어.',time:'오전 11:43',image:'',read:true},
-    {side:'theirs',type:'text',text:'완성하면 보여줘!',time:'오전 11:43',image:'',read:false}
-  ]
-};
+const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="${bg}"/><circle cx="32" cy="23" r="10" fill="${fill}"/><path d="M13 57c1.8-14 9.4-22 19-22s17.2 8 19 22H13Z" fill="${fill}"/></svg>`);
 
 const capture=$('#captureArea');
 
@@ -171,6 +126,12 @@ function xPost(post,i){
         <button class="x-quote-toggle" type="button">${post.quote?'일반 트윗으로 변경':'인용 트윗으로 변경'}</button>
         <div class="menu-sep"></div>
         <button class="x-media-enable" type="button">${post.mediaEnabled?'사진 첨부 끄기':'사진 첨부하기'}</button>
+        <div class="menu-sep"></div>
+        <button class="x-author-edit-toggle" type="button">작성자 이름 · 아이디 수정</button>
+        <div class="x-author-editor" hidden>
+          <label>이름<input class="x-author-menu-name" type="text" value="${esc(authorName)}"></label>
+          <label>아이디<input class="x-author-menu-handle" type="text" value="${esc(authorHandle)}"></label>
+        </div>
       </div>
     </div></div>
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
@@ -309,6 +270,54 @@ function renderKakao(){
     <footer class="kakao-compose"><span>＋</span><div class="kakao-input editable" contenteditable="true">메시지 입력</div><span>☺　♯</span></footer>
   </div>`;
 }
+
+function selectItem(kind,index){
+  state.selected={kind,index};
+  updateInspector();
+  document.querySelectorAll('.is-selected-item').forEach(el=>el.classList.remove('is-selected-item'));
+  const sel=kind==='x'?`.x-post[data-index="${index}"]`:
+            kind==='dm'?`.dm-page [data-index="${index}"]`:
+            kind==='kakao'?`.kakao-page [data-index="${index}"]`:null;
+  if(sel)document.querySelector(sel)?.classList.add('is-selected-item');
+}
+function selectedData(){
+  if(!state.selected)return null;
+  const {kind,index}=state.selected;
+  const arr=kind==='x'?state.xPosts:kind==='dm'?state.dm:kind==='kakao'?state.kakao:null;
+  return arr?.[index]?{kind,index,item:arr[index],arr}:null;
+}
+function updateInspector(){
+  const d=selectedData(), empty=$('#inspectorEmpty'), fields=$('#inspectorFields');
+  if(!d){
+    empty.hidden=false;fields.hidden=true;$('#inspectorType').textContent='선택 없음';return;
+  }
+  empty.hidden=true;fields.hidden=false;
+  const isX=d.kind==='x', isTyping=d.item.type==='typing';
+  $('#inspectorType').textContent=isX?'X 게시물':isTyping?'입력중 표시':'메시지';
+  $('#inspectNameField').hidden=!isX;
+  $('#inspectHandleField').hidden=!isX;
+  $('#inspectBodyField').hidden=isTyping;
+  $('#inspectSideField').hidden=isX;
+  $('#inspectTimeField').hidden=isX||isTyping;
+  $('#duplicateSelectedBtn').hidden=isX;
+  if(isX){
+    $('#inspectName').value=d.item.authorName??state.name;
+    $('#inspectHandle').value=d.item.authorHandle??state.handle;
+    $('#inspectBody').value=d.item.body||'';
+  }else{
+    $('#inspectSide').value=d.item.side;
+    if(!isTyping){
+      $('#inspectBody').value=d.item.text||'';
+      $('#inspectTime').value=d.item.time||'';
+    }
+  }
+}
+function refreshSelected(){
+  const s=state.selected;
+  render();
+  if(s)requestAnimationFrame(()=>selectItem(s.kind,s.index));
+}
+
 function render(){
   if(state.template==='x')renderX();
   else if(state.template==='instagram')renderInstagram();
@@ -344,6 +353,10 @@ function bindChat(listName){
     if(!row.matches('.bubble-row,.kakao-message,.typing-row'))return;
     if(m.type==='typing')return;
     const i=+row.dataset.index,m=arr[i];
+    row.addEventListener('click',e=>{
+      if(!e.target.closest('input,button,[contenteditable="true"]'))selectItem(state.template==='kakao'?'kakao':'dm',i);
+    });
+    row.querySelector('[contenteditable="true"]')?.addEventListener('focus',()=>selectItem(state.template==='kakao'?'kakao':'dm',i));
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
     $('.chat-photo-input',row)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{m.image=src;render()}));
@@ -367,10 +380,30 @@ function bindPreview(){
   if(state.template==='x'){
     $$('.x-post',capture).forEach(card=>{
       const i=+card.dataset.index,p=state.xPosts[i];
-      $('.x-body-edit',card).addEventListener('input',e=>p.body=e.target.textContent);
+      card.addEventListener('click',e=>{
+        if(!e.target.closest('button,input,label,[contenteditable="true"]'))selectItem('x',i);
+      });
+      $('.x-body-edit',card).addEventListener('focus',()=>selectItem('x',i));
+      $('.x-body-edit',card).addEventListener('input',e=>{p.body=e.target.textContent;updateInspector()});
+      $('.x-author-edit-toggle',card)?.addEventListener('click',e=>{
+        e.stopPropagation();
+        const editor=$('.x-author-editor',card);
+        editor.hidden=!editor.hidden;
+      });
+      $('.x-author-menu-name',card)?.addEventListener('input',e=>{
+        p.authorName=e.target.value;
+        $('.x-author-name',card).textContent=e.target.value;
+        updateInspector();
+      });
+      $('.x-author-menu-handle',card)?.addEventListener('input',e=>{
+        p.authorHandle=safeHandle(e.target.value);
+        $('.x-author-handle',card).textContent=p.authorHandle;
+        updateInspector();
+      });
       $('.x-time',card).addEventListener('input',e=>p.time=e.target.textContent);
-      $('.x-author-name',card)?.addEventListener('input',e=>p.authorName=e.target.textContent.trim());
-      $('.x-author-handle',card)?.addEventListener('input',e=>p.authorHandle=safeHandle(e.target.textContent));
+      $('.x-author-name',card)?.addEventListener('focus',()=>selectItem('x',i));
+      $('.x-author-name',card)?.addEventListener('input',e=>{p.authorName=e.target.textContent.trim();updateInspector()});
+      $('.x-author-handle',card)?.addEventListener('input',e=>{p.authorHandle=safeHandle(e.target.textContent);updateInspector()});
       const bump=(key,flag)=>{
         const current=Math.max(0,Number(String(p[key]).replace(/\D/g,''))||0);
         p[flag]=!p[flag];
@@ -419,6 +452,7 @@ document.addEventListener('click',e=>{
 });
 $$('.template-card').forEach(btn=>btn.addEventListener('click',()=>{
   saveCurrentProfile();
+  state.selected=null;
   state.template=btn.dataset.template;
   loadTemplateProfile();
   syncTemplateBackgroundControls();
@@ -439,7 +473,8 @@ $('#myAvatarInput').addEventListener('change',e=>fileToData(e.target.files[0],sr
 
 $('#mainColor').addEventListener('input',e=>{
   state.main=e.target.value;
-  if(state.autoPalette)applyRecommendedPalette();
+  if(state.autoPalette)
+applyRecommendedPalette();
   else{state.accent=state.main;$('#accentColor').value=state.accent}
   syncVars();
 });
@@ -462,9 +497,12 @@ function addChatMessage(type){
 $('#addTextMessageBtn').addEventListener('click',()=>addChatMessage('text'));
 $('#addPhotoMessageBtn').addEventListener('click',()=>addChatMessage('photo'));
 $('#addTypingBtn').addEventListener('click',()=>{
-  const arr=state.template==='kakao'?state.kakao:state.dm;
+  const kind=state.template==='kakao'?'kakao':'dm';
+  const arr=kind==='kakao'?state.kakao:state.dm;
   arr.push({side:nextSide(arr),type:'typing',text:'',time:'',image:'',read:true,video:false});
+  state.selected={kind,index:arr.length-1};
   render();
+  requestAnimationFrame(()=>selectItem(kind,arr.length-1));
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
@@ -619,6 +657,40 @@ document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
   if(!$('#noticeBackdrop').hidden)closeNotice();
   if(!$('#previewBackdrop').hidden)closePreview();
+});
+
+$('#inspectName').addEventListener('input',e=>{
+  const d=selectedData();if(!d||d.kind!=='x')return;
+  d.item.authorName=e.target.value;refreshSelected();
+});
+$('#inspectHandle').addEventListener('input',e=>{
+  const d=selectedData();if(!d||d.kind!=='x')return;
+  d.item.authorHandle=safeHandle(e.target.value);refreshSelected();
+});
+$('#inspectBody').addEventListener('input',e=>{
+  const d=selectedData();if(!d)return;
+  if(d.kind==='x')d.item.body=e.target.value;
+  else d.item.text=e.target.value;
+  refreshSelected();
+});
+$('#inspectSide').addEventListener('change',e=>{
+  const d=selectedData();if(!d||d.kind==='x')return;
+  d.item.side=e.target.value;refreshSelected();
+});
+$('#inspectTime').addEventListener('input',e=>{
+  const d=selectedData();if(!d||d.kind==='x')return;
+  d.item.time=e.target.value;refreshSelected();
+});
+$('#duplicateSelectedBtn').addEventListener('click',()=>{
+  const d=selectedData();if(!d||d.kind==='x')return;
+  const copy=JSON.parse(JSON.stringify(d.item));
+  d.arr.splice(d.index+1,0,copy);
+  state.selected={kind:d.kind,index:d.index+1};
+  refreshSelected();
+});
+$('#deleteSelectedBtn').addEventListener('click',()=>{
+  const d=selectedData();if(!d)return;
+  d.arr.splice(d.index,1);state.selected=null;render();updateInspector();
 });
 
 applyRecommendedPalette();

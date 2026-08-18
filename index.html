@@ -230,6 +230,33 @@
         <div class="capture" id="captureArea"></div>
       </div>
     </section>
+
+    <aside class="inspector" id="inspector">
+      <div class="inspector-head">
+        <div><small>QUICK EDIT</small><b>본문 수정</b></div>
+        <span id="inspectorType">선택 없음</span>
+      </div>
+      <div class="inspector-empty" id="inspectorEmpty">
+        미리보기에서 게시물이나 메시지를 클릭하면<br>여기에서 편하게 수정할 수 있어요.
+      </div>
+      <div class="inspector-fields" id="inspectorFields" hidden>
+        <label class="field" id="inspectNameField"><span>이름</span><input id="inspectName" type="text"></label>
+        <label class="field" id="inspectHandleField"><span>아이디</span><input id="inspectHandle" type="text"></label>
+        <label class="field" id="inspectBodyField"><span>본문</span><textarea id="inspectBody" rows="7"></textarea></label>
+        <label class="field" id="inspectSideField">
+          <span>보내는 사람</span>
+          <select id="inspectSide">
+            <option value="theirs">상대방</option>
+            <option value="mine">나</option>
+          </select>
+        </label>
+        <label class="field" id="inspectTimeField"><span>시간</span><input id="inspectTime" type="text"></label>
+        <div class="inspector-actions">
+          <button class="btn btn-wide" id="duplicateSelectedBtn" type="button">같은 쪽에 하나 더 보내기</button>
+          <button class="btn btn-wide btn-danger" id="deleteSelectedBtn" type="button">선택 항목 삭제</button>
+        </div>
+      </div>
+    </aside>
   </main>
 
   <div class="preview-backdrop" id="previewBackdrop" hidden>

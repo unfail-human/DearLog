@@ -1266,3 +1266,150 @@ html,body{background:#f5f4f1}
 .x-action-btn.share{justify-self:end;width:28px;margin-right:0}
 .x-action-btn b{min-width:26px;text-align:left;font-size:10px;font-weight:600}
 .x-post-author-note{font-size:8px;color:var(--preview-muted);margin-top:1px}
+
+
+/* v15 — avatar artwork must fill the circle */
+.avatar{
+  object-fit:cover !important;
+  object-position:center !important;
+  overflow:hidden !important;
+  flex:0 0 auto;
+}
+img.avatar{
+  display:block !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+.x-compose .avatar,.x-post .avatar,.dm-page .avatar,.kakao-page .avatar{
+  object-position:center center !important;
+}
+/* default SVG person was clipped because its body reached the SVG edge */
+.avatar[src^="data:image/svg+xml"]{
+  object-fit:cover !important;
+}
+
+/* X author vertical rhythm */
+.x-post-header{
+  align-items:flex-start !important;
+}
+.x-user{
+  align-items:center !important;
+}
+.x-user>div{
+  min-width:0;
+  padding-top:1px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.x-user-name{
+  line-height:1.25 !important;
+  min-height:14px;
+}
+.x-meta{
+  line-height:1.25 !important;
+  margin-top:0 !important;
+}
+.x-author-name,.x-author-handle{outline:none}
+
+/* X author editor in more menu */
+.x-author-editor{
+  padding:8px;
+  display:grid;
+  gap:6px;
+  border-top:1px solid var(--preview-line);
+}
+.x-author-editor[hidden]{display:none}
+.x-author-editor label{
+  display:grid;
+  gap:3px;
+  font-size:8px;
+  color:var(--preview-muted);
+}
+.x-author-editor input{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid var(--preview-line);
+  border-radius:7px;
+  background:var(--preview-card);
+  color:var(--preview-text);
+  padding:7px 8px;
+  font:inherit;
+}
+.x-author-edit-toggle{width:100%}
+
+/* three-column app with right quick editor */
+.app{
+  grid-template-columns:minmax(250px,310px) minmax(430px,1fr) 270px !important;
+}
+.inspector{
+  position:sticky;
+  top:0;
+  height:calc(100vh - 58px);
+  overflow:auto;
+  box-sizing:border-box;
+  padding:20px 16px;
+  background:#fff;
+  border-left:1px solid var(--line);
+}
+.inspector-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:18px;
+}
+.inspector-head>div{display:grid;gap:3px}
+.inspector-head small{font-size:7px;letter-spacing:.16em;color:var(--muted)}
+.inspector-head b{font-size:13px;color:var(--text)}
+.inspector-head>span{font-size:8px;color:var(--muted)}
+.inspector-empty{
+  border:1px dashed var(--line-strong);
+  border-radius:12px;
+  padding:18px 12px;
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.7;
+  text-align:center;
+}
+.inspector-fields{display:grid;gap:11px}
+.inspector-fields textarea,
+.inspector-fields select{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid var(--line-strong);
+  border-radius:10px;
+  background:#fbfaf8;
+  color:var(--text);
+  padding:10px;
+  font:inherit;
+  resize:vertical;
+}
+.inspector-actions{display:grid;gap:6px;margin-top:4px}
+.is-selected-item{
+  outline:2px solid rgba(93,90,85,.28) !important;
+  outline-offset:-2px;
+}
+
+/* on narrower screens the quick editor becomes a normal right drawer column */
+@media(max-width:1180px){
+  .app{grid-template-columns:270px minmax(420px,1fr) !important}
+  .inspector{
+    position:fixed;
+    z-index:40;
+    right:14px;
+    top:72px;
+    width:260px;
+    height:auto;
+    max-height:calc(100vh - 90px);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 16px 45px rgba(45,42,37,.12);
+  }
+}
+
+/* message groups look naturally consecutive */
+.bubble-row + .bubble-row,
+.kakao-message + .kakao-message{
+  margin-top:4px !important;
+}
