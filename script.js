@@ -370,7 +370,28 @@ function refreshSelected(){
   if(s)requestAnimationFrame(()=>selectItem(s.kind,s.index));
 }
 
+
+function fitCaptureToStage(){
+  if(window.innerWidth<=900){
+    capture.style.transform='';
+    return;
+  }
+  const shell=document.querySelector('.capture-shell');
+  if(!shell||!capture.offsetWidth||!capture.offsetHeight)return;
+
+  // Fit the entire current template inside the fixed center workspace.
+  const availableW=Math.max(100,shell.clientWidth);
+  const availableH=Math.max(100,shell.clientHeight);
+  const naturalW=capture.offsetWidth;
+  const naturalH=capture.offsetHeight;
+
+  // Never enlarge above 100%; only shrink enough to show the whole template.
+  const scale=Math.min(1,availableW/naturalW,availableH/naturalH);
+  capture.style.transform=`scale(${scale})`;
+}
+
 function render(){
+  requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
   if(state.template==='x')renderX();
   else if(state.template==='instagram')renderInstagram();
   else if(state.template==='dm')renderDM();
@@ -891,6 +912,7 @@ $('#deleteSelectedBtn').addEventListener('click',()=>{
   d.arr.splice(d.index,1);state.selected=null;render();updateInspector();
 });
 
+window.addEventListener('resize',()=>requestAnimationFrame(fitCaptureToStage));
 applyRecommendedPalette();
 loadTemplateProfile();
 $('#sidebarAvatarPreview').src=state.template==='x'||state.template==='instagram'?state.avatar:state.theirAvatar;

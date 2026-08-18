@@ -1822,3 +1822,69 @@ body{
   max-height:none !important;
   pointer-events:none !important;
 }
+
+
+/* v27 — keep the whole work canvas visible and anchored */
+.stage{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:18px 14px 28px 18px !important;
+}
+
+/* Move title/badge left and keep them fixed at the top of the work column */
+.stage-top{
+  position:absolute !important;
+  top:14px !important;
+  left:18px !important;
+  right:18px !important;
+  z-index:20 !important;
+  padding:0 0 10px 0 !important;
+  margin:0 !important;
+  background:linear-gradient(to bottom,#f5f4f1 82%,rgba(245,244,241,0)) !important;
+}
+
+/* The template itself gets the remaining viewport and is always visible at once.
+   Scaling happens visually without changing the actual template dimensions. */
+.capture-shell{
+  position:absolute !important;
+  top:68px !important;
+  left:18px !important;
+  right:18px !important;
+  bottom:18px !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  overflow:hidden !important;
+}
+
+/* Default desktop fit. JS below refines this dynamically per template/viewport. */
+.capture{
+  margin:0 !important;
+  transform-origin:top left !important;
+  flex:0 0 auto !important;
+}
+
+/* On small screens revert to normal page flow. */
+@media(max-width:900px){
+  .stage{
+    position:relative !important;
+    overflow:visible !important;
+    padding:20px !important;
+  }
+  .stage-top{
+    position:relative !important;
+    inset:auto !important;
+    padding:0 0 16px !important;
+    background:none !important;
+  }
+  .capture-shell{
+    position:relative !important;
+    inset:auto !important;
+    display:block !important;
+    overflow:visible !important;
+  }
+  .capture{
+    transform:none !important;
+    margin:0 auto !important;
+  }
+}
