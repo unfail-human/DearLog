@@ -19,10 +19,11 @@ const state={
   main:'#7896c6',bg:'#f5f7fb',card:'#ffffff',accent:'#7896c6',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'24',reposts:'16',shares:'3',image:''},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'86',replies:'11',reposts:'7',shares:'2',image:''}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'24',reposts:'16',shares:'3',image:'',video:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'86',replies:'11',reposts:'7',shares:'2',image:'',video:false}
   ],
   igTiles:Array(9).fill(''),
+  igVideos:Array(9).fill(false),
   dm:[
     {side:'theirs',type:'text',text:'오늘 기록은 다 했어?',time:'11:42',image:'',read:true},
     {side:'mine',type:'text',text:'응. 마지막 한 줄만 남았어.',time:'11:43',image:'',read:true},
@@ -104,7 +105,10 @@ function xPost(post,i){
     </div></div><span class="x-meta">•••</span></div>
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
     <label class="x-media image-picker"><input type="file" accept="image/*" class="x-image-input">
-    ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}</label>
+    ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
+    ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
+    <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
+    </label>
     <div class="x-actions">
       <span>◌ <b class="editable x-replies" contenteditable="true">${esc(post.replies)}</b></span>
       <span>↻ <b class="editable x-reposts" contenteditable="true">${esc(post.reposts ?? '0')}</b></span>
@@ -131,12 +135,17 @@ function renderInstagram(){
     <div class="ig-bio"><b class="editable sync-name" contenteditable="true">${esc(state.name)}</b><br><span class="editable" contenteditable="true">좋아하는 순간들을 작은 기록으로 남겨요.</span></div>
     </div></section><div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
     <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker" data-index="${i}">
-    <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}</label>`).join('')}</div></div>`;
+    <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
+    ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
+    <button class="media-play-toggle ig-video-toggle" type="button">${state.igVideos?.[i]?'ON':'▶'}</button>
+    </label>`).join('')}</div></div>`;
 }
 function chatMedia(m, cls){
   if(m.type!=='photo') return `<div class="bubble editable chat-text" contenteditable="true">${esc(m.text)}</div>`;
   return `<label class="${cls} chat-photo image-picker"><input type="file" accept="image/*" class="chat-photo-input">
     ${m.image?`<img src="${m.image}" alt="메시지 사진">`:`<div class="image-placeholder"><b>＋</b><span>사진 메시지</span></div>`}
+    ${m.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
+    <button class="media-play-toggle chat-video-toggle" type="button">${m.video?'동영상 ON':'▶'}</button>
   </label>`;
 }
 function dmBubble(m,i){
@@ -216,12 +225,13 @@ function bindChat(listName){
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
     $('.chat-photo-input',row)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{m.image=src;render()}));
+    $('.chat-video-toggle',row)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();m.video=!m.video;render()});
     const toggle=()=>{
       m.read=!m.read;
       render();
     };
     $('.chat-click-target',row)?.addEventListener('click',e=>{
-      if(e.target.closest('input'))return;
+      if(e.target.closest('input')||e.target.closest('.media-play-toggle'))return;
       if(m.type==='photo' && !m.image)return;
       toggle();
     });
@@ -242,11 +252,13 @@ function bindPreview(){
       $('.x-reposts',card).addEventListener('input',e=>p.reposts=e.target.textContent);
       $('.x-shares',card).addEventListener('input',e=>p.shares=e.target.textContent);
       $('.x-image-input',card).addEventListener('change',e=>fileToData(e.target.files[0],src=>{p.image=src;render()}));
+      $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
     });
   }else if(state.template==='instagram'){
     $$('.ig-tile',capture).forEach(tile=>{
       const i=+tile.dataset.index;
       $('.ig-image-input',tile).addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.igTiles[i]=src;render()}));
+      $('.ig-video-toggle',tile)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.igVideos[i]=!state.igVideos[i];render()});
     });
   }else if(state.template==='dm') bindChat('dm');
   else bindChat('kakao');
@@ -282,21 +294,23 @@ $('#darkToggle').addEventListener('change',e=>{state.dark=e.target.checked;syncV
 function nextSide(arr){return arr.length&&arr[arr.length-1].side==='mine'?'theirs':'mine'}
 function addChatMessage(type){
   const arr=state.template==='kakao'?state.kakao:state.dm;
-  arr.push({side:nextSide(arr),type,text:type==='text'?'새 메시지를 입력하세요.':'',time:'now',image:'',read:false});
+  arr.push({side:nextSide(arr),type,text:type==='text'?'새 메시지를 입력하세요.':'',time:'now',image:'',read:false,video:false});
   render();
 }
 $('#addTextMessageBtn').addEventListener('click',()=>addChatMessage('text'));
 $('#addPhotoMessageBtn').addEventListener('click',()=>addChatMessage('photo'));
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'0',replies:'0',reposts:'0',shares:'0',image:''});
-  else if(state.template==='instagram')state.igTiles.push('');
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'0',replies:'0',reposts:'0',shares:'0',image:'',video:false});
+  else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);}
   render();
 });
 $('#removeItemBtn').addEventListener('click',()=>{
   const target=state.template==='x'?state.xPosts:state.template==='instagram'?state.igTiles:state.template==='dm'?state.dm:state.kakao;
   if(target.length<=1)return alert('항목은 최소 1개가 필요해요.');
-  target.pop();render();
+  target.pop();
+  if(state.template==='instagram')state.igVideos.pop();
+  render();
 });
 
 $('#chatBgColor').addEventListener('input',e=>{state.chatBg=e.target.value;syncVars()});

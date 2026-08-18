@@ -396,3 +396,121 @@ button{cursor:pointer}
 .notice-content p{margin:7px 0}
 .notice-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--line)}
 .notice-actions label{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px}
+
+
+/* v5 unified template sizing */
+.capture-shell{
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+}
+.capture{
+  width:390px;
+  min-width:390px;
+  max-width:390px;
+  min-height:844px;
+  height:auto;
+  border-radius:30px;
+  overflow:hidden;
+}
+.x-page,.ig-page,.dm-page,.kakao-page{
+  width:390px;
+  min-width:390px;
+  max-width:390px;
+  box-sizing:border-box;
+}
+
+/* chat can grow vertically */
+.dm-page,.kakao-page{
+  min-height:844px;
+  height:auto !important;
+}
+.dm-body,.kakao-room{
+  overflow:visible !important;
+}
+.dm-page{
+  display:flex;
+  flex-direction:column;
+}
+.dm-body{
+  flex:none !important;
+  min-height:720px;
+}
+.kakao-page{
+  display:flex;
+  flex-direction:column;
+}
+.kakao-room{
+  flex:none !important;
+  min-height:720px;
+}
+
+/* x media placeholder perfect centering */
+.x-media{
+  position:relative;
+  display:block;
+}
+.x-media .image-placeholder{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  gap:4px;
+}
+
+/* video play overlay */
+.media-play-toggle{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:4;
+  border:1px solid rgba(255,255,255,.8);
+  background:rgba(20,27,38,.58);
+  color:#fff;
+  border-radius:999px;
+  padding:5px 8px;
+  font-size:9px;
+  backdrop-filter:blur(4px);
+}
+.video-play-overlay{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  z-index:3;
+}
+.video-play-overlay span{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  padding-left:4px;
+  background:rgba(20,27,38,.62);
+  color:#fff;
+  font-size:24px;
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+.ig-tile .media-play-toggle{
+  top:6px;
+  right:6px;
+  padding:4px 6px;
+  font-size:8px;
+}
+.ig-tile .video-play-overlay span{
+  width:38px;
+  height:38px;
+  font-size:18px;
+}
+.chat-photo{
+  position:relative;
+}
+.chat-photo .media-play-toggle{
+  top:7px;
+  right:7px;
+}
