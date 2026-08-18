@@ -1744,3 +1744,28 @@ body{
   bottom:10px !important;
 }
 .capture.clean-output .x-media-scale-hint{display:none!important}
+
+
+/* v24 — preview actions in one clean horizontal row */
+.preview-head-actions{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+}
+.preview-head-actions > .save-menu-wrap{
+  display:block;
+  flex:0 0 auto;
+}
+.preview-head-actions > .btn,
+.preview-head-actions .save-menu-wrap > .btn{
+  width:auto !important;
+  min-width:64px;
+  margin:0 !important;
+  white-space:nowrap;
+}
+.preview-modal-head{
+  align-items:center !important;
+}
