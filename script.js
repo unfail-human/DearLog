@@ -654,6 +654,7 @@ async function saveCleanCapture(format='png',sourceNode=null){
       clean.classList.add('clean-output');
       clean.querySelectorAll('[contenteditable="true"]').forEach(el=>el.removeAttribute('contenteditable'));
       clean.querySelectorAll('input').forEach(el=>el.remove());
+      flattenXMediaForOutput(sourceNode,clean);
     }else{
       clean=createCleanPreviewClone();
     }
@@ -701,6 +702,57 @@ async function saveCleanCapture(format='png',sourceNode=null){
 
 
 
+
+function flattenXMediaForOutput(sourceRoot,cloneRoot){
+  const sourceMedia=[...sourceRoot.querySelectorAll('.x-media.has-image')];
+  const cloneMedia=[...cloneRoot.querySelectorAll('.x-media.has-image')];
+
+  sourceMedia.forEach((media,idx)=>{
+    const target=cloneMedia[idx];
+    const img=media.querySelector('img');
+    if(!target||!img||!img.complete||!img.naturalWidth||!img.naturalHeight)return;
+
+    const w=Math.max(1,Math.round(media.clientWidth));
+    const h=Math.max(1,Math.round(media.clientHeight));
+    const styles=getComputedStyle(media);
+
+    const scale=parseFloat(styles.getPropertyValue('--media-scale'))||1;
+    const moveX=parseFloat(styles.getPropertyValue('--media-x'))||0;
+    const moveY=parseFloat(styles.getPropertyValue('--media-y'))||0;
+    const bg=(styles.getPropertyValue('--media-bg')||'#f5f4f1').trim();
+
+    const fit=Math.min(w/img.naturalWidth,h/img.naturalHeight);
+    const drawW=img.naturalWidth*fit*scale;
+    const drawH=img.naturalHeight*fit*scale;
+    const drawX=(w-drawW)/2+moveX;
+    const drawY=(h-drawH)/2+moveY;
+
+    const canvas=document.createElement('canvas');
+    const outputScale=4;
+    canvas.width=w*outputScale;
+    canvas.height=h*outputScale;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(outputScale,outputScale);
+    ctx.fillStyle=bg;
+    ctx.fillRect(0,0,w,h);
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
+    ctx.drawImage(img,drawX,drawY,drawW,drawH);
+
+    const flat=document.createElement('img');
+    flat.src=canvas.toDataURL('image/png',1);
+    flat.alt='';
+    flat.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;transform:none!important;max-width:none!important;max-height:none!important;';
+    target.replaceChildren(flat);
+
+    // The frame stays identical; only editing UI disappears.
+    target.classList.add('is-flattened-output');
+    target.style.setProperty('--media-scale','1');
+    target.style.setProperty('--media-x','0px');
+    target.style.setProperty('--media-y','0px');
+  });
+}
+
 function createCleanPreviewClone(){
   const clone=capture.cloneNode(true);
   clone.id='previewCapture';
@@ -709,6 +761,7 @@ function createCleanPreviewClone(){
     el.removeAttribute('contenteditable');
   });
   clone.querySelectorAll('input').forEach(el=>el.remove());
+  flattenXMediaForOutput(capture,clone);
   return clone;
 }
 function openPreview(){
