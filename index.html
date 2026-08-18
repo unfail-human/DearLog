@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f5f4f1">
-  <title>Dearlog — SNS Maker</title>
+  <title>Dearlog</title>
   <meta name="description" content="창작 캐릭터와 이야기용 SNS 이미지 메이커 Dearlog">
   <meta property="og:title" content="Dearlog — SNS Maker">
   <meta property="og:description" content="나만의 가상 SNS 화면을 자유롭게 만들어보세요.">
@@ -206,19 +206,6 @@
         <button class="btn btn-wide" id="clearChatBgBtn" type="button">배경 이미지 지우기</button>
       </section>
 
-      <section class="tool-section" id="contentControls">
-        <div class="section-title"><span>콘텐츠</span></div>
-        <div class="button-stack">
-          <button class="btn btn-wide" id="addItemBtn" type="button">＋ 항목 추가</button>
-          <div class="chat-add-row" id="chatAddRow" hidden>
-            <button class="btn btn-wide" id="addTextMessageBtn" type="button">＋ 텍스트 메시지</button>
-            <button class="btn btn-wide" id="addPhotoMessageBtn" type="button">＋ 사진 메시지</button>
-            <button class="btn btn-wide" id="addTypingBtn" type="button">＋ 입력중 표시</button>
-          </div>
-          <button class="btn btn-wide btn-danger" id="removeItemBtn" type="button">− 마지막 항목 삭제</button>
-        </div>
-      </section>
-
       <div class="tip">
         <b>TIP</b>
         <span>미리보기 안의 글자를 클릭하면 대부분 바로 수정할 수 있어요.</span>
@@ -243,6 +230,23 @@
         <div><small>QUICK EDIT</small><b>본문 수정</b></div>
         <span id="inspectorType">선택 없음</span>
       </div>
+
+      <section class="inspector-content-tools" id="contentControls">
+        <div class="inspector-section-title">
+          <b>콘텐츠 추가</b>
+          <small id="contentToolHint">현재 템플릿</small>
+        </div>
+        <div class="button-stack">
+          <button class="btn btn-wide" id="addItemBtn" type="button">＋ 항목 추가</button>
+          <div class="chat-add-row" id="chatAddRow" hidden>
+            <button class="btn btn-wide" id="addTextMessageBtn" type="button">＋ 텍스트 메시지</button>
+            <button class="btn btn-wide" id="addPhotoMessageBtn" type="button">＋ 사진 메시지</button>
+            <button class="btn btn-wide" id="addTypingBtn" type="button">＋ 입력중 표시</button>
+          </div>
+          <button class="btn btn-wide btn-danger" id="removeItemBtn" type="button">− 마지막 항목 삭제</button>
+        </div>
+      </section>
+
       <div class="inspector-empty" id="inspectorEmpty">
         미리보기에서 게시물이나 메시지를 클릭하면<br>여기에서 편하게 수정할 수 있어요.
       </div>

@@ -9,7 +9,7 @@ window.addEventListener('error',e=>{
 const $=(s,p=document)=>p.querySelector(s);
 const $$=(s,p=document)=>[...p.querySelectorAll(s)];
 
-const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="${bg}"/><circle cx="32" cy="23" r="10" fill="${fill}"/><path d="M13 57c1.8-14 9.4-22 19-22s17.2 8 19 22H13Z" fill="${fill}"/></svg>`);
+const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="${bg}"/><circle cx="32" cy="22" r="10.5" fill="${fill}"/><path d="M7 64C8.6 45.5 18.2 34 32 34s23.4 11.5 25 30H7Z" fill="${fill}"/></svg>`);
 
 const state={
   template:'x',brandSymbol:'✦',selected:null,
@@ -146,6 +146,7 @@ function setChatControls(){
   $('#handleField').hidden=chat;
   $('#chatBioField').hidden=!chat;
   $('#profileSectionTitle').textContent=state.template==='x'?'내 프로필':'프로필';
+  const hint=$('#contentToolHint');if(hint)hint.textContent=state.template==='x'?'X':state.template==='instagram'?'Instagram':state.template==='dm'?'DM':'카카오톡';
 }
 function sharedTop(title='Dearlog'){
   return `<div class="preview-top"><div class="preview-brand">${state.brandSymbol?`<i>${esc(state.brandSymbol)}</i>`:''}<span>${title}</span></div><button class="preview-icon-btn" type="button">•••</button></div>`;

@@ -1441,3 +1441,135 @@ img.avatar{
   cursor:pointer;
 }
 .save-menu button:hover{background:#f5f4f1}
+
+
+/* v17: fixed workspace, independently scrollable sidebars */
+html,body{
+  height:100%;
+  overflow:hidden !important;
+}
+body{
+  min-height:100%;
+}
+.topbar{
+  position:fixed !important;
+  top:0;
+  left:0;
+  right:0;
+  z-index:100;
+}
+.app{
+  position:fixed !important;
+  inset:68px 0 0 0;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  align-items:stretch;
+}
+.sidebar{
+  height:100% !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.stage{
+  height:100% !important;
+  overflow:auto !important;
+  overscroll-behavior:contain;
+  padding-top:28px !important;
+  padding-bottom:50px !important;
+}
+.stage-top{
+  position:sticky;
+  top:0;
+  z-index:12;
+  background:linear-gradient(to bottom,#f5f4f1 78%,rgba(245,244,241,0));
+  padding-top:4px;
+  padding-bottom:14px;
+}
+.capture-shell{
+  position:relative;
+}
+.inspector{
+  position:relative !important;
+  top:auto !important;
+  right:auto !important;
+  height:100% !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+/* keep editor stage visually anchored while controls scroll */
+.capture{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* right-side content tools */
+.inspector-content-tools{
+  margin-bottom:18px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--line);
+}
+.inspector-section-title{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
+}
+.inspector-section-title b{
+  font-size:11px;
+  color:var(--text);
+}
+.inspector-section-title small{
+  font-size:8px;
+  color:var(--muted);
+}
+
+/* tighter right chat buttons */
+.inspector .chat-add-row{
+  grid-template-columns:1fr !important;
+}
+
+/* default avatar fills to the bottom edge */
+.avatar[src^="data:image/svg+xml"]{
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+
+@media(max-width:1180px){
+  .app{
+    grid-template-columns:250px minmax(390px,1fr) 250px !important;
+  }
+  .inspector{
+    position:relative !important;
+    right:auto !important;
+    top:auto !important;
+    width:auto !important;
+    height:100% !important;
+    max-height:none !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+}
+@media(max-width:900px){
+  html,body{overflow:auto !important;height:auto}
+  .topbar{position:sticky !important}
+  .app{
+    position:relative !important;
+    inset:auto !important;
+    height:auto !important;
+    display:block !important;
+    overflow:visible !important;
+  }
+  .sidebar,.stage,.inspector{
+    height:auto !important;
+    overflow:visible !important;
+  }
+  .inspector{border-top:1px solid var(--line)}
+}
