@@ -1,7 +1,7 @@
 const $=(s,p=document)=>p.querySelector(s);
 const $$=(s,p=document)=>[...p.querySelectorAll(s)];
 
-const DEFAULT_AVATAR=(fill='#7896c6',bg='#edf3fc')=>`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
 <rect width="300" height="300" rx="150" fill="${bg}"/>
 <circle cx="150" cy="119" r="58" fill="${fill}"/>
@@ -10,17 +10,17 @@ const DEFAULT_AVATAR=(fill='#7896c6',bg='#edf3fc')=>`data:image/svg+xml;charset=
 <path d="M134 145c10 7 22 7 32 0" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
 </svg>`)}`
 const state={
-  template:'x',
-  name:'Dearlog',handle:'dearlog',chatBio:'집에 가고 싶다...',
+  template:'x',brandSymbol:'✦',
+  name:'Dearlog',handle:'dearlog',chatBio:'너와의 추억을 기록하는 중',
   avatar:DEFAULT_AVATAR(),
-  theirName:'상대방',myName:'나',nameSymbol:'',theirSymbol:'',mySymbol:'',
+  theirName:'상대방',myName:'나',
   theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),
   myAvatar:DEFAULT_AVATAR('#667085','#eef1f5'),
   profiles:{
-    x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR(),symbol:''},
-    instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR(),symbol:''},
-    dm:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirSymbol:'',mySymbol:'',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
-    kakao:{name:'상대방',myName:'나',bio:'집에 가고 싶다...',theirSymbol:'',mySymbol:'',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
+    x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
+    instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
+    dm:{name:'상대방',myName:'나',bio:'너와의 추억을 기록하는 중',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')},
+    kakao:{name:'상대방',myName:'나',bio:'너와의 추억을 기록하는 중',theirAvatar:DEFAULT_AVATAR('#7896c6','#edf3fc'),myAvatar:DEFAULT_AVATAR('#667085','#eef1f5')}
   },
   backgrounds:{
     x:{color:'#f5f4f1',image:'',scale:100},
@@ -31,8 +31,8 @@ const state={
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,liked:false,reposted:false,replied:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,liked:false,reposted:false,replied:false}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -53,23 +53,23 @@ const capture=$('#captureArea');
 function loadTemplateProfile(){
   const p=state.profiles[state.template];
   if(state.template==='x'||state.template==='instagram'){
-    state.name=p.name;state.handle=p.handle;state.avatar=p.avatar;state.nameSymbol=p.symbol||'';
-    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;$('#nameSymbolSelect').value=state.nameSymbol;
+    state.name=p.name;state.handle=p.handle;state.avatar=p.avatar;
+    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;
   }else{
     state.theirName=p.name;state.myName=p.myName;state.chatBio=p.bio;
-    state.theirSymbol=p.theirSymbol||'';state.mySymbol=p.mySymbol||'';
+    
     state.theirAvatar=p.theirAvatar;state.myAvatar=p.myAvatar;
     $('#theirNameInput').value=p.name;$('#myNameInput').value=p.myName;$('#chatBioInput').value=p.bio;
-    $('#theirSymbolSelect').value=state.theirSymbol;$('#mySymbolSelect').value=state.mySymbol;
+    
   }
 }
 function saveCurrentProfile(){
   const p=state.profiles[state.template];
   if(state.template==='x'||state.template==='instagram'){
-    p.name=state.name;p.handle=state.handle;p.avatar=state.avatar;p.symbol=state.nameSymbol||'';
+    p.name=state.name;p.handle=state.handle;p.avatar=state.avatar;
   }else{
     p.name=state.theirName;p.myName=state.myName;p.bio=state.chatBio;
-    p.theirSymbol=state.theirSymbol||'';p.mySymbol=state.mySymbol||'';
+    
     p.theirAvatar=state.theirAvatar;p.myAvatar=state.myAvatar;
   }
 }
@@ -77,6 +77,7 @@ function syncTemplateBackgroundControls(){
   const b=state.backgrounds[state.template];
   $('#templateBgColor').value=b.color;
   $('#bgScaleValue').textContent=`${b.scale}%`;
+  const meter=$('#bgScaleMeterFill');if(meter)meter.style.width=`${Math.max(0,Math.min(100,(b.scale-40)/2.6))}%`;
 }
 
 
@@ -142,16 +143,20 @@ function setChatControls(){
   $('#addItemBtn').hidden=chat;
   $('#handleField').hidden=chat;
   $('#chatBioField').hidden=!chat;
+  $('#profileSectionTitle').textContent=state.template==='x'?'내 프로필':'프로필';
 }
 function sharedTop(title='Dearlog'){
-  return `<div class="preview-top"><div class="preview-brand"><i>✦</i><span>${title}</span></div><button class="preview-icon-btn" type="button">•••</button></div>`;
+  return `<div class="preview-top"><div class="preview-brand">${state.brandSymbol?`<i>${esc(state.brandSymbol)}</i>`:''}<span>${title}</span></div><button class="preview-icon-btn" type="button">•••</button></div>`;
 }
 
 function xPost(post,i){
+  const authorName=post.authorName??state.name;
+  const authorHandle=post.authorHandle??state.handle;
+  const fmt=v=>String(Math.max(0,Number(String(v).replace(/\D/g,''))||0)).padStart(3,'0').slice(-3);
   return `<article class="x-post" data-index="${i}">
     <div class="x-post-header"><div class="x-user"><img class="avatar sync-avatar" src="${state.avatar}" alt="" decoding="async"><div>
-    <div class="x-user-name"><span class="editable sync-name" contenteditable="true">${esc(state.name)}</span>${symbolHtml(state.nameSymbol)}</div>
-    <div class="x-meta">@<span class="editable sync-handle" contenteditable="true">${esc(state.handle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
+    <div class="x-user-name"><span class="editable x-author-name" contenteditable="true">${esc(authorName)}</span></div>
+    <div class="x-meta">@<span class="editable x-author-handle" contenteditable="true">${esc(authorHandle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
     </div></div>
     <div class="x-more-wrap"><button class="x-more-btn" type="button">•••</button>
       <div class="x-more-menu" hidden>
@@ -162,26 +167,22 @@ function xPost(post,i){
     </div></div>
     <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
     ${post.quote?`<div class="quote-card">
-      <div class="quote-user">
-        <img class="avatar" src="${state.avatar}" alt="">
-        <div class="quote-user-main">
-          <span class="quote-name editable quote-name-edit" contenteditable="true">${esc(post.quoteName||'Original')}</span>
-          <span class="quote-meta">@<span class="editable quote-handle-edit" contenteditable="true">${esc(post.quoteHandle||'original')}</span></span>
-        </div>
-      </div>
+      <div class="quote-user"><img class="avatar" src="${state.avatar}" alt=""><div class="quote-user-main">
+      <span class="quote-name editable quote-name-edit" contenteditable="true">${esc(post.quoteName||'Original')}</span>
+      <span class="quote-meta">@<span class="editable quote-handle-edit" contenteditable="true">${esc(post.quoteHandle||'original')}</span></span></div></div>
       <div class="quote-body editable quote-body-edit" contenteditable="true">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
     </div>`:''}
     ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale||1}"><input type="file" accept="image/*" class="x-image-input">
-    ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
-    ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
-    ${post.image?`<div class="x-media-scale-hint">휠로 사진 크기 조절</div>`:''}
-    <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
+      ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
+      ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
+      ${post.image?`<div class="x-media-scale-hint">휠로 사진 크기 조절</div>`:''}
+      <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
     </label>`:''}
     <div class="x-actions">
-      <span>◌ <b class="editable x-replies" contenteditable="true">${esc(post.replies)}</b></span>
-      <span>↻ <b class="editable x-reposts" contenteditable="true">${esc(post.reposts ?? '0')}</b></span>
-      <span>♡ <b class="editable x-likes" contenteditable="true">${esc(post.likes)}</b></span>
-      <span>↗</span>
+      <button class="x-action-btn x-reply-btn ${post.replied?'is-active':''}" type="button"><span>◌</span><b>${fmt(post.replies)}</b></button>
+      <button class="x-action-btn x-repost-btn ${post.reposted?'is-active':''}" type="button"><span>↻</span><b>${fmt(post.reposts)}</b></button>
+      <button class="x-action-btn x-like-btn ${post.liked?'is-active':''}" type="button"><span>♡</span><b>${fmt(post.likes)}</b></button>
+      <button class="x-action-btn share" type="button">↗</button>
     </div>
   </article>`;
 }
@@ -189,7 +190,7 @@ function renderX(){
   $('#stageTitle').textContent='X 템플릿';$('#stageDesc').textContent='게시물과 답글 느낌의 화면을 만들어보세요.';
   capture.innerHTML=`<div class="x-page">${sharedTop('Dearlog')}
     <section class="x-compose"><img class="avatar sync-avatar" src="${state.avatar}" alt=""><div class="x-compose-main">
-    <div class="x-compose-text editable" contenteditable="true">무슨 일이 일어나고 있나요?</div>
+    <div class="x-compose-text editable" contenteditable="true">무슨 일이 일어나고 있나요?</div><div class="x-post-author-note">내 프로필로 작성</div>
     <div class="x-compose-bottom"><span class="x-compose-tools" aria-hidden="true">
   <i class="x-tool-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m5 17 4-4 3 3 2-2 5 5"/></svg></i>
   <i class="x-tool-icon x-tool-gif">GIF</i>
@@ -205,16 +206,19 @@ function renderX(){
 function renderInstagram(){
   $('#stageTitle').textContent='Instagram 템플릿';$('#stageDesc').textContent='9칸 프로필 피드와 사진을 만들어보세요.';
   capture.innerHTML=`<div class="ig-page">${sharedTop('Dearlog')}
-    <section class="ig-profile"><label class="image-picker"><input type="file" accept="image/*" class="avatar-local-input">
-    <img class="avatar sync-avatar" src="${state.avatar}" alt=""></label><div>
-    <div class="ig-name-row"><span class="ig-handle editable sync-handle" contenteditable="true">${esc(state.handle)}</span><button class="ig-follow editable" contenteditable="true">팔로우</button></div>
-    <div class="ig-counts"><span>게시물 <b class="editable" contenteditable="true">${state.igTiles.length}</b></span><span>팔로워 <b class="editable" contenteditable="true">1.2K</b></span><span>팔로잉 <b class="editable" contenteditable="true">87</b></span></div>
-    <div class="ig-bio"><b><span class="editable sync-name" contenteditable="true">${esc(state.name)}</span>${symbolHtml(state.nameSymbol)}</b><br><span class="editable" contenteditable="true">좋아하는 순간들을 작은 기록으로 남겨요.</span></div>
-    </div></section><div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
+    <section class="ig-profile">
+      <label class="ig-avatar-picker"><input type="file" accept="image/*" class="avatar-local-input" hidden><img class="avatar sync-avatar" src="${state.avatar}" alt="" decoding="async"></label>
+      <div class="ig-profile-info">
+        <div class="ig-name-row"><span class="ig-handle editable sync-handle" contenteditable="true">${esc(state.handle)}</span><button class="ig-follow editable" contenteditable="true">팔로우</button></div>
+        <div class="ig-counts"><span>게시물 <b class="editable" contenteditable="true">${state.igTiles.length}</b></span><span>팔로워 <b class="editable" contenteditable="true">1.2K</b></span><span>팔로잉 <b class="editable" contenteditable="true">87</b></span></div>
+        <div class="ig-bio"><b><span class="editable sync-name" contenteditable="true">${esc(state.name)}</span></b><br><span class="editable" contenteditable="true">너와의 추억을 기록하는 중</span></div>
+      </div>
+    </section>
+    <div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
     <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}">
-    <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
-    ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
-    <button class="media-play-toggle ig-video-toggle" type="button">${state.igVideos?.[i]?'ON':'▶'}</button>
+      <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
+      ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
+      <button class="media-play-toggle ig-video-toggle" type="button">${state.igVideos?.[i]?'ON':'▶'}</button>
     </label>`).join('')}</div></div>`;
 }
 function chatMedia(m, cls){
@@ -234,7 +238,7 @@ function dmBubble(m,i){
     <img class="avatar chat-side-avatar" src="${avatar}" alt="">
     <div class="chat-message-stack">
       <div>
-        <div class="dm-sender-name">${esc(sender)}${symbolHtml(m.side==='theirs'?state.theirSymbol:state.mySymbol)}</div>
+        <div class="dm-sender-name">${esc(sender)}</div>
         <div class="chat-click-target">${chatMedia(m,'dm-photo')}</div>
       </div>
       <div class="dm-time editable chat-time" contenteditable="true">${esc(m.time)}</div>
@@ -248,7 +252,7 @@ function dmTyping(m,i){
   return `<div class="typing-row ${m.side}" data-index="${i}">
     <img class="avatar chat-side-avatar" src="${avatar}" alt="">
     <div class="typing-wrap">
-      <div class="typing-name">${esc(sender)}${symbolHtml(m.side==='theirs'?state.theirSymbol:state.mySymbol)}</div>
+      <div class="typing-name">${esc(sender)}</div>
       <div class="typing-bubble"><i class="typing-dot"></i><i class="typing-dot"></i><i class="typing-dot"></i></div>
     </div>
   </div>`;
@@ -256,7 +260,7 @@ function dmTyping(m,i){
 function renderDM(){
   $('#stageTitle').textContent='DM 템플릿';$('#stageDesc').textContent='양쪽 프로필과 사진 메시지까지 포함한 DM을 만들어보세요.';
   capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
-    <img class="avatar" src="${state.theirAvatar}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span>${symbolHtml(state.theirSymbol)}</div>
+    <img class="avatar" src="${state.theirAvatar}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></div>
     <div class="chat-bio-preview editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</div></div></div><span>☎　ⓘ</span></header>
     <main class="dm-body chat-wallpaper"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
     <footer class="dm-compose"><span>＋</span><div class="dm-input editable" contenteditable="true">메시지 입력...</div><button class="dm-send">보내기</button></footer></div>`;
@@ -267,7 +271,7 @@ function kakaoBubble(m,i){
   return `<div class="kakao-message ${m.side}" data-index="${i}">
     <img class="avatar kakao-avatar" src="${avatar}" alt="">
     <div class="kakao-message-main">
-      <div class="kakao-sender"><span class="editable ${mine?'my-name':'their-name'}" contenteditable="true">${esc(mine?state.myName:state.theirName)}</span>${symbolHtml(mine?state.mySymbol:state.theirSymbol)}</div>
+      <div class="kakao-sender"><span class="editable ${mine?'my-name':'their-name'}" contenteditable="true">${esc(mine?state.myName:state.theirName)}</span></div>
       <div class="kakao-content-row">
         <div class="chat-click-target">${chatMedia(m,'kakao-photo')}</div>
         <span class="kakao-read-one${readClass}" title="클릭해서 숫자 1 표시 전환">1</span>
@@ -282,7 +286,7 @@ function kakaoTyping(m,i){
   return `<div class="typing-row ${m.side}" data-index="${i}">
     <img class="avatar kakao-avatar" src="${avatar}" alt="">
     <div class="typing-wrap">
-      <div class="typing-name">${esc(sender)}${symbolHtml(m.side==='theirs'?state.theirSymbol:state.mySymbol)}</div>
+      <div class="typing-name">${esc(sender)}</div>
       <div class="typing-bubble"><i class="typing-dot"></i><i class="typing-dot"></i><i class="typing-dot"></i></div>
     </div>
   </div>`;
@@ -291,7 +295,7 @@ function kakaoTyping(m,i){
 function renderKakao(){
   $('#stageTitle').textContent='카카오톡 템플릿';$('#stageDesc').textContent='상대와 내 프로필, 텍스트·사진 메시지를 함께 만들 수 있어요.';
   capture.innerHTML=`<div class="kakao-page">
-    <header class="kakao-head"><button>‹</button><div><b><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span>${symbolHtml(state.theirSymbol)}</b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
+    <header class="kakao-head"><button>‹</button><div><b><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
     <div class="kakao-room"><div class="kakao-date editable" contenteditable="true">2026년 8월 19일 수요일</div>
     ${state.kakao.map((m,i)=>m.type==='typing'?kakaoTyping(m,i):kakaoBubble(m,i)).join('')}</div>
     <footer class="kakao-compose"><span>＋</span><div class="kakao-input editable" contenteditable="true">메시지 입력</div><span>☺　♯</span></footer>
@@ -357,9 +361,17 @@ function bindPreview(){
       const i=+card.dataset.index,p=state.xPosts[i];
       $('.x-body-edit',card).addEventListener('input',e=>p.body=e.target.textContent);
       $('.x-time',card).addEventListener('input',e=>p.time=e.target.textContent);
-      $('.x-likes',card).addEventListener('input',e=>p.likes=e.target.textContent.slice(0,3));
-      $('.x-replies',card).addEventListener('input',e=>p.replies=e.target.textContent.slice(0,3));
-      $('.x-reposts',card).addEventListener('input',e=>p.reposts=e.target.textContent.slice(0,3));
+      $('.x-author-name',card)?.addEventListener('input',e=>p.authorName=e.target.textContent.trim());
+      $('.x-author-handle',card)?.addEventListener('input',e=>p.authorHandle=safeHandle(e.target.textContent));
+      const bump=(key,flag)=>{
+        const current=Math.max(0,Number(String(p[key]).replace(/\D/g,''))||0);
+        p[flag]=!p[flag];
+        p[key]=String(Math.max(0,current+(p[flag]?1:-1))).padStart(3,'0').slice(-3);
+        render();
+      };
+      $('.x-reply-btn',card)?.addEventListener('click',()=>bump('replies','replied'));
+      $('.x-repost-btn',card)?.addEventListener('click',()=>bump('reposts','reposted'));
+      $('.x-like-btn',card)?.addEventListener('click',()=>bump('likes','liked'));
       const moreBtn=$('.x-more-btn',card), moreMenu=$('.x-more-menu',card);
       moreBtn?.addEventListener('click',e=>{e.stopPropagation();moreMenu.hidden=!moreMenu.hidden});
       $('.x-quote-toggle',card)?.addEventListener('click',e=>{
@@ -406,10 +418,8 @@ $$('.template-card').forEach(btn=>btn.addEventListener('click',()=>{
   render();
 }));
 
-$('#nameSymbolSelect').addEventListener('change',e=>{state.nameSymbol=e.target.value;saveCurrentProfile();render()});
-$('#theirSymbolSelect').addEventListener('change',e=>{state.theirSymbol=e.target.value;saveCurrentProfile();render()});
-$('#mySymbolSelect').addEventListener('change',e=>{state.mySymbol=e.target.value;saveCurrentProfile();render()});
 
+$('#brandSymbolSelect').addEventListener('change',e=>{state.brandSymbol=e.target.value;render()});
 $('#nameInput').addEventListener('input',e=>{state.name=e.target.value||'Dearlog';saveCurrentProfile();render()});
 $('#handleInput').addEventListener('input',e=>{state.handle=safeHandle(e.target.value);saveCurrentProfile();render()});
 $('#chatBioInput').addEventListener('input',e=>{state.chatBio=e.target.value;saveCurrentProfile();render()});
@@ -450,7 +460,7 @@ $('#addTypingBtn').addEventListener('click',()=>{
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.'});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,liked:false,reposted:false,replied:false});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);}
   render();
 });
@@ -482,6 +492,7 @@ capture.addEventListener('wheel',e=>{
   e.preventDefault();
   b.scale=Math.max(40,Math.min(300,b.scale+(e.deltaY<0?5:-5)));
   $('#bgScaleValue').textContent=`${b.scale}%`;
+  const meter=$('#bgScaleMeterFill');if(meter)meter.style.width=`${Math.max(0,Math.min(100,(b.scale-40)/2.6))}%`;
   syncVars();
 },{passive:false});
 
@@ -604,6 +615,7 @@ document.addEventListener('keydown',e=>{
 
 applyRecommendedPalette();
 loadTemplateProfile();
+$('#brandSymbolSelect').value=state.brandSymbol;
 syncTemplateBackgroundControls();
 render();
 if(window.DEARLOG_NOTICE?.enabled && !sessionStorage.getItem('dearlogNoticeHidden')) openNotice();
