@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f5f7fb">
+  <meta name="theme-color" content="#f5f4f1">
   <title>Dearlog — SNS Maker</title>
   <meta name="description" content="창작 캐릭터와 이야기용 SNS 이미지 메이커 Dearlog">
   <meta property="og:title" content="Dearlog — SNS Maker">
@@ -24,9 +24,9 @@
       <span class="brand-sub">SNS MAKER</span>
     </a>
     <div class="top-actions">
-      <button class="btn btn-subtle" id="previewBtn">미리보기</button>
-      <button class="btn btn-subtle" id="resetBtn">초기화</button>
-      <button class="btn btn-primary" id="exportBtn">PNG 저장</button>
+      <button class="btn btn-subtle" id="previewBtn" type="button">미리보기</button>
+      <button class="btn btn-subtle" id="resetBtn" type="button">초기화</button>
+      <button class="btn btn-primary" id="exportBtn" type="button">PNG 저장</button>
     </div>
   </header>
 
@@ -44,32 +44,72 @@
           <small>4 TYPES</small>
         </div>
         <div class="template-grid" id="templateGrid">
-          <button class="template-card active" data-template="x">
+          <button class="template-card active" data-template="x" type="button">
             <span class="template-icon">𝕏</span>
             <span><b>X</b><small>POST / REPLY</small></span>
           </button>
-          <button class="template-card" data-template="instagram">
+          <button class="template-card" data-template="instagram" type="button">
             <span class="template-icon">◎</span>
             <span><b>Instagram</b><small>FEED / PHOTO</small></span>
           </button>
-          <button class="template-card" data-template="dm">
+          <button class="template-card" data-template="dm" type="button">
             <span class="template-icon">◌</span>
             <span><b>DM</b><small>MESSAGE / CHAT</small></span>
           </button>
-          <button class="template-card" data-template="kakao">
+          <button class="template-card" data-template="kakao" type="button">
             <span class="template-icon">K</span>
             <span><b>카카오톡</b><small>KAKAO / CHAT</small></span>
           </button>
         </div>
       </section>
 
-      <section class="tool-section">
-        <div class="section-title"><span id="profileSectionTitle">프로필</span></div>
-            <label class="field"><span>프로필 사진</span><span class="file-button">내 이미지<input id="myAvatarInput" type="file" accept="image/*"></span></label>
+      <section class="tool-section" id="basicProfileSection">
+        <div class="section-title"><span id="profileSectionTitle">내 프로필</span></div>
+        <label class="field">
+          <span>이름</span>
+          <input id="nameInput" type="text" value="Dearlog" maxlength="30">
+        </label>
+        <label class="field" id="handleField">
+          <span>아이디</span>
+          <div class="prefix-input"><i>@</i><input id="handleInput" type="text" value="dearlog" maxlength="30"></div>
+        </label>
+        <label class="field" id="chatBioField" hidden>
+          <span>한줄소개</span>
+          <input id="chatBioInput" type="text" value="너와의 추억을 기록하는 중" maxlength="60">
+        </label>
+        <label class="field">
+          <span>기본 프로필 이미지</span>
+          <span class="file-button">이미지 선택<input id="avatarInput" type="file" accept="image/*"></span>
+        </label>
+      </section>
+
+      <section class="tool-section" id="chatProfileSection" hidden>
+        <div class="section-title"><span>메시지 프로필</span><small>DM / KAKAO</small></div>
+        <div class="chat-profile-grid">
+          <div class="chat-profile-card">
+            <b>상대</b>
+            <label class="field">
+              <span>이름</span>
+              <input id="theirNameInput" type="text" value="상대방" maxlength="30">
+            </label>
+            <label class="field">
+              <span>프로필 사진</span>
+              <span class="file-button">상대 이미지<input id="theirAvatarInput" type="file" accept="image/*"></span>
+            </label>
+          </div>
+          <div class="chat-profile-card">
+            <b>나</b>
+            <label class="field">
+              <span>이름</span>
+              <input id="myNameInput" type="text" value="나" maxlength="30">
+            </label>
+            <label class="field">
+              <span>프로필 사진</span>
+              <span class="file-button">내 이미지<input id="myAvatarInput" type="file" accept="image/*"></span>
+            </label>
           </div>
         </div>
       </section>
-
 
       <section class="tool-section" id="templateBackgroundSection">
         <div class="section-title"><span>템플릿 배경</span><small>현재 템플릿에만 적용</small></div>
@@ -80,7 +120,10 @@
           </div>
           <div class="bg-control-divider"></div>
           <div class="bg-control-row bg-control-row--stack">
-            <div class="bg-control-copy"><b>배경 이미지</b><small>이미지를 넣은 뒤 미리보기에서 휠로 확대·축소할 수 있어요.</small></div>
+            <div class="bg-control-copy">
+              <b>배경 이미지</b>
+              <small>이미지를 넣은 뒤 미리보기에서 휠로 확대·축소할 수 있어요.</small>
+            </div>
             <div class="bg-image-actions">
               <label class="mini-upload-btn">이미지 선택<input id="templateBgImageInput" type="file" accept="image/*"></label>
               <button class="mini-ghost-btn" id="clearTemplateBgBtn" type="button">이미지 지우기</button>
@@ -99,11 +142,22 @@
         <label class="field">
           <span>Dearlog 로고 기호</span>
           <select id="brandSymbolSelect" class="symbol-select">
-            <option value="">없음</option><option value="✦" selected>✦</option><option value="✧">✧</option>
-            <option value="◆">◆</option><option value="◇">◇</option><option value="❖">❖</option>
-            <option value="❈">❈</option><option value="✿">✿</option><option value="♡">♡</option>
-            <option value="♥">♥</option><option value="☆">☆</option><option value="★">★</option>
-            <option value="☾">☾</option><option value="☼">☼</option><option value="•">•</option><option value="·">·</option>
+            <option value="">없음</option>
+            <option value="✦" selected>✦</option>
+            <option value="✧">✧</option>
+            <option value="◆">◆</option>
+            <option value="◇">◇</option>
+            <option value="❖">❖</option>
+            <option value="❈">❈</option>
+            <option value="✿">✿</option>
+            <option value="♡">♡</option>
+            <option value="♥">♥</option>
+            <option value="☆">☆</option>
+            <option value="★">★</option>
+            <option value="☾">☾</option>
+            <option value="☼">☼</option>
+            <option value="•">•</option>
+            <option value="·">·</option>
           </select>
         </label>
         <label class="field main-color-field">
@@ -115,7 +169,9 @@
           <input id="autoPaletteToggle" type="checkbox" checked>
         </label>
         <div class="palette-preview" id="palettePreview">
-          <span data-swatch="bg"></span><span data-swatch="card"></span><span data-swatch="accent"></span>
+          <span data-swatch="bg"></span>
+          <span data-swatch="card"></span>
+          <span data-swatch="accent"></span>
           <small>추천 색상</small>
         </div>
         <div class="color-row">
@@ -146,13 +202,13 @@
       <section class="tool-section" id="contentControls">
         <div class="section-title"><span>콘텐츠</span></div>
         <div class="button-stack">
-          <button class="btn btn-wide" id="addItemBtn">＋ 항목 추가</button>
-          <div class="chat-add-row" id="chatAddRow">
-            <button class="btn btn-wide" id="addTextMessageBtn">＋ 텍스트 메시지</button>
-            <button class="btn btn-wide" id="addPhotoMessageBtn">＋ 사진 메시지</button>
-            <button class="btn btn-wide" id="addTypingBtn">＋ 입력중 표시</button>
+          <button class="btn btn-wide" id="addItemBtn" type="button">＋ 항목 추가</button>
+          <div class="chat-add-row" id="chatAddRow" hidden>
+            <button class="btn btn-wide" id="addTextMessageBtn" type="button">＋ 텍스트 메시지</button>
+            <button class="btn btn-wide" id="addPhotoMessageBtn" type="button">＋ 사진 메시지</button>
+            <button class="btn btn-wide" id="addTypingBtn" type="button">＋ 입력중 표시</button>
           </div>
-          <button class="btn btn-wide btn-danger" id="removeItemBtn">− 마지막 항목 삭제</button>
+          <button class="btn btn-wide btn-danger" id="removeItemBtn" type="button">− 마지막 항목 삭제</button>
         </div>
       </section>
 
@@ -165,20 +221,16 @@
     <section class="stage">
       <div class="stage-top">
         <div>
-          <b id="stageTitle">X형 템플릿</b>
+          <b id="stageTitle">X 템플릿</b>
           <span id="stageDesc">게시물과 답글을 만들어보세요.</span>
         </div>
         <span class="editing-badge">LIVE EDIT</span>
       </div>
-
       <div class="capture-shell">
         <div class="capture" id="captureArea"></div>
       </div>
     </section>
   </main>
-
-  <input id="avatarHidden" type="file" accept="image/*" hidden>
-
 
   <div class="preview-backdrop" id="previewBackdrop" hidden>
     <div class="preview-modal">
