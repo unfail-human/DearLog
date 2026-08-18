@@ -1413,3 +1413,31 @@ img.avatar{
 .kakao-message + .kakao-message{
   margin-top:4px !important;
 }
+
+
+/* v16 save format menu */
+.save-menu-wrap{position:relative}
+.save-menu{
+  position:absolute;
+  right:0;
+  top:calc(100% + 7px);
+  z-index:120;
+  min-width:132px;
+  padding:5px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  box-shadow:0 12px 32px rgba(45,42,37,.12);
+}
+.save-menu button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  border-radius:7px;
+  padding:9px 10px;
+  font-size:10px;
+  cursor:pointer;
+}
+.save-menu button:hover{background:#f5f4f1}

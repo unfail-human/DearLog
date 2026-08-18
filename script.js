@@ -11,6 +11,45 @@ const $$=(s,p=document)=>[...p.querySelectorAll(s)];
 
 const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="${bg}"/><circle cx="32" cy="23" r="10" fill="${fill}"/><path d="M13 57c1.8-14 9.4-22 19-22s17.2 8 19 22H13Z" fill="${fill}"/></svg>`);
 
+const state={
+  template:'x',brandSymbol:'✦',selected:null,
+  name:'Dearlog',handle:'dearlog',chatBio:'너와의 추억을 기록하는 중',
+  avatar:DEFAULT_AVATAR(),
+  theirName:'상대방',myName:'나',
+  theirAvatar:DEFAULT_AVATAR('#8f8a81','#ece9e3'),
+  myAvatar:DEFAULT_AVATAR('#746f67','#e5e1da'),
+  profiles:{
+    x:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
+    instagram:{name:'Dearlog',handle:'dearlog',avatar:DEFAULT_AVATAR()},
+    dm:{name:'상대방',myName:'나',bio:'너와의 추억을 기록하는 중',theirAvatar:DEFAULT_AVATAR('#8f8a81','#ece9e3'),myAvatar:DEFAULT_AVATAR('#746f67','#e5e1da')},
+    kakao:{name:'상대방',myName:'나',bio:'너와의 추억을 기록하는 중',theirAvatar:DEFAULT_AVATAR('#8f8a81','#ece9e3'),myAvatar:DEFAULT_AVATAR('#746f67','#e5e1da')}
+  },
+  backgrounds:{
+    x:{color:'#f5f4f1',image:'',scale:100},
+    instagram:{color:'#f5f4f1',image:'',scale:100},
+    dm:{color:'#f5f4f1',image:'',scale:100},
+    kakao:{color:'#f5f4f1',image:'',scale:100}
+  },
+  main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
+  chatBg:'#dfe8ef',chatBgImage:'',
+  xPosts:[
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',liked:false,reposted:false,replied:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',liked:false,reposted:false,replied:false}
+  ],
+  igTiles:Array(9).fill(''),
+  igVideos:Array(9).fill(false),
+  dm:[
+    {side:'theirs',type:'text',text:'오늘 기록은 다 했어?',time:'11:42',image:'',read:true},
+    {side:'mine',type:'text',text:'응. 마지막 한 줄만 남았어.',time:'11:43',image:'',read:true},
+    {side:'theirs',type:'text',text:'그럼 다 쓰고 보여줘 ☺',time:'11:43',image:'',read:true}
+  ],
+  kakao:[
+    {side:'theirs',type:'text',text:'오늘은 뭐 하고 있었어?',time:'오전 11:42',image:'',read:true},
+    {side:'mine',type:'text',text:'기록 정리하고 있었어.',time:'오전 11:43',image:'',read:true},
+    {side:'theirs',type:'text',text:'완성하면 보여줘!',time:'오전 11:43',image:'',read:false}
+  ]
+};
+
 const capture=$('#captureArea');
 
 function loadTemplateProfile(){
@@ -351,12 +390,13 @@ function bindChat(listName){
   const arr=state[listName];
   $$(`[data-index]`,capture).forEach(row=>{
     if(!row.matches('.bubble-row,.kakao-message,.typing-row'))return;
-    if(m.type==='typing')return;
     const i=+row.dataset.index,m=arr[i];
+    if(!m)return;
     row.addEventListener('click',e=>{
       if(!e.target.closest('input,button,[contenteditable="true"]'))selectItem(state.template==='kakao'?'kakao':'dm',i);
     });
     row.querySelector('[contenteditable="true"]')?.addEventListener('focus',()=>selectItem(state.template==='kakao'?'kakao':'dm',i));
+    if(m.type==='typing')return;
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
     $('.chat-photo-input',row)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{m.image=src;render()}));
@@ -547,7 +587,7 @@ $('#chatBgImageInput').addEventListener('change',e=>fileToData(e.target.files[0]
 $('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chatBgImageInput').value='';syncVars()});
 
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
-async function saveCleanCapture(sourceNode=null){
+async function saveCleanCapture(format='png',sourceNode=null){
   let tempWrap=null;
   try{
     tempWrap=document.createElement('div');
@@ -574,29 +614,37 @@ async function saveCleanCapture(sourceNode=null){
       logging:false,
       imageTimeout:0
     });
-    const a=document.createElement('a'),d=new Date(),
-      stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
-    a.download=`dearlog-${state.template}-${stamp}.png`;
-    a.href=canvas.toDataURL('image/png',1.0);
+    const d=new Date();
+    const stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+    const base=`dearlog-${state.template}-${stamp}`;
+
+    if(format==='pdf'){
+      if(!window.jspdf?.jsPDF)throw new Error('PDF library unavailable');
+      const {jsPDF}=window.jspdf;
+      const pxToMm=0.264583;
+      const w=canvas.width*pxToMm/4;
+      const h=canvas.height*pxToMm/4;
+      const pdf=new jsPDF({orientation:w>h?'landscape':'portrait',unit:'mm',format:[w,h]});
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,w,h,undefined,'FAST');
+      pdf.save(`${base}.pdf`);
+      return;
+    }
+
+    const a=document.createElement('a');
+    if(format==='jpg'){
+      a.download=`${base}.jpg`;
+      a.href=canvas.toDataURL('image/jpeg',0.96);
+    }else{
+      a.download=`${base}.png`;
+      a.href=canvas.toDataURL('image/png',1.0);
+    }
     a.click();
   }finally{
     tempWrap?.remove();
   }
 }
 
-$('#exportBtn').addEventListener('click',async()=>{
-  const btn=$('#exportBtn'),old=btn.textContent;
-  btn.disabled=true;btn.textContent='고화질 저장 중…';
-  $$('[contenteditable=true]',capture).forEach(e=>e.blur());
-  try{
-    await saveCleanCapture();
-  }catch(err){
-    console.error(err);
-    alert('PNG 저장에 실패했어요.');
-  }finally{
-    btn.disabled=false;btn.textContent=old;
-  }
-});
+
 
 
 
@@ -622,21 +670,48 @@ function closePreview(){
 }
 $('#previewBtn').addEventListener('click',openPreview);
 $('#previewCloseBtn').addEventListener('click',closePreview);
-$('#previewSaveBtn').addEventListener('click',async()=>{
-  const btn=$('#previewSaveBtn'),old=btn.textContent;
-  btn.disabled=true;btn.textContent='저장 중…';
-  try{
-    const node=$('#previewMount .capture');
-    if(node)await saveCleanCapture(node);
-  }catch(err){
-    console.error(err);
-    alert('PNG 저장에 실패했어요.');
-  }finally{
-    btn.disabled=false;btn.textContent=old;
-  }
-});
+
 $('#previewBackdrop').addEventListener('click',e=>{
   if(e.target===$('#previewBackdrop'))closePreview();
+});
+
+
+function toggleSaveMenu(menu){
+  menu.hidden=!menu.hidden;
+}
+$('#saveMenuBtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  toggleSaveMenu($('#saveMenu'));
+});
+$('#previewSaveBtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  toggleSaveMenu($('#previewSaveMenu'));
+});
+$$('[data-save-format]').forEach(btn=>btn.addEventListener('click',async()=>{
+  const format=btn.dataset.saveFormat;
+  $('#saveMenu').hidden=true;
+  const trigger=$('#saveMenuBtn'),old=trigger.textContent;
+  trigger.disabled=true;trigger.textContent='저장 중…';
+  try{await saveCleanCapture(format)}
+  catch(err){console.error(err);alert('저장에 실패했어요.')}
+  finally{trigger.disabled=false;trigger.textContent=old}
+}));
+$$('[data-preview-save-format]').forEach(btn=>btn.addEventListener('click',async()=>{
+  const format=btn.dataset.previewSaveFormat;
+  $('#previewSaveMenu').hidden=true;
+  const trigger=$('#previewSaveBtn'),old=trigger.textContent;
+  trigger.disabled=true;trigger.textContent='저장 중…';
+  try{
+    const node=$('#previewMount .capture');
+    if(node)await saveCleanCapture(format,node);
+  }catch(err){console.error(err);alert('저장에 실패했어요.')}
+  finally{trigger.disabled=false;trigger.textContent=old}
+}));
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.save-menu-wrap')){
+    $('#saveMenu').hidden=true;
+    $('#previewSaveMenu').hidden=true;
+  }
 });
 
 function openNotice(){

@@ -26,7 +26,14 @@
     <div class="top-actions">
       <button class="btn btn-subtle" id="previewBtn" type="button">미리보기</button>
       <button class="btn btn-subtle" id="resetBtn" type="button">초기화</button>
-      <button class="btn btn-primary" id="exportBtn" type="button">PNG 저장</button>
+      <div class="save-menu-wrap">
+        <button class="btn btn-primary" id="saveMenuBtn" type="button">저장 ▾</button>
+        <div class="save-menu" id="saveMenu" hidden>
+          <button type="button" data-save-format="png">PNG 이미지</button>
+          <button type="button" data-save-format="jpg">JPG 이미지</button>
+          <button type="button" data-save-format="pdf">PDF 파일</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -267,7 +274,14 @@
           <span>실제 저장되는 화면과 동일하게 표시됩니다.</span>
         </div>
         <div class="preview-head-actions">
-          <button class="btn btn-primary" id="previewSaveBtn" type="button">PNG 저장</button>
+          <div class="save-menu-wrap">
+            <button class="btn btn-primary" id="previewSaveBtn" type="button">저장 ▾</button>
+            <div class="save-menu" id="previewSaveMenu" hidden>
+              <button type="button" data-preview-save-format="png">PNG 이미지</button>
+              <button type="button" data-preview-save-format="jpg">JPG 이미지</button>
+              <button type="button" data-preview-save-format="pdf">PDF 파일</button>
+            </div>
+          </div>
           <button class="btn btn-subtle" id="previewCloseBtn" type="button">닫기</button>
         </div>
       </div>
@@ -291,6 +305,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="./notice.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>
