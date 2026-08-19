@@ -1,1 +1,1 @@
-window.DEARLOG_NOTICE={enabled:true,version:"v92",title:"Dearlog 업데이트",html:`<p>Dearlog가 업데이트되었습니다.</p>`};
+window.DEARLOG_NOTICE={enabled:true,version:"v93",title:"Dearlog 업데이트",html:`<p>Dearlog가 업데이트되었습니다.</p>`};

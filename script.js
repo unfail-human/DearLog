@@ -880,19 +880,27 @@ function applyWorkspaceZoom(){
   const valueBtn=$('#zoomValue');
   if(!shell||!stage||!capture.offsetWidth||!capture.offsetHeight)return;
 
-  const naturalH=capture.offsetHeight;
+  const naturalH=capture.scrollHeight || capture.offsetHeight;
   const scale=workspaceZoom;
 
   capture.style.setProperty('transform',`scale(${scale})`,'important');
   capture.style.setProperty('transform-origin','top center','important');
 
-  // X only: keep it slightly higher in the stage.
-  const xLift=state.template==='x' ? -22 : 0;
+  const xLift=state.template==='x' ? -14 : 0;
   capture.style.marginTop=`${xLift}px`;
   capture.style.marginBottom='0px';
 
-  shell.style.height=`${Math.max(0,naturalH*scale+xLift)}px`;
-  shell.style.minHeight='0';
+  const visibleH=Math.max(0,naturalH*scale+xLift);
+  shell.style.height=`${visibleH}px`;
+  shell.style.minHeight=`${visibleH}px`;
+
+  // X can grow indefinitely as posts are added.
+  // Add real bottom room to the scrollable stage so the last post/source tail is reachable.
+  if(state.template==='x'){
+    shell.style.paddingBottom='80px';
+  }else{
+    shell.style.paddingBottom='24px';
+  }
 
   if(valueBtn)valueBtn.textContent=`${Math.round(scale*100)}%`;
 }
@@ -1056,7 +1064,7 @@ function render(){
     updateWorkspaceSourceCredit();
 
     // Measure only after the newly rendered template and source tail exist.
-    requestAnimationFrame(applyWorkspaceZoom);
+    requestAnimationFrame(()=>requestAnimationFrame(applyWorkspaceZoom));
   });
 }
 function bindNames(){

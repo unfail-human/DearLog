@@ -46,12 +46,23 @@
           <b id="stageTitle">X 템플릿</b>
           <span id="stageDesc">게시물과 답글을 만들어보세요.</span>
         </div>
-      </div>
-      <div class="workspace-zoom" id="workspaceZoom" aria-label="작업화면 확대 축소">
+      </div><div class="stage-left-tools">
+        <nav class="utility-dock" aria-label="빠른 도구">
+    <button class="utility-dock-btn" id="slotOpenBtn" type="button" title="슬롯 저장 / 불러오기">
+      <span class="utility-dock-icon">⇅</span>
+      <span>슬롯</span>
+    </button>
+    <button class="utility-dock-btn utility-dock-help" id="helpOpenBtn" type="button" title="기능 설명">
+      <span class="utility-dock-icon">?</span>
+      <span>설명</span>
+    </button>
+  </nav>
+        <div class="workspace-zoom" id="workspaceZoom" aria-label="작업화면 확대 축소">
         <button type="button" id="zoomOutBtn" aria-label="축소">−</button>
         <span class="zoom-value" id="zoomValue" aria-live="polite">100%</span>
         <button type="button" id="zoomInBtn" aria-label="확대">＋</button>
         <button type="button" id="zoomResetBtn" class="zoom-reset-btn" aria-label="배율 초기화">초기화</button>
+      </div>
       </div>
 
       <div class="capture-shell">
@@ -430,22 +441,7 @@
 
       </div>
     </aside>
-  </main>
-
-
-  <nav class="utility-dock" aria-label="빠른 도구">
-    <button class="utility-dock-btn" id="slotOpenBtn" type="button" title="슬롯 저장 / 불러오기">
-      <span class="utility-dock-icon">⇅</span>
-      <span>슬롯</span>
-    </button>
-    <button class="utility-dock-btn utility-dock-help" id="helpOpenBtn" type="button" title="기능 설명">
-      <span class="utility-dock-icon">?</span>
-      <span>설명</span>
-    </button>
-  </nav>
-
-
-  <div class="help-backdrop help-guide-backdrop" id="helpBackdrop" hidden>
+  </main><div class="help-backdrop help-guide-backdrop" id="helpBackdrop" hidden>
     <div class="help-guide-card" id="helpGuideCard" role="dialog" aria-modal="true" aria-labelledby="helpGuideTitle">
       <div class="help-guide-kicker" id="helpGuideKicker">DEARLOG GUIDE · 1 / 9</div>
       <h2 id="helpGuideTitle">템플릿 선택</h2>
