@@ -3655,3 +3655,153 @@ body{
   visibility:visible !important;
   opacity:1 !important;
 }
+
+
+/* v68 — source credit */
+.source-text-field > span{
+  display:none !important;
+}
+.source-skip-row{
+  margin-top:8px;
+}
+.inspect-source-preview{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+}
+#inspectSourceLeft[hidden]{
+  display:none !important;
+}
+
+/* Always show site credit at the right edge. */
+.export-source{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+}
+.export-source.source-left-hidden{
+  grid-template-columns:1fr auto !important;
+}
+.export-source.source-left-hidden .export-site-credit{
+  grid-column:2 !important;
+}
+.export-site-credit{
+  justify-self:end !important;
+}
+
+/* Live workspace credit */
+.workspace-source-credit{
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:-26px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:10px !important;
+  padding:6px 10px !important;
+  box-sizing:border-box !important;
+  background:#f7f5f1 !important;
+  border-top:1px solid #ece8e1 !important;
+  color:#8f8a81 !important;
+  font-family:var(--dearlog-font,system-ui,sans-serif) !important;
+  font-size:8px !important;
+  pointer-events:none !important;
+  z-index:50 !important;
+}
+.workspace-source-left{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.workspace-source-right{
+  justify-self:end;
+  white-space:nowrap;
+}
+.workspace-source-credit.source-left-hidden{
+  grid-template-columns:1fr auto !important;
+}
+
+/* Keep room for the live tail beneath the editor. */
+.capture-shell{
+  padding-bottom:30px !important;
+}
+
+
+/* v69 — source tail is part of the visible workspace itself */
+.capture{
+  overflow:visible !important;
+}
+
+.workspace-source-credit{
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+
+  width:100% !important;
+  min-height:30px !important;
+  box-sizing:border-box !important;
+
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:12px !important;
+
+  margin:0 !important;
+  padding:7px 11px !important;
+
+  background:#f7f5f1 !important;
+  border-top:1px solid #ece8e1 !important;
+  border-radius:0 !important;
+
+  color:#8f8a81 !important;
+  font-family:var(--dearlog-font,system-ui,sans-serif) !important;
+  font-size:8px !important;
+  line-height:1.2 !important;
+
+  pointer-events:none !important;
+  z-index:1 !important;
+}
+
+.workspace-source-credit.source-left-hidden{
+  grid-template-columns:1fr auto !important;
+}
+
+.workspace-source-left{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+.workspace-source-right{
+  justify-self:end !important;
+  white-space:nowrap !important;
+  font-weight:500 !important;
+}
+
+/* Tail visually attaches to the rounded template card above. */
+.capture > .x-page + .workspace-source-credit,
+.capture > .ig-page + .workspace-source-credit,
+.capture > .dm-page + .workspace-source-credit,
+.capture > .kakao-page + .workspace-source-credit{
+  border-radius:0 0 16px 16px !important;
+}
+
+/* Avoid extra fake spacing below capture; tail now takes real layout space. */
+.capture-shell{
+  padding-bottom:0 !important;
+}
+
+/* Preview/export tail uses the exact same layout. */
+.export-source{
+  position:relative !important;
+  width:100% !important;
+}
+
+.clean-output .export-source{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+}

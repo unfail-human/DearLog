@@ -36,8 +36,8 @@ const state={
     kakao:{color:'#f5f4f1',image:'',scale:100}
   },
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
-  fontMode:'Pretendard',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
-  sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',
+  fontMode:'Noto Sans KR',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
+  sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',sourceSkip:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -763,7 +763,11 @@ function selectedData(){
 function updateInspector(){
   if($('#inspectSourceText')){
     $('#inspectSourceText').value=state.sourceText||'커미션 출처를 표기합니다.';
+  $('#sourceSkipToggle').checked=!!state.sourceSkip;
+  if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
     $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
+    if($('#sourceSkipToggle'))$('#sourceSkipToggle').checked=!!state.sourceSkip;
+    if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
   }
 
   const d=selectedData(), empty=$('#inspectorEmpty'), fields=$('#inspectorFields');
@@ -831,6 +835,7 @@ function render(){
   else if(state.template==='dm')renderDM();
   else renderKakao();
   syncVars();setChatControls();bindPreview();
+  requestAnimationFrame(updateWorkspaceSourceCredit);
 }
 function bindNames(){
   $$('.sync-name',capture).forEach(el=>el.addEventListener('input',()=>{
@@ -1519,20 +1524,31 @@ function flattenInstagramForOutput(sourceRoot,cloneRoot){
 }
 
 
-function appendSourceCredit(root){
-  root.querySelectorAll('.export-source').forEach(el=>el.remove());
+
+function updateWorkspaceSourceCredit(){
+  let credit=capture.querySelector('.workspace-source-credit');
+  if(!credit){
+    credit=document.createElement('div');
+    credit.className='workspace-source-credit';
+    capture.appendChild(credit);
+  }
 
   const artworkSource=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
+  const left=state.sourceSkip?'':`<span class="workspace-source-left">ⓒ ${esc(artworkSource)}</span>`;
+  credit.innerHTML=`${left}<span class="workspace-source-right">Made with Dearlog</span>`;
+  credit.classList.toggle('source-left-hidden',!!state.sourceSkip);
+}
 
+function appendSourceCredit(root){
+  root.querySelectorAll('.export-source,.workspace-source-credit').forEach(el=>el.remove());
+
+  const artworkSource=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
   const credit=document.createElement('div');
-  credit.className='export-source';
-  credit.innerHTML=`
-    <span class="export-source-label">
-      <span class="export-source-copy">ⓒ</span>
-      <span>${esc(artworkSource)}</span>
-    </span>
-    <b class="export-site-credit">Made with Dearlog</b>
-  `;
+  credit.className='workspace-source-credit export-source';
+
+  const left=state.sourceSkip?'':`<span class="workspace-source-left">ⓒ ${esc(artworkSource)}</span>`;
+  credit.innerHTML=`${left}<span class="workspace-source-right">Made with Dearlog</span>`;
+  credit.classList.toggle('source-left-hidden',!!state.sourceSkip);
 
   root.appendChild(credit);
 }
@@ -1721,9 +1737,20 @@ $('#designTabBtn')?.addEventListener('click',()=>setInspectorTab('design'));
 
 $('#inspectSourceText').addEventListener('input',e=>{
   state.sourceText=e.target.value;
-  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
+  const text=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
+  if($('#inspectSourcePreview'))$('#inspectSourcePreview').textContent=text;
+  updateWorkspaceSourceCredit();
   if(typeof queueAutosave==='function')queueAutosave(500);
 });
+
+$('#sourceSkipToggle').addEventListener('change',e=>{
+  state.sourceSkip=e.target.checked;
+  const left=$('#inspectSourceLeft');
+  if(left)left.hidden=state.sourceSkip;
+  updateWorkspaceSourceCredit();
+  if(typeof queueAutosave==='function')queueAutosave(250);
+});
+
 
 $('#inspectImageBg').addEventListener('input',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
@@ -1854,11 +1881,12 @@ function restoreStateObject(saved){
   syncCommonProfileToState();
 
   // compatibility defaults for older/missing values
-  state.fontMode=state.fontMode||'Pretendard';
+  state.fontMode=state.fontMode||'Noto Sans KR';
   state.customFontName=state.customFontName||'';
   state.customFontData=state.customFontData||'';
   state.instagramPhotoBg=state.instagramPhotoBg||'#ffffff';
   state.sourceEnabled=true;
+  state.sourceSkip=!!state.sourceSkip;
   state.sourceText=state.sourceText||'커미션 출처를 표기합니다.';
   applyCustomFontData();
   state.template=state.template||'x';
