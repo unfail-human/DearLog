@@ -5668,3 +5668,89 @@ body.help-guide-open .help-guide-target *{
   position:static !important;
   margin-left:auto !important;
 }
+
+
+/* v96 — square outer template frames everywhere
+   Keep internal UI (message bubbles, inputs, cards) rounded; only the full template frame becomes rectangular. */
+.capture,
+.clean-output,
+#previewCapture{
+  border-radius:0 !important;
+  overflow:visible !important;
+}
+
+.x-page,
+.ig-page,
+.dm-page,
+.kakao-page,
+.clean-output .x-page,
+.clean-output .ig-page,
+.clean-output .dm-page,
+.clean-output .kakao-page,
+#previewCapture .x-page,
+#previewCapture .ig-page,
+#previewCapture .dm-page,
+#previewCapture .kakao-page{
+  border-radius:0 !important;
+}
+
+/* Remove the rounded tail corners that left empty transparent/white wedges. */
+.workspace-source-credit,
+.export-source,
+.capture > .x-page + .workspace-source-credit,
+.capture > .ig-page + .workspace-source-credit,
+.capture > .dm-page + .workspace-source-credit,
+.capture > .kakao-page + .workspace-source-credit,
+.clean-output .workspace-source-credit,
+.clean-output .export-source{
+  border-radius:0 !important;
+}
+
+/* Ensure preview/export occupies the complete rectangular width with no corner gaps. */
+.preview-modal-body #previewMount,
+.preview-modal-body #previewMount .capture,
+.clean-output{
+  background-clip:border-box !important;
+}
+.clean-output > .x-page,
+.clean-output > .ig-page,
+.clean-output > .dm-page,
+.clean-output > .kakao-page,
+#previewCapture > .x-page,
+#previewCapture > .ig-page,
+#previewCapture > .dm-page,
+#previewCapture > .kakao-page{
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+
+/* Source tail: make commission credit as crisp/readable as the Dearlog credit. */
+.workspace-source-credit{
+  color:#746f67 !important;
+  opacity:1 !important;
+  font-weight:500 !important;
+  -webkit-font-smoothing:antialiased !important;
+  text-rendering:geometricPrecision !important;
+}
+.workspace-source-left,
+.export-source .workspace-source-left{
+  color:#746f67 !important;
+  opacity:1 !important;
+  font-weight:500 !important;
+}
+.workspace-source-right,
+.export-source .workspace-source-right{
+  color:#746f67 !important;
+  opacity:1 !important;
+  font-weight:500 !important;
+}
+
+/* html2canvas/export needs explicit opacity/color inheritance. */
+.clean-output .workspace-source-left,
+.clean-output .workspace-source-right,
+.clean-output .export-source .workspace-source-left,
+.clean-output .export-source .workspace-source-right{
+  color:#746f67 !important;
+  opacity:1 !important;
+  font-weight:500 !important;
+}
