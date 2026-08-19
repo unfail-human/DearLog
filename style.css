@@ -3034,3 +3034,59 @@ body{
 #inspectPostAvatarPreview{
   background:#ece9e3;
 }
+
+
+/* v52 — Instagram outer area is always clean white */
+.ig-page,
+.ig-profile,
+.ig-tabs,
+.ig-grid{
+  background:#ffffff !important;
+}
+.ig-grid{
+  border-top-color:#ece9e3 !important;
+}
+.ig-tile{
+  background:var(--ig-photo-bg,#ffffff) !important;
+}
+
+/* Keep empty margins inside an edited Instagram image controlled only
+   by the photo background color, never by the global template background. */
+.ig-tile.has-image{
+  background:var(--ig-photo-bg,#ffffff) !important;
+}
+
+/* Font settings */
+.font-settings-card{
+  display:grid;
+  gap:9px;
+  margin-bottom:10px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfaf8;
+}
+.font-setting-note{
+  color:var(--muted);
+  font-size:8px;
+  line-height:1.5;
+}
+#fontSelect{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid var(--line-strong);
+  border-radius:9px;
+  background:#fff;
+  color:var(--text);
+  padding:9px 10px;
+  font:inherit;
+}
+
+/* One font variable controls all Dearlog template typography. */
+.capture,
+.preview-modal,
+.notice-modal,
+.slot-modal,
+.help-modal{
+  font-family:var(--dearlog-font,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif) !important;
+}

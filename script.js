@@ -36,6 +36,7 @@ const state={
     kakao:{color:'#f5f4f1',image:'',scale:100}
   },
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
+  fontMode:'system',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -444,6 +445,26 @@ function updatePalettePreview(){
   const map={bg:state.bg,card:state.card,accent:state.accent};
   Object.entries(map).forEach(([k,v])=>{const sw=$(`[data-swatch="${k}"]`);if(sw)sw.style.background=v});
 }
+
+function applyCustomFontData(){
+  const old=document.getElementById('dearlogCustomFontStyle');
+  old?.remove();
+  if(!state.customFontData)return;
+  const style=document.createElement('style');
+  style.id='dearlogCustomFontStyle';
+  style.textContent=`@font-face{font-family:"DearlogCustomFont";src:url("${state.customFontData}");font-display:swap;}`;
+  document.head.appendChild(style);
+}
+
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result);
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+
 function syncVars(){
   const tb=state.backgrounds[state.template];
   capture.style.setProperty('--template-bg-color',tb.color);
@@ -456,11 +477,22 @@ function syncVars(){
   capture.style.setProperty('--chat-bg',state.chatBg);
   capture.style.setProperty('--chat-bg-image',state.chatBgImage ? `url("${state.chatBgImage}")` : 'none');
   updatePalettePreview();
+  const fontMap={
+    system:'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+    serif:'Georgia,"Times New Roman","Noto Serif KR",serif',
+    rounded:'"Arial Rounded MT Bold","NanumSquareRound",system-ui,sans-serif',
+    mono:'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+    custom:'"DearlogCustomFont",system-ui,sans-serif'
+  };
+  document.documentElement.style.setProperty('--dearlog-font',fontMap[state.fontMode]||fontMap.system);
+  document.documentElement.style.setProperty('--ig-photo-bg',state.instagramPhotoBg||'#ffffff');
+
 }
 function setChatControls(){
   const chat=['dm','kakao'].includes(state.template);
   $('#chatProfileSection').hidden=!chat;
   $('#chatBackgroundSection').hidden=!chat;
+  $('#instagramPhotoBgSection').hidden=state.template!=='instagram';
   $('#chatAddRow').hidden=!chat;
   $('#addItemBtn').hidden=chat;
   $('#handleField').hidden=chat;
@@ -921,7 +953,7 @@ function bindPreview(){
           aspect:spec.aspect,
           outputW:spec.outputW,
           outputH:spec.outputH,
-          bg:'#ffffff'
+          bg:state.instagramPhotoBg||'#ffffff'
         },src=>{
           state.igTiles[i]=src;
           state.igScales[i]=1;state.igXs[i]=0;state.igYs[i]=0;
@@ -1005,6 +1037,43 @@ $('#myAvatarInput').addEventListener('change',e=>{
     queueAutosave?.(250);
   });
   e.target.value='';
+});
+
+
+$('#fontSelect').addEventListener('change',e=>{
+  state.fontMode=e.target.value;
+  syncVars();
+  render();
+  if(typeof queueAutosave==='function')queueAutosave(250);
+});
+
+$('#customFontInput').addEventListener('change',async e=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+  try{
+    state.customFontData=await fileToDataURL(file);
+    state.customFontName=file.name;
+    state.fontMode='custom';
+    applyCustomFontData();
+    const opt=$('#fontSelect option[value="custom"]');
+    if(opt){opt.disabled=false;opt.textContent=`사용자 폰트 · ${file.name}`;}
+    $('#fontSelect').value='custom';
+    $('#customFontName').textContent=file.name;
+    syncVars();
+    render();
+  }catch(err){
+    console.error(err);
+    alert('폰트 파일을 불러오지 못했어요.');
+  }finally{
+    e.target.value='';
+  }
+});
+
+$('#instagramPhotoBgColor').addEventListener('input',e=>{
+  state.instagramPhotoBg=e.target.value;
+  syncVars();
+  render();
+  if(typeof queueAutosave==='function')queueAutosave(250);
 });
 
 $('#mainColor').addEventListener('input',e=>{
@@ -1485,7 +1554,7 @@ function storageState(){
   saveCurrentProfile();
 
   // Slots/autosave store text and settings only. Never store uploaded files.
-  const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|image|chatBgImage)$/i;
+  const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|image|chatBgImage|customFontData)$/i;
   const IMAGE_ARRAY_KEYS=/^(igTiles)$/i;
 
   function clean(value,key=''){
@@ -1580,6 +1649,11 @@ function restoreStateObject(saved){
   syncCommonProfileToState();
 
   // compatibility defaults for older/missing values
+  state.fontMode=state.fontMode||'system';
+  state.customFontName=state.customFontName||'';
+  state.customFontData=state.customFontData||'';
+  state.instagramPhotoBg=state.instagramPhotoBg||'#ffffff';
+  applyCustomFontData();
   state.template=state.template||'x';
   state.brandSymbol=state.brandSymbol??'✦';
   state.selected=null;
@@ -1789,6 +1863,12 @@ if(!restoredAutosave){
   loadTemplateProfile();
   $('#sidebarAvatarPreview').src=(state.template==='x'||state.template==='instagram')?state.avatar:state.theirAvatar;
   $('#brandSymbolSelect').value=state.brandSymbol;
+  applyCustomFontData();
+  $('#fontSelect').value=state.fontMode||'system';
+  $('#customFontName').textContent=state.customFontName||'폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.';
+  const customOpt=$('#fontSelect option[value="custom"]');
+  if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}
+  $('#instagramPhotoBgColor').value=state.instagramPhotoBg||'#ffffff';
   syncTemplateBackgroundControls();
   render();
 }
