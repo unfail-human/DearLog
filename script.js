@@ -39,7 +39,7 @@ const state={
   fontMode:'Noto Sans KR',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
   sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',sourceSkip:false,
   dmStyle:{theirBubble:'#e9e9eb',myBubble:'#0a84ff',theirText:'#111111',myText:'#ffffff'},
-  stickerLayers:{x:[],instagram:[],dm:[],kakao:[]},selectedSticker:null,
+  stickerLayers:{x:[],instagram:[],dm:[],kakao:[]},selectedSticker:null,stickerStudioActive:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -784,14 +784,14 @@ function selectedData(){
 function updateInspector(){
   if($('#inspectSourceText')){
     $('#inspectSourceText').value=state.sourceText||'커미션 출처를 표기합니다.';
-  $('#sourceSkipToggle').checked=!!state.sourceSkip;
+  syncSourceSkipButton();
   if($('#dmTheirBubbleColor'))$('#dmTheirBubbleColor').value=state.dmStyle?.theirBubble||'#e9e9eb';
   if($('#dmMyBubbleColor'))$('#dmMyBubbleColor').value=state.dmStyle?.myBubble||'#0a84ff';
   if($('#dmTheirTextColor'))$('#dmTheirTextColor').value=state.dmStyle?.theirText||'#111111';
   if($('#dmMyTextColor'))$('#dmMyTextColor').value=state.dmStyle?.myText||'#ffffff';
   if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
     $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
-    if($('#sourceSkipToggle'))$('#sourceSkipToggle').checked=!!state.sourceSkip;
+    if($('#sourceSkipToggle'))syncSourceSkipButton();
     if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
   }
 
@@ -866,6 +866,7 @@ function renderStickers(){
   if(!items.length){
     state.selectedSticker=null;
     $('#deleteStickerBtn') && ($('#deleteStickerBtn').disabled=true);
+    renderStickerLibrary();updateStickerStudioUI();
     return;
   }
 
@@ -882,13 +883,35 @@ function renderStickers(){
     img.style.left=`${s.x??145}px`;
     img.style.top=`${s.y??180}px`;
     img.style.width=`${s.width??100}px`;
+    img.classList.toggle('is-locked',!!s.locked);
+    img.style.pointerEvents=state.stickerStudioActive&&!s.locked?'auto':'none';
     if(state.selectedSticker===i)img.classList.add('is-selected');
     layer.appendChild(img);
   });
   capture.appendChild(layer);
   bindStickers();
+  renderStickerLibrary();
 }
 
+function renderStickerLibrary(){
+  const box=$('#stickerLibrary');if(!box)return;
+  const items=currentStickers();
+  if(!items.length){box.innerHTML='<div class="sticker-library-empty">추가한 스티커가 여기에 보여요.</div>';return;}
+  box.innerHTML=items.map((s,i)=>`<button type="button" class="sticker-thumb ${state.selectedSticker===i?'is-selected':''}" data-sticker-index="${i}" title="스티커 ${i+1}"><img src="${s.src}" alt=""><span>${s.locked?'🔒':''}</span></button>`).join('');
+  box.querySelectorAll('.sticker-thumb').forEach(btn=>btn.addEventListener('click',()=>{
+    state.selectedSticker=Number(btn.dataset.stickerIndex);
+    renderStickers();
+    updateStickerStudioUI();
+  }));
+}
+function updateStickerStudioUI(){
+  const toggle=$('#stickerStudioToggle'),status=$('#stickerStudioStatus');
+  if(toggle){toggle.setAttribute('aria-pressed',String(!!state.stickerStudioActive));toggle.textContent=state.stickerStudioActive?'스티커 편집 종료':'스티커 편집 시작';}
+  if(status)status.textContent=state.stickerStudioActive?'편집 활성화':'편집 잠금 상태';
+  const s=currentStickers()[state.selectedSticker];
+  if($('#deleteStickerBtn'))$('#deleteStickerBtn').disabled=!state.stickerStudioActive||!s||!!s.locked;
+  if($('#lockStickerBtn')){$('#lockStickerBtn').disabled=!s;$('#lockStickerBtn').textContent=s?.locked?'선택 스티커 잠금 해제':'선택 스티커 잠금';}
+}
 function bindStickers(){
   capture.querySelectorAll('.sticker-item').forEach(img=>{
     const i=Number(img.dataset.index);
@@ -900,6 +923,7 @@ function bindStickers(){
     });
 
     img.addEventListener('wheel',e=>{
+      if(!state.stickerStudioActive||currentStickers()[i]?.locked)return;
       e.preventDefault();
       e.stopPropagation();
       const s=currentStickers()[i];
@@ -910,7 +934,7 @@ function bindStickers(){
     },{passive:false});
 
     img.addEventListener('pointerdown',e=>{
-      if(e.button!==0)return;
+      if(e.button!==0||!state.stickerStudioActive||currentStickers()[i]?.locked)return;
       e.preventDefault();
       e.stopPropagation();
       state.selectedSticker=i;
@@ -958,6 +982,7 @@ function render(){
   syncVars();setChatControls();bindPreview();
   requestAnimationFrame(()=>{
     renderStickers();
+    updateStickerStudioUI();
     updateWorkspaceSourceCredit();
   });
 }
@@ -1354,12 +1379,23 @@ function addChatMessage(type){
   render();
 }
 
+$('#stickerStudioToggle')?.addEventListener('click',()=>{
+  state.stickerStudioActive=!state.stickerStudioActive;
+  if(!state.stickerStudioActive)state.selectedSticker=null;
+  renderStickers();updateStickerStudioUI();
+});
+$('#lockStickerBtn')?.addEventListener('click',()=>{
+  const s=currentStickers()[state.selectedSticker];if(!s)return;
+  s.locked=!s.locked;
+  renderStickers();updateStickerStudioUI();queueAutosave?.(250);
+});
 $('#stickerInput')?.addEventListener('change',e=>{
   const file=e.target.files?.[0];
   if(!file)return;
   fileToData(file,src=>{
     const items=currentStickers();
-    items.push({src,x:145,y:170,width:100});
+    items.push({src,x:145,y:170,width:100,locked:false});
+    state.stickerStudioActive=true;
     state.selectedSticker=items.length-1;
     render();
   });
@@ -1369,7 +1405,7 @@ $('#stickerInput')?.addEventListener('change',e=>{
 $('#deleteStickerBtn')?.addEventListener('click',()=>{
   const items=currentStickers();
   const i=state.selectedSticker;
-  if(i===null||i===undefined||!items[i])return;
+  if(!state.stickerStudioActive||i===null||i===undefined||!items[i]||items[i].locked)return;
   items.splice(i,1);
   state.selectedSticker=null;
   render();
@@ -1874,26 +1910,15 @@ $('#inspectUseMyAvatarBtn').addEventListener('click',()=>{
 
 
 function setInspectorTab(tab){
-  const edit=tab==='edit';
-  const editBtn=$('#editTabBtn');
-  const designBtn=$('#designTabBtn');
-  const editPanel=$('#editTabPanel');
-  const designPanel=$('#designTabPanel');
-
-  editBtn?.classList.toggle('is-active',edit);
-  designBtn?.classList.toggle('is-active',!edit);
-
-  if(editPanel){
-    editPanel.hidden=!edit;
-    editPanel.classList.toggle('is-active',edit);
-  }
-  if(designPanel){
-    designPanel.hidden=edit;
-    designPanel.classList.toggle('is-active',!edit);
-  }
+  ['edit','design','sticker'].forEach(name=>{
+    const btn=$('#'+name+'TabBtn'),panel=$('#'+name+'TabPanel'),active=tab===name;
+    btn?.classList.toggle('is-active',active);
+    if(panel){panel.hidden=!active;panel.classList.toggle('is-active',active);}
+  });
 }
 $('#editTabBtn')?.addEventListener('click',()=>setInspectorTab('edit'));
 $('#designTabBtn')?.addEventListener('click',()=>setInspectorTab('design'));
+$('#stickerTabBtn')?.addEventListener('click',()=>setInspectorTab('sticker'));
 
 $('#inspectSourceText').addEventListener('input',e=>{
   state.sourceText=e.target.value;
@@ -1903,12 +1928,18 @@ $('#inspectSourceText').addEventListener('input',e=>{
   if(typeof queueAutosave==='function')queueAutosave(500);
 });
 
-$('#sourceSkipToggle').addEventListener('change',e=>{
-  state.sourceSkip=e.target.checked;
-  const left=$('#inspectSourceLeft');
-  if(left)left.hidden=state.sourceSkip;
+function syncSourceSkipButton(){
+  const b=$('#sourceSkipToggle');if(!b)return;
+  b.setAttribute('aria-pressed',String(!!state.sourceSkip));
+  b.textContent=state.sourceSkip?'표기 안 함':'표기 중';
+  b.classList.toggle('is-off',!!state.sourceSkip);
+}
+$('#sourceSkipToggle')?.addEventListener('click',()=>{
+  state.sourceSkip=!state.sourceSkip;
+  syncSourceSkipButton();
+  if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
   updateWorkspaceSourceCredit();
-  if(typeof queueAutosave==='function')queueAutosave(250);
+  queueAutosave?.(250);
 });
 
 

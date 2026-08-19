@@ -160,6 +160,7 @@
       <div class="inspector-tabs" role="tablist">
         <button class="inspector-tab is-active" id="editTabBtn" type="button" data-inspector-tab="edit">본문 수정하기</button>
         <button class="inspector-tab" id="designTabBtn" type="button" data-inspector-tab="design">화면 꾸미기</button>
+        <button class="inspector-tab" id="stickerTabBtn" type="button" data-inspector-tab="sticker">스티커 스튜디오</button>
       </div>
 
       <div class="inspector-tab-panel is-active" id="editTabPanel" data-inspector-panel="edit">
@@ -177,13 +178,6 @@
             <button class="btn btn-wide" id="addTypingBtn" type="button">＋ 입력중 표시</button>
           </div>
           <button class="btn btn-wide btn-danger" id="removeItemBtn" type="button">− 마지막 항목 삭제</button>
-          <label class="btn btn-wide sticker-upload-btn">
-            ＋ 스티커 추가
-            <input id="stickerInput" type="file" accept="image/*">
-          </label>
-          <button class="btn btn-wide" id="deleteStickerBtn" type="button" disabled>선택 스티커 삭제</button>
-        </div>
-        <small class="sticker-help">스티커를 드래그해서 이동하고, 마우스 휠로 크기를 조절할 수 있어요.</small>
       </section>
 
 
@@ -224,6 +218,22 @@
         </div>
       </div>
 
+      </div>
+
+      <div class="inspector-tab-panel" id="stickerTabPanel" data-inspector-panel="sticker" hidden>
+        <section class="tool-section sticker-studio">
+          <div class="section-title"><span>스티커 스튜디오</span><small>이미지 꾸미기</small></div>
+          <button class="btn btn-wide sticker-studio-toggle" id="stickerStudioToggle" type="button" aria-pressed="false">스티커 편집 시작</button>
+          <p class="sticker-studio-status" id="stickerStudioStatus">편집 잠금 상태</p>
+          <label class="btn btn-wide sticker-upload-btn">＋ 스티커 추가<input id="stickerInput" type="file" accept="image/*"></label>
+          <div class="sticker-library-head"><b>스티커 목록</b><small>이미지를 눌러 선택</small></div>
+          <div class="sticker-library" id="stickerLibrary"><div class="sticker-library-empty">추가한 스티커가 여기에 보여요.</div></div>
+          <div class="sticker-studio-actions">
+            <button class="btn btn-wide" id="lockStickerBtn" type="button" disabled>선택 스티커 잠금</button>
+            <button class="btn btn-wide btn-danger" id="deleteStickerBtn" type="button" disabled>선택 스티커 삭제</button>
+          </div>
+          <small class="sticker-help">스튜디오를 활성화한 뒤 작업화면의 스티커를 드래그해 이동하고 마우스 휠로 크기를 조절할 수 있어요.</small>
+        </section>
       </div>
 
       <div class="inspector-tab-panel" id="designTabPanel" data-inspector-panel="design" hidden>
@@ -374,13 +384,10 @@
             <input id="inspectSourceText" type="text" value="커미션 출처를 표기합니다." maxlength="80">
           </label>
 
-          <label class="toggle-row source-skip-row">
-            <span>
-              <b>커미션 출처 표기 생략</b>
-              <small>체크하면 ⓒ 커미션 출처를 숨겨요.</small>
-            </span>
-            <input id="sourceSkipToggle" type="checkbox">
-          </label>
+          <div class="source-skip-row">
+            <div class="source-skip-copy"><b>커미션 출처 표기</b><small>ⓒ 커미션 출처 표시 여부</small></div>
+            <button class="mini-ghost-btn source-skip-btn" id="sourceSkipToggle" type="button" aria-pressed="false">표기 중</button>
+          </div>
 
           <div class="inspect-source-preview">
             <span id="inspectSourceLeft">ⓒ <b id="inspectSourcePreview">커미션 출처를 표기합니다.</b></span>
