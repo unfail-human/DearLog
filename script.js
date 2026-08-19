@@ -883,10 +883,11 @@ function fitCaptureToStage(){
   const padX=(parseFloat(stageStyle.paddingLeft)||0)+(parseFloat(stageStyle.paddingRight)||0);
   const padY=(parseFloat(stageStyle.paddingTop)||0)+(parseFloat(stageStyle.paddingBottom)||0);
   const availableW=Math.max(260,stage.clientWidth-padX-18);
-  const availableH=Math.max(320,stage.clientHeight-padY-18);
+  const bottomBreathingRoom=state.template==='x' ? 72 : 18;
+  const availableH=Math.max(320,stage.clientHeight-padY-bottomBreathingRoom);
 
   // X is taller than the other templates, so give only X a little extra shrink.
-  const templateScaleCap=state.template==='x' ? .82 : .90;
+  const templateScaleCap=state.template==='x' ? .72 : .90;
   const scale=Math.min(templateScaleCap,availableW/naturalW,availableH/naturalH);
   capture.style.transform=`scale(${scale})`;
   capture.style.transformOrigin='top center';

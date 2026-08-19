@@ -4882,3 +4882,15 @@ body{
     padding-bottom:8px !important;
   }
 }
+
+
+/* v82 — X editor preview: clearly smaller and centered with bottom breathing room */
+@media(min-width:901px){
+  .capture-shell{
+    padding-top:4px !important;
+    padding-bottom:54px !important;
+  }
+  .capture[data-template="x"]{
+    transform-origin:top center !important;
+  }
+}
