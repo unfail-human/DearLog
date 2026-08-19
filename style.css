@@ -3330,3 +3330,160 @@ body{
 .profile-editor-video-row input{width:18px;height:18px}
 .clean-output .video-play-overlay,
 .preview-modal .video-play-overlay{display:flex !important;z-index:20 !important}
+
+
+/* v60 — video overlay always centered in the actual photo frame */
+.video-play-overlay{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+  pointer-events:none !important;
+  z-index:18 !important;
+}
+.video-play-overlay > span{
+  position:static !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:42px !important;
+  height:42px !important;
+  border-radius:50% !important;
+  margin:0 !important;
+  transform:none !important;
+  background:rgba(20,20,20,.58) !important;
+  color:#fff !important;
+  line-height:1 !important;
+  font-size:17px !important;
+  padding-left:2px !important;
+  box-sizing:border-box !important;
+}
+
+/* Ensure all media frames establish the correct positioning context */
+.x-media,
+.ig-tile,
+.chat-photo,
+.dm-photo,
+.kakao-photo{
+  position:relative !important;
+  overflow:hidden !important;
+}
+
+/* ---------------------------------------------------------
+   Source tail: artwork source left, site credit right
+   --------------------------------------------------------- */
+.export-source{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:12px !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding:7px 12px 8px !important;
+  background:#f7f5f1 !important;
+  border-top:1px solid #ece8e1 !important;
+}
+.export-source-label{
+  display:flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  min-width:0 !important;
+  color:#8f8a81 !important;
+  font-size:8px !important;
+  overflow:hidden !important;
+}
+.export-source-label > span:last-child{
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+.export-source-copy{
+  flex:0 0 auto;
+  font-size:10px !important;
+  line-height:1 !important;
+}
+.export-site-credit{
+  justify-self:end !important;
+  margin:0 !important;
+  color:#8f8a81 !important;
+  font-size:8px !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+}
+
+/* Right inspector artwork source editor */
+.inspect-source-editor{
+  display:grid;
+  gap:8px;
+  margin-bottom:16px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfaf8;
+}
+.inspect-label-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.inspect-label-row b{
+  font-size:10px;
+  color:var(--text);
+}
+.inspect-label-row small{
+  font-size:8px;
+  color:var(--muted);
+}
+.inspect-source-preview{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 9px;
+  border-radius:8px;
+  background:#f3f0eb;
+  font-size:8px;
+  color:#8f8a81;
+}
+.inspect-source-preview > span:first-child{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.inspect-source-fixed{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+
+/* v61 — appearance/source tools live in the right inspector */
+.inspector .inspector-appearance{
+  margin:0 0 16px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfaf8;
+}
+.inspector .inspector-appearance .section-title{
+  margin-bottom:9px;
+}
+.inspector .inspector-appearance .color-row{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+.inspector .font-settings-card{
+  margin-bottom:9px;
+}
+
+/* Instagram photo background now follows the normal background color control. */
+.ig-tile,
+.ig-tile.has-image{
+  background:var(--ig-photo-bg,#ffffff) !important;
+}

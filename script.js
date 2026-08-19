@@ -523,15 +523,13 @@ function syncVars(){
     custom:'"DearlogCustomFont",system-ui,sans-serif'
   };
   document.documentElement.style.setProperty('--dearlog-font',fontMap[state.fontMode]||fontMap.system);
-  document.documentElement.style.setProperty('--ig-photo-bg',state.instagramPhotoBg||'#ffffff');
+  document.documentElement.style.setProperty('--ig-photo-bg',state.backgrounds?.instagram?.color||state.bg||'#ffffff');
 
 }
 function setChatControls(){
   const chat=['dm','kakao'].includes(state.template);
   $('#chatProfileSection').hidden=!chat;
-  $('#chatBackgroundSection').hidden=!chat;
-  $('#instagramPhotoBgSection').hidden=state.template!=='instagram';
-  $('#chatAddRow').hidden=!chat;
+  $('#chatBackgroundSection').hidden=!chat;  $('#chatAddRow').hidden=!chat;
   $('#addItemBtn').hidden=chat;
   $('#handleField').hidden=chat;
   $('#chatBioField').hidden=!chat;
@@ -758,6 +756,11 @@ function selectedData(){
   return arr?.[index]?{kind,index,item:arr[index],arr}:null;
 }
 function updateInspector(){
+  if($('#inspectSourceText')){
+    $('#inspectSourceText').value=state.sourceText||'출처 미입력';
+    $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'출처 미입력';
+  }
+
   const d=selectedData(), empty=$('#inspectorEmpty'), fields=$('#inspectorFields');
   if(!d){
     empty.hidden=false;fields.hidden=true;$('#inspectorType').textContent='선택 없음';return;
@@ -1051,7 +1054,7 @@ function bindPreview(){
           aspect:spec.aspect,
           outputW:spec.outputW,
           outputH:spec.outputH,
-          bg:state.instagramPhotoBg||'#ffffff',
+          bg:state.backgrounds?.instagram?.color||state.bg||'#ffffff',
           supportsVideo:true,
           video:!!state.igVideos[i]
         },(src,meta)=>{
@@ -1142,10 +1145,7 @@ $('#myAvatarInput').addEventListener('change',e=>{
 
 
 
-$('#sourceTextInput').addEventListener('input',e=>{
-  state.sourceText=e.target.value;
-  if(typeof queueAutosave==='function')queueAutosave(500);
-});
+
 
 $('#fontSelect').addEventListener('change',e=>{
   state.fontMode=e.target.value;
@@ -1175,14 +1175,6 @@ $('#customFontInput').addEventListener('change',async e=>{
     e.target.value='';
   }
 });
-
-$('#instagramPhotoBgColor').addEventListener('input',e=>{
-  state.instagramPhotoBg=e.target.value;
-  syncVars();
-  render();
-  if(typeof queueAutosave==='function')queueAutosave(250);
-});
-
 $('#mainColor').addEventListener('input',e=>{
   state.main=e.target.value;
   if(state.autoPalette)
@@ -1197,8 +1189,8 @@ $('#autoPaletteToggle').addEventListener('change',e=>{
 });
 $('#bgColor').addEventListener('input',e=>{
   state.bg=e.target.value;
-  const bg=state.backgrounds[state.template]||(state.backgrounds[state.template]={color:e.target.value,image:'',scale:100});
-  bg.color=e.target.value;
+  const current=state.backgrounds[state.template]||(state.backgrounds[state.template]={color:e.target.value,image:'',scale:100});
+  current.color=e.target.value;
   syncVars();
   render();
   if(typeof queueAutosave==='function')queueAutosave(250);
@@ -1529,7 +1521,13 @@ function appendSourceCredit(root){
 
   const credit=document.createElement('div');
   credit.className='export-source';
-  credit.innerHTML=`<span class="export-source-label"><span class="export-source-copy">ⓒ</span><span>${esc(artworkSource)}</span></span><b>Made with Dearlog</b>`;
+  credit.innerHTML=`
+    <span class="export-source-label">
+      <span class="export-source-copy">ⓒ</span>
+      <span>${esc(artworkSource)}</span>
+    </span>
+    <b class="export-site-credit">Made with Dearlog</b>
+  `;
 
   root.appendChild(credit);
 }
@@ -1692,6 +1690,13 @@ $('#inspectUseMyAvatarBtn').addEventListener('click',()=>{
   d.item.authorAvatar=state.avatar;
   refreshSelected();
 });
+
+$('#inspectSourceText').addEventListener('input',e=>{
+  state.sourceText=e.target.value;
+  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'출처 미입력';
+  if(typeof queueAutosave==='function')queueAutosave(500);
+});
+
 $('#inspectImageBg').addEventListener('input',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
   d.item.imageBg=e.target.value;
@@ -2041,8 +2046,8 @@ if(!restoredAutosave){
   $('#fontSelect').value=state.fontMode||'system';
   $('#customFontName').textContent=state.customFontName||'폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.';
   const customOpt=$('#fontSelect option[value="custom"]');
-  if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}
-  $('#instagramPhotoBgColor').value=state.instagramPhotoBg||'#ffffff';
+  if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}  $('#inspectSourceText').value=state.sourceText||'출처 미입력';
+  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'출처 미입력';
   $('#sourceTextInput').value=state.sourceText||'출처 미입력';  syncTemplateBackgroundControls();
   render();
 }
