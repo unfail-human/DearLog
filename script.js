@@ -905,6 +905,7 @@ async function saveCleanCapture(format='png',sourceNode=null){
     tempWrap.style.left='-99999px';
     tempWrap.style.top='0';
     tempWrap.style.zIndex='-1';
+
     let clean;
     if(sourceNode){
       clean=sourceNode.cloneNode(true);
@@ -915,40 +916,63 @@ async function saveCleanCapture(format='png',sourceNode=null){
     }else{
       clean=createCleanPreviewClone();
     }
+
     tempWrap.appendChild(clean);
     document.body.appendChild(tempWrap);
 
+    const bgColor=state.backgrounds?.[state.template]?.color || state.bg || '#f5f4f1';
+
     const canvas=await html2canvas(clean,{
       scale:4,
-      backgroundColor:null,
+      backgroundColor:format==='png'?null:bgColor,
       useCORS:true,
       logging:false,
       imageTimeout:0
     });
+
     const d=new Date();
     const stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
     const base=`dearlog-${state.template}-${stamp}`;
 
     if(format==='pdf'){
       if(!window.jspdf?.jsPDF)throw new Error('PDF library unavailable');
+
+      const flat=document.createElement('canvas');
+      flat.width=canvas.width;
+      flat.height=canvas.height;
+      const fctx=flat.getContext('2d');
+      fctx.fillStyle=bgColor;
+      fctx.fillRect(0,0,flat.width,flat.height);
+      fctx.drawImage(canvas,0,0);
+
       const {jsPDF}=window.jspdf;
       const pxToMm=0.264583;
-      const w=canvas.width*pxToMm/4;
-      const h=canvas.height*pxToMm/4;
+      const w=flat.width*pxToMm/4;
+      const h=flat.height*pxToMm/4;
       const pdf=new jsPDF({orientation:w>h?'landscape':'portrait',unit:'mm',format:[w,h]});
-      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,w,h,undefined,'FAST');
+      pdf.addImage(flat.toDataURL('image/png'),'PNG',0,0,w,h,undefined,'FAST');
       pdf.save(`${base}.pdf`);
       return;
     }
 
     const a=document.createElement('a');
+
     if(format==='jpg'){
+      const flat=document.createElement('canvas');
+      flat.width=canvas.width;
+      flat.height=canvas.height;
+      const fctx=flat.getContext('2d');
+      fctx.fillStyle=bgColor;
+      fctx.fillRect(0,0,flat.width,flat.height);
+      fctx.drawImage(canvas,0,0);
+
       a.download=`${base}.jpg`;
-      a.href=canvas.toDataURL('image/jpeg',0.96);
+      a.href=flat.toDataURL('image/jpeg',0.96);
     }else{
       a.download=`${base}.png`;
       a.href=canvas.toDataURL('image/png',1.0);
     }
+
     a.click();
   }finally{
     tempWrap?.remove();
@@ -1075,6 +1099,22 @@ document.addEventListener('click',e=>{
     $('#saveMenu').hidden=true;
     $('#previewSaveMenu').hidden=true;
   }
+});
+
+
+function openHelpModal(){
+  $('#helpBackdrop').hidden=false;
+}
+function closeHelpModal(){
+  $('#helpBackdrop').hidden=true;
+}
+$('#helpOpenBtn')?.addEventListener('click',openHelpModal);
+$('#helpCloseBtn')?.addEventListener('click',closeHelpModal);
+$('#helpBackdrop')?.addEventListener('click',e=>{
+  if(e.target===$('#helpBackdrop'))closeHelpModal();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!$('#helpBackdrop')?.hidden)closeHelpModal();
 });
 
 function openNotice(){
