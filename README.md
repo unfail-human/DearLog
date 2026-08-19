@@ -1,6 +1,9 @@
-# Dearlog v63
+# Dearlog v64
 
 ## 이번 업데이트
-- GitHub 저장소 루트에 업로드된 KoPubWorld 바탕/돋움, Noto Sans KR, Pretendard 폰트를 기본 폰트 목록에 연결
-- Pretendard를 기본 글꼴로 설정
-- 공지 문구를 간단한 업데이트 안내 형식으로 변경
+- 사라졌던 `화면 꾸미기` 탭 전체 복구
+- 화면 꾸미기의 로고 / 폰트 / 팔레트 / 배경 / 카드 / 포인트 / 다크 모드 / 템플릿 배경 / 출처 표기 복구
+- v62의 `본문 수정하기 / 화면 꾸미기` 탭 레이아웃 유지
+- GitHub 루트에 업로드한 KoPubWorld / Noto Sans KR / Pretendard 폰트 연결
+- Pretendard 기본 폰트 적용
+- 공지는 간단한 업데이트 안내만 표시

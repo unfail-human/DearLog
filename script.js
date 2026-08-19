@@ -36,7 +36,7 @@ const state={
     kakao:{color:'#f5f4f1',image:'',scale:100}
   },
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
-  fontMode:'system',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
+  fontMode:'Pretendard',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
   sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
@@ -516,15 +516,16 @@ function syncVars(){
   capture.style.setProperty('--chat-bg-image',state.chatBgImage ? `url("${state.chatBgImage}")` : 'none');
   updatePalettePreview();
   const fontMap={
-  'Pretendard':"'Pretendard','Noto Sans KR',sans-serif",
-  'Noto Sans KR':"'Noto Sans KR',sans-serif",
-  'KoPubWorld Dotum':"'KoPubWorld Dotum','Noto Sans KR',sans-serif",
-  'KoPubWorld Batang':"'KoPubWorld Batang',serif",
-  system:"system-ui,-apple-system,'Noto Sans KR',sans-serif",
-  serif:"'KoPubWorld Batang','Noto Serif KR',serif",
-  rounded:"'Pretendard','Noto Sans KR',sans-serif",
-  mono:"ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
-};
+    'Pretendard':"'Pretendard','Noto Sans KR',sans-serif",
+    'Noto Sans KR':"'Noto Sans KR',sans-serif",
+    'KoPubWorld Dotum':"'KoPubWorld Dotum','Noto Sans KR',sans-serif",
+    'KoPubWorld Batang':"'KoPubWorld Batang',serif",
+    system:'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+    serif:'Georgia,"Times New Roman","Noto Serif KR",serif',
+    rounded:'"Arial Rounded MT Bold","NanumSquareRound",system-ui,sans-serif',
+    mono:'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+    custom:'"DearlogCustomFont",system-ui,sans-serif'
+  };
   document.documentElement.style.setProperty('--dearlog-font',fontMap[state.fontMode]||fontMap.system);
   document.documentElement.style.setProperty('--ig-photo-bg',state.backgrounds?.instagram?.color||state.bg||'#ffffff');
 
@@ -1843,7 +1844,7 @@ function restoreStateObject(saved){
   syncCommonProfileToState();
 
   // compatibility defaults for older/missing values
-  state.fontMode=state.fontMode||'system';
+  state.fontMode=state.fontMode||'Pretendard';
   state.customFontName=state.customFontName||'';
   state.customFontData=state.customFontData||'';
   state.instagramPhotoBg=state.instagramPhotoBg||'#ffffff';
