@@ -302,7 +302,7 @@ button{cursor:pointer}
 
 /* Kakao */
 .kakao-page{
-  min-height:650px;background:color-mix(in srgb,var(--preview-accent) 14%, #dfe8ef);
+  min-height:650px;background:var(--chat-bg,#dfe8ef);
   color:#232323;display:flex;flex-direction:column
 }
 .kakao-head{
@@ -849,7 +849,7 @@ button{cursor:pointer}
 }
 .x-media-enable.active{
   color:var(--preview-accent);
-  border-color:color-mix(in srgb,var(--preview-accent) 45%, var(--preview-line));
+  border-color:var(--preview-accent);
 }
 .capture.clean-output .x-media-row{
   display:none !important;
@@ -906,10 +906,10 @@ button{cursor:pointer}
 
 .quote-card{
   margin:10px 0 12px;
-  border:1px solid color-mix(in srgb,var(--preview-line) 82%, transparent);
+  border:1px solid var(--preview-line);
   border-radius:14px;
   padding:11px 12px;
-  background:color-mix(in srgb,var(--preview-card) 97%, var(--preview-bg));
+  background:var(--preview-card);
 }
 .quote-user{
   display:flex;
@@ -1064,7 +1064,7 @@ button{cursor:pointer}
 /* background stays visible through content surfaces */
 .x-page,.ig-page{background:rgba(255,255,255,.90)!important}
 .dm-body,.kakao-room{
-  background-color:color-mix(in srgb,var(--chat-bg) 86%, transparent) !important;
+  background-color:var(--chat-bg,#dfe8ef) !important;
 }
 
 

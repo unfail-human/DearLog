@@ -1627,6 +1627,54 @@ $('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chat
 
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
 
+
+function sanitizeUnsupportedExportColors(root){
+  const colorProps=[
+    'color','backgroundColor','borderTopColor','borderRightColor',
+    'borderBottomColor','borderLeftColor','outlineColor',
+    'textDecorationColor','caretColor','fill','stroke'
+  ];
+
+  const nodes=[root,...root.querySelectorAll('*')];
+  nodes.forEach(el=>{
+    let cs;
+    try{cs=getComputedStyle(el)}catch{return}
+
+    colorProps.forEach(prop=>{
+      let value='';
+      try{value=cs[prop]||''}catch{return}
+      if(!value)return;
+
+      // html2canvas versions used by Dearlog do not understand CSS Color 4
+      // functions such as color(...), oklch(...), lab(...), or color-mix(...).
+      if(/\b(?:color|oklch|oklab|lab|lch|color-mix)\s*\(/i.test(value)){
+        const fallback =
+          prop==='color' ? '#242321' :
+          prop==='fill'||prop==='stroke' ? 'currentColor' :
+          'transparent';
+        try{el.style.setProperty(
+          prop.replace(/[A-Z]/g,m=>'-'+m.toLowerCase()),
+          fallback,
+          'important'
+        )}catch{}
+      }
+    });
+
+    // Shadows may also contain modern color functions.
+    ['boxShadow','textShadow'].forEach(prop=>{
+      let value='';
+      try{value=cs[prop]||''}catch{return}
+      if(/\b(?:color|oklch|oklab|lab|lch|color-mix)\s*\(/i.test(value)){
+        try{el.style.setProperty(
+          prop.replace(/[A-Z]/g,m=>'-'+m.toLowerCase()),
+          'none',
+          'important'
+        )}catch{}
+      }
+    });
+  });
+}
+
 async function waitForCaptureImages(root,timeout=5000){
   const imgs=[...root.querySelectorAll('img')];
   if(!imgs.length)return;
@@ -1756,6 +1804,7 @@ async function saveCleanCapture(format='png',sourceNode=null){
     tempWrap.appendChild(clean);
     document.body.appendChild(tempWrap);
 
+    sanitizeUnsupportedExportColors(clean);
     await waitForCaptureImages(clean);
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 
@@ -2074,13 +2123,26 @@ $('#previewSaveBtn').addEventListener('click',e=>{
   e.stopPropagation();
   toggleSaveMenu($('#previewSaveMenu'));
 });
+
+function exportErrorMessage(err){
+  const raw=String(err?.message||err||'렌더링 오류');
+  if(/unsupported color function/i.test(raw)){
+    const fn=(raw.match(/"([^"]+)"/)||[])[1]||'색상';
+    return `저장 렌더러가 지원하지 않는 색상 함수(${fn})가 발견되었습니다.`;
+  }
+  if(/canvas/i.test(raw) && /empty/i.test(raw)){
+    return '저장용 이미지 화면을 만들지 못했습니다.';
+  }
+  return raw;
+}
+
 $$('[data-save-format]').forEach(btn=>btn.addEventListener('click',async()=>{
   const format=btn.dataset.saveFormat;
   $('#saveMenu').hidden=true;
   const trigger=$('#saveMenuBtn'),old=trigger.textContent;
   trigger.disabled=true;trigger.textContent='저장 중…';
   try{await saveCleanCapture(format)}
-  catch(err){console.error(err);alert(`저장에 실패했어요.\n${err?.message||'렌더링 오류'}`)}
+  catch(err){console.error(err);alert(`저장에 실패했어요.\n${exportErrorMessage(err)}`)}
   finally{trigger.disabled=false;trigger.textContent=old}
 }));
 $$('[data-preview-save-format]').forEach(btn=>btn.addEventListener('click',async()=>{
@@ -2091,7 +2153,7 @@ $$('[data-preview-save-format]').forEach(btn=>btn.addEventListener('click',async
   try{
     const node=$('#previewMount .capture');
     if(node)await saveCleanCapture(format,node);
-  }catch(err){console.error(err);alert(`저장에 실패했어요.\n${err?.message||'렌더링 오류'}`)}
+  }catch(err){console.error(err);alert(`저장에 실패했어요.\n${exportErrorMessage(err)}`)}
   finally{trigger.disabled=false;trigger.textContent=old}
 }));
 document.addEventListener('click',e=>{
