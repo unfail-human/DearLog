@@ -1,921 +1,400 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="my-editor-version" content="77">
-  <title>My Writing Editor</title>
-  <link rel="icon" type="image/png" sizes="1254x1254" href="./favicon-v73.png?v=73">
-  <link rel="shortcut icon" type="image/png" href="./favicon-v73.png?v=73">
-  <link rel="apple-touch-icon" href="./favicon-v73.png?v=73">
-  <link rel="image_src" href="https://unfail-human.github.io/my-editor/og-image-v73.png?v=73">
-
-
-  <!-- Link preview / Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="MY EDITOR">
-  <meta property="og:title" content="MY EDITOR">
-  <meta property="og:url" content="https://unfail-human.github.io/my-editor/">
-  <meta property="og:image" content="https://unfail-human.github.io/my-editor/og-image-v73.png?v=73">
-  <meta property="og:image:secure_url" content="https://unfail-human.github.io/my-editor/og-image-v73.png?v=73">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="512">
-  <meta property="og:image:height" content="512">
-  <meta property="og:image:alt" content="MY EDITOR sparkle icon">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="MY EDITOR">
-  <meta name="twitter:image" content="https://unfail-human.github.io/my-editor/og-image-v73.png?v=73">
-
-
-
-
-
-  <link rel="stylesheet" href="style.css?v=77">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f4f1">
+  <title>Dearlog</title>
+  <meta name="description" content="창작 캐릭터와 이야기용 SNS 이미지 메이커 Dearlog">
+  <meta property="og:title" content="Dearlog — SNS Maker">
+  <meta property="og:description" content="나만의 가상 SNS 화면을 자유롭게 만들어보세요.">
+  <meta property="og:image" content="./og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dearlog — SNS Maker">
+  <meta name="twitter:description" content="나만의 가상 SNS 화면을 자유롭게 만들어보세요.">
+  <meta name="twitter:image" content="./og-image.png">
+  <link rel="icon" href="./favicon.png">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-
-<button
-  id="developerHiddenButton"
-  class="developer-hidden-button"
-  type="button"
-  aria-label="개발자 메뉴"
-  title=""
-></button>
-
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">✦</div>
-      <div>
-        <div class="brand-title">MY EDITOR</div>
-        <div class="brand-sub">Writing Space</div>
-      </div>
-    </div>
-
-    <button id="addSlotBtn" class="add-slot">＋ 새 슬롯</button>
-    <div class="section-label">SLOTS</div>
-    <div id="slotList" class="slot-list"></div>
-
-    <div class="sidebar-bottom">
-      <button id="exportBackupBtn" class="subtle-btn">전체 백업</button>
-      <label class="subtle-btn file-label" for="importBackupInput">백업 불러오기</label>
-      <input id="importBackupInput" type="file" accept=".json,application/json" hidden>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <div class="top-left-meta">
-        <div id="slotLabel" class="slot-label">SLOT 01</div>
-        <div class="page-nav">
-          <button id="prevPageBtn" class="page-nav-btn" title="이전 페이지">‹</button>
-          <span id="pageNavLabel">PAGE 01 / 01</span>
-          <button id="nextPageBtn" class="page-nav-btn" title="다음 페이지">›</button>
-          <button id="addPageBtn" class="add-page-strong" title="새 페이지 추가">＋ 새 페이지</button>
-          <button id="deletePageBtn" class="page-nav-btn danger" title="현재 페이지 삭제">−</button>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Dearlog">
+      <span class="brand-mark">✦</span>
+      <span class="brand-name">Dearlog</span>
+      <span class="brand-sub">SNS MAKER</span>
+    </a>
+    <div class="top-actions">
+      <button class="btn btn-subtle" id="previewBtn" type="button">미리보기</button>
+      <button class="btn btn-subtle" id="resetBtn" type="button">초기화</button>
+      <div class="save-menu-wrap">
+        <button class="btn btn-primary" id="saveMenuBtn" type="button">저장 ▾</button>
+        <div class="save-menu" id="saveMenu" hidden>
+          <button type="button" data-save-format="png">PNG 이미지</button>
+          <button type="button" data-save-format="jpg">JPG 이미지</button>
+          <button type="button" data-save-format="pdf">PDF 파일</button>
         </div>
-        <div id="saveStatus" class="save-status visually-hidden-status">자동 저장됨</div>
       </div>
+    </div>
+  </header>
 
-      <div class="top-actions">
-        <button id="copyBtn" class="top-btn">복사</button>
-        <button id="previewBtn" class="top-btn">미리보기</button>
-        <div class="save-wrap">
-          <button id="saveMenuBtn" class="top-btn primary">저장 ▾</button>
-          <div id="saveMenu" class="save-menu save-menu-step">
-            <div class="save-step active" data-save-step="scope">
-              <div class="save-menu-title">저장 범위</div>
-              <button data-save-scope="current">현재 페이지 저장</button>
-              <button data-save-scope="all">전체 페이지 저장</button>
-            </div>
-            <div class="save-step" data-save-step="format">
-              <div class="save-menu-head">
-                <button id="saveBackBtn" class="save-back-btn">‹</button>
-                <div>
-                  <div class="save-menu-title">파일 형식</div>
-                  <div id="saveScopeLabel" class="save-menu-sub">현재 페이지</div>
-                </div>
-              </div>
-              <button data-export="png">PNG</button>
-              <button data-export="jpg">JPG</button>
-              <button data-export="pdf">PDF</button>
-              <button data-export="txt">TXT</button>
-            </div>
+  <main class="app">
+    <aside class="sidebar">
+      <section class="intro">
+        <div class="kicker">DEARLOG MAKER</div>
+        <h1>가상의 SNS를<br>자유롭게 만들어보세요.</h1>
+        <p>템플릿을 고른 뒤 이름, 아이디, 글, 사진을 원하는 대로 바꿀 수 있어요.</p>
+      </section>
+
+      <section class="tool-section">
+        <div class="section-title">
+          <span>템플릿</span>
+          <small>4 TYPES</small>
+        </div>
+        <div class="template-grid" id="templateGrid">
+          <button class="template-card active" data-template="x" type="button">
+            <span class="template-icon">𝕏</span>
+            <span><b>X</b><small>POST / REPLY</small></span>
+          </button>
+          <button class="template-card" data-template="instagram" type="button">
+            <span class="template-icon">◎</span>
+            <span><b>Instagram</b><small>FEED / PHOTO</small></span>
+          </button>
+          <button class="template-card" data-template="dm" type="button">
+            <span class="template-icon">◌</span>
+            <span><b>DM</b><small>MESSAGE / CHAT</small></span>
+          </button>
+          <button class="template-card" data-template="kakao" type="button">
+            <span class="template-icon">K</span>
+            <span><b>카카오톡</b><small>KAKAO / CHAT</small></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="tool-section" id="basicProfileSection">
+        <div class="section-title"><span id="profileSectionTitle">내 프로필</span></div>
+        <label class="field">
+          <span>이름</span>
+          <input id="nameInput" type="text" value="Dearlog" maxlength="30">
+        </label>
+        <label class="field" id="handleField">
+          <span>아이디</span>
+          <div class="prefix-input"><i>@</i><input id="handleInput" type="text" value="dearlog" maxlength="30"></div>
+        </label>
+        <label class="field" id="chatBioField" hidden>
+          <span>한줄소개</span>
+          <input id="chatBioInput" type="text" value="너와의 추억을 기록하는 중" maxlength="60">
+        </label>
+        <label class="field">
+          <span>기본 프로필 이미지</span>
+          <div class="profile-image-control">
+            <img id="sidebarAvatarPreview" class="sidebar-avatar-preview" alt="현재 프로필 이미지">
+            <span class="file-button">이미지 선택<input id="avatarInput" type="file" accept="image/*"></span>
+          </div>
+        </label>
+      </section>
+
+      <section class="tool-section" id="chatProfileSection" hidden>
+        <div class="section-title"><span>메시지 프로필</span><small>DM / KAKAO</small></div>
+        <div class="chat-profile-grid">
+          <div class="chat-profile-card">
+            <b>상대</b>
+            <label class="field">
+              <span>이름</span>
+              <input id="theirNameInput" type="text" value="상대방" maxlength="30">
+            </label>
+            <label class="field">
+              <span>프로필 사진</span>
+              <span class="file-button">상대 이미지<input id="theirAvatarInput" type="file" accept="image/*"></span>
+            </label>
+          </div>
+          <div class="chat-profile-card">
+            <b>나</b>
+            <label class="field">
+              <span>이름</span>
+              <input id="myNameInput" type="text" value="나" maxlength="30">
+            </label>
+            <label class="field">
+              <span>프로필 사진</span>
+              <span class="file-button">내 이미지<input id="myAvatarInput" type="file" accept="image/*"></span>
+            </label>
           </div>
         </div>
+      </section>
+
+      <section class="tool-section" id="templateBackgroundSection">
+        <div class="section-title"><span>템플릿 배경</span><small>현재 템플릿에만 적용</small></div>
+        <div class="bg-control-card">
+          <div class="bg-control-row">
+            <div><b>배경색</b><small>템플릿 바탕색</small></div>
+            <input id="templateBgColor" class="bg-color-chip" type="color" value="#f5f4f1">
+          </div>
+          <div class="bg-control-divider"></div>
+          <div class="bg-control-row bg-control-row--stack">
+            <div class="bg-control-copy">
+              <b>배경 이미지</b>
+              <small>이미지를 넣은 뒤 미리보기에서 휠로 확대·축소할 수 있어요.</small>
+            </div>
+            <div class="bg-image-actions">
+              <label class="mini-upload-btn">이미지 선택<input id="templateBgImageInput" type="file" accept="image/*"></label>
+              <button class="mini-ghost-btn" id="clearTemplateBgBtn" type="button">이미지 지우기</button>
+            </div>
+          </div>
+          <div class="bg-scale-bar">
+            <span>이미지 크기</span>
+            <div class="bg-scale-meter"><i id="bgScaleMeterFill"></i></div>
+            <b id="bgScaleValue">100%</b>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool-section" id="appearanceSection">
+        <div class="section-title"><span>화면 꾸미기</span></div>
+        <label class="field">
+          <span>Dearlog 로고 기호</span>
+          <select id="brandSymbolSelect" class="symbol-select">
+            <option value="">없음</option>
+            <option value="✦" selected>✦</option>
+            <option value="✧">✧</option>
+            <option value="◆">◆</option>
+            <option value="◇">◇</option>
+            <option value="❖">❖</option>
+            <option value="❈">❈</option>
+            <option value="✿">✿</option>
+            <option value="♡">♡</option>
+            <option value="♥">♥</option>
+            <option value="☆">☆</option>
+            <option value="★">★</option>
+            <option value="☾">☾</option>
+            <option value="☼">☼</option>
+            <option value="•">•</option>
+            <option value="·">·</option>
+          </select>
+        </label>
+        <label class="field main-color-field">
+          <span>메인 색상</span>
+          <input id="mainColor" type="color" value="#5d5a55">
+        </label>
+        <label class="toggle-row auto-palette-row">
+          <span><b>자동 추천 팔레트</b><small>메인 색상에 맞춰 배경·카드·포인트를 자동 조정</small></span>
+          <input id="autoPaletteToggle" type="checkbox" checked>
+        </label>
+        <div class="palette-preview" id="palettePreview">
+          <span data-swatch="bg"></span>
+          <span data-swatch="card"></span>
+          <span data-swatch="accent"></span>
+          <small>추천 색상</small>
+        </div>
+        <div class="color-row">
+          <label><span>배경</span><input id="bgColor" type="color" value="#f5f4f1"></label>
+          <label><span>카드</span><input id="cardColor" type="color" value="#ffffff"></label>
+          <label><span>포인트</span><input id="accentColor" type="color" value="#5d5a55"></label>
+        </div>
+        <p class="field-note">자동 추천을 꺼도 위 색상들은 직접 자유롭게 바꿀 수 있어요.</p>
+        <label class="toggle-row">
+          <span><b>다크 모드</b><small>미리보기만 어둡게 전환</small></span>
+          <input id="darkToggle" type="checkbox">
+        </label>
+      </section>
+
+      <section class="tool-section" id="chatBackgroundSection" hidden>
+        <div class="section-title"><span>채팅 배경</span><small>DM / KAKAO</small></div>
+        <label class="field">
+          <span>배경색</span>
+          <input id="chatBgColor" type="color" value="#dfe8ef">
+        </label>
+        <label class="field">
+          <span>배경 이미지</span>
+          <span class="file-button">배경 이미지 선택<input id="chatBgImageInput" type="file" accept="image/*"></span>
+        </label>
+        <button class="btn btn-wide" id="clearChatBgBtn" type="button">배경 이미지 지우기</button>
+      </section>
+
+      <div class="tip">
+        <b>TIP</b>
+        <span>미리보기 안의 글자를 클릭하면 대부분 바로 수정할 수 있어요.</span>
       </div>
-    </header>
+    </aside>
 
-    <section class="workspace">
-      <div id="paper" class="paper">
-        <div id="paperEffect" class="paper-effect"></div>
-        <div id="symbolLayer" class="symbol-layer"></div>
-
-        <input id="titleInput" class="title-input" placeholder="제목을 입력하세요">
-        <input id="subtitleInput" class="subtitle-input" placeholder="소제목을 입력하세요">
-
-        <article id="editor" class="editor" contenteditable="true" data-placeholder="이곳에 글을 작성하세요."></article>
-
-        <footer class="paper-footer">
-          <span class="paper-source-credit">MY EDITOR · unfail-human.github.io/my-editor/</span>
-        <span id="pageNumberPreview">— 01 —</span>
-        </footer>
+    <section class="stage">
+      <div class="stage-top">
+        <div>
+          <b id="stageTitle">X 템플릿</b>
+          <span id="stageDesc">게시물과 답글을 만들어보세요.</span>
+        </div>
+      </div>
+      <div class="capture-shell">
+        <div class="capture" id="captureArea"></div>
       </div>
     </section>
 
-    <footer class="statusbar">
-      <span id="charCount">0자</span>
-      <span id="lastSaved">아직 저장하지 않음</span>
-    </footer>
+    <aside class="inspector" id="inspector">
+      <div class="inspector-head">
+        <div><small>QUICK EDIT</small><b>게시글 수정</b></div>
+        <span id="inspectorType">선택 없음</span>
+      </div>
+
+      <section class="inspector-content-tools" id="contentControls">
+        <div class="inspector-section-title">
+          <b>콘텐츠 추가</b>
+          <small id="contentToolHint">현재 템플릿</small>
+        </div>
+        <div class="button-stack">
+          <button class="btn btn-wide" id="addItemBtn" type="button">＋ 항목 추가</button>
+          <div class="chat-add-row" id="chatAddRow" hidden>
+            <button class="btn btn-wide" id="addTextMessageBtn" type="button">＋ 텍스트 메시지</button>
+            <button class="btn btn-wide" id="addPhotoMessageBtn" type="button">＋ 사진 메시지</button>
+            <button class="btn btn-wide" id="addTypingBtn" type="button">＋ 입력중 표시</button>
+          </div>
+          <button class="btn btn-wide btn-danger" id="removeItemBtn" type="button">− 마지막 항목 삭제</button>
+        </div>
+      </section>
+
+      <div class="inspector-empty" id="inspectorEmpty">
+        미리보기에서 게시물이나 메시지를 클릭하면<br>여기에서 편하게 수정할 수 있어요.
+      </div>
+      <div class="inspector-fields" id="inspectorFields" hidden>
+        <label class="field" id="inspectNameField"><span>이름</span><input id="inspectName" type="text"></label>
+        <label class="field" id="inspectHandleField"><span>아이디</span><input id="inspectHandle" type="text"></label>
+        <div class="inspect-post-avatar" id="inspectPostAvatarField" hidden>
+          <span class="inspect-label">게시물 프로필 사진</span>
+          <div class="inspect-post-avatar-row">
+            <img id="inspectPostAvatarPreview" alt="게시물 프로필 사진">
+            <div class="inspect-post-avatar-actions">
+              <label class="mini-upload-btn">이미지 선택<input id="inspectPostAvatarInput" type="file" accept="image/*"></label>
+              <button class="mini-ghost-btn" id="inspectUseMyAvatarBtn" type="button">내 프로필 사진 사용</button>
+            </div>
+          </div>
+        </div>
+        <label class="field" id="inspectBodyField"><span>본문</span><textarea id="inspectBody" rows="7"></textarea></label>
+        <label class="field" id="inspectSideField">
+          <span>보내는 사람</span>
+          <select id="inspectSide">
+            <option value="theirs">상대방</option>
+            <option value="mine">나</option>
+          </select>
+        </label>
+        <label class="field" id="inspectTimeField"><span>시간</span><input id="inspectTime" type="text"></label>
+        <label class="field" id="inspectImageBgField" hidden>
+          <span>첨부 사진 배경색</span>
+          <input id="inspectImageBg" type="color" value="#f5f4f1">
+        </label>
+        <div class="inspector-actions">
+          <button class="btn btn-wide" id="duplicateSelectedBtn" type="button">같은 쪽에 하나 더 보내기</button>
+          <button class="btn btn-wide btn-danger" id="deleteSelectedBtn" type="button">선택 항목 삭제</button>
+        </div>
+      </div>
+    </aside>
   </main>
 
-  <aside class="right-panel">
-    <div class="panel-head">
-      <div class="panel-kicker">EDITOR</div>
-      <h2>편집 설정</h2>
-    </div>
 
-    <div class="tabs">
-      <button class="tab active" data-tab="text">글 편집</button>
-      <button class="tab" data-tab="document">문서</button>
-      <button class="tab" data-tab="background">배경</button>
-      <button class="tab" data-tab="symbol">기호</button>
-    </div>
+  <nav class="utility-dock" aria-label="빠른 도구">
+    <button class="utility-dock-btn" id="slotOpenBtn" type="button" title="슬롯 저장 / 불러오기">
+      <span class="utility-dock-icon">⇅</span>
+      <span>슬롯</span>
+    </button>
+  </nav>
 
-    <div class="panel-body active" data-panel="text">
-<section class="panel-section">
-        <h3>글꼴</h3>
-        <label class="field">
-          <span>폰트</span>
-          <select id="fontFamily">
-            <option value="Pretendard">Pretendard</option>
-            <option value="Noto Sans KR">Noto Sans KR</option>
-            <option value="KoPubWorld Batang">KoPubWorld 바탕</option>
-            <option value="KoPubWorld Dotum">KoPubWorld 돋움</option>
-            <option value="Arial">Arial</option>
-            <option value="Georgia">Georgia</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>크기(pt)</span>
-          <input id="fontSize" type="number" min="6" max="54" step="0.5" value="12">
-        </label>
-        <div class="button-grid four">
-          <button data-cmd="bold"><b>B</b></button>
-          <button data-cmd="italic"><i>I</i></button>
-          <button data-cmd="underline"><u>U</u></button>
-          <button data-cmd="strikeThrough"><s>S</s></button>
-        </div>
-        <div class="color-grid">
-          <label>글자색 <input id="textColor" type="color" value="#3f3d3b"></label>
-          <label>형광펜 <input id="highlightColor" type="color" value="#fff2a8"></label>
-        </div>
-        <div class="button-grid two">
-          <button id="applyHighlightBtn">형광펜 적용</button>
-          <button id="removeHighlightBtn">형광펜 지우기</button>
-        </div>
-        <div class="section-apply-row">
-          <button id="applyFontSectionBtn" class="section-apply primary">글꼴 적용</button>
-          <button id="resetFormatBtn" class="section-apply">기본 서식으로</button>
-        </div>
-        <p class="hint">폰트·크기·글자색은 기본적으로 드래그한 글자에 적용됩니다. ‘글꼴 적용’은 현재 설정값을 페이지 전체에 일괄 적용합니다.</p>
-      </section>
-
-      <section class="panel-section">
-        <h3>문단</h3>
-        <label class="field">
-          <span>스타일</span>
-          <select id="blockStyle">
-            <option value="p">본문</option>
-            <option value="h1">제목 1</option>
-            <option value="h2">제목 2</option>
-            <option value="h3">제목 3</option>
-            <option value="blockquote">인용문</option>
-          </select>
-        </label>
-        <div class="button-grid four">
-          <button data-cmd="justifyLeft">⇤</button>
-          <button data-cmd="justifyCenter">≡</button>
-          <button data-cmd="justifyRight">⇥</button>
-          <button data-cmd="justifyFull">☰</button>
-        </div>
-        <div class="button-grid two">
-          <button data-cmd="insertUnorderedList">• 목록</button>
-          <button data-cmd="insertOrderedList">1. 목록</button>
-          <button data-cmd="indent">들여쓰기</button>
-          <button data-cmd="outdent">내어쓰기</button>
-        </div>
-      </section>
-
-      <section class="panel-section">
-        <h3>간격</h3>
-        <label class="range-field">
-          <span>자간</span>
-          <input id="letterSpacing" type="range" min="-8" max="20" value="0">
-          <output id="letterSpacingOut">0em</output>
-        </label>
-        <label class="range-field">
-          <span>행간</span>
-          <input id="lineHeight" type="range" min="80" max="240" value="125">
-          <output id="lineHeightOut">1.25</output>
-        </label>
-        <label class="range-field">
-          <span>문단 간격</span>
-          <input id="paragraphSpacing" type="range" min="-12" max="40" value="0">
-          <output id="paragraphSpacingOut">0px</output>
-        </label>
-        
-        <label class="range-field">
-          <span>장평</span>
-          <input id="widthScale" type="range" min="70" max="140" value="100">
-          <output id="widthScaleOut">100%</output>
-        </label>
-<p class="hint">글자를 선택하면 선택 영역에, 선택하지 않으면 현재 슬롯의 모든 페이지에 실시간으로 적용됩니다.</p>
-      </section>
-
-      <section class="panel-section">
-        <h3>빠른 편집</h3>
-        <div class="button-grid two">
-          <button data-cmd="undo">↶ 실행취소</button>
-          <button data-cmd="redo">↷ 다시실행</button>
-          <button id="linkBtn">링크</button>
-          <button id="clearFormatBtn">선택 서식 지우기</button>
-        </div>
-      </section>
-
-      <section class="panel-section">
-        <h3>사용자 폰트</h3>
-        <label class="upload" for="fontUpload">＋ 폰트 파일 추가</label>
-        <input id="fontUpload" type="file" accept=".ttf,.otf,.woff,.woff2" hidden>
-        <div id="customFontList" class="asset-list"></div>
-      </section>
-    </div>
-
-
-    <div class="panel-body" data-panel="document">
-      <section class="panel-section">
-        <h3>문서 템플릿</h3>
-        <label class="field">
-          <span>형식</span>
-          <select id="documentTemplate">
-            <option value="a4">일반 문서 · A4</option>
-            <option value="letter">레터형</option>
-            <option value="postcard">엽서형</option>
-            <option value="card">카드형 · 3:2</option>
-            <option value="widecard">와이드 카드 · 16:9</option>
-            <option value="minicard">미니 카드 · 4:3</option>
-            <option value="square">정사각형 카드</option>
-            <option value="ticket">티켓형</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span>방향</span>
-          <select id="documentOrientation">
-            <option value="portrait">세로형</option>
-            <option value="landscape">가로형</option>
-          </select>
-        </label>
-
-        <section class="template-layout-box">
-          <div class="layout-subhead">현재 템플릿 세부 설정</div>
-
-          <label class="range-field">
-            <span>제목 크기</span>
-            <input id="templateTitleSize" type="range" min="18" max="72" value="34">
-            <output id="templateTitleSizeOut">34px</output>
-          </label>
-          <label class="range-field">
-            <span>본문 위치</span>
-            <input id="templateBodyShiftX" type="range" min="-4" max="5" step="0.5" value="-2">
-            <output id="templateBodyShiftXOut">왼쪽 2%</output>
-          </label>
-          
-
-          <label class="range-field">
-            <span>제목 · 본문 간격</span>
-            <input id="templateHeadingGap" type="range" min="70" max="240" value="150">
-            <output id="templateHeadingGapOut">150px</output>
-          </label>
-
-          <label class="field">
-            <span>제목 배치</span>
-            <select id="templateHeadingPosition">
-              <option value="top-left">위 · 왼쪽</option><option value="top-center">위 · 가운데</option><option value="top-right">위 · 오른쪽</option>
-              <option value="middle-left">중앙 · 왼쪽</option><option value="center">중앙 · 가운데</option><option value="middle-right">중앙 · 오른쪽</option>
-              <option value="bottom-left">아래 · 왼쪽</option><option value="bottom-center">아래 · 가운데</option><option value="bottom-right">아래 · 오른쪽</option>
-            </select>
-          </label>
-
-          <p class="hint">이 값은 현재 선택한 템플릿에만 저장됩니다. 다른 템플릿으로 바꾸면 해당 템플릿의 설정을 따로 불러옵니다.</p>
-        
-        <div class="template-margin-launcher">
-          <button id="openDocumentMarginBtn" class="margin-launch-btn" type="button">
-            <span class="margin-launch-icon" aria-hidden="true">
-              <span class="margin-page-outline"></span>
-              <span class="margin-page-inner"></span>
-            </span>
-            <span class="margin-launch-copy">
-              <strong>문서 여백</strong>
-              <small id="documentMarginSummary">보통</small>
-            </span>
-            <span class="margin-launch-chevron">›</span>
-          </button>
-        </div>
-</section>
-
-        <div class="template-preview-row">
-          <div id="templateMiniPreview" class="template-mini-preview">
-            <div class="template-mini-title"></div>
-            <div class="template-mini-lines"></div>
-          </div>
-          <p class="hint">문서 비율은 편집 화면·미리보기·이미지/PDF 저장에 함께 반영됩니다.</p>
-        </div>
-      </section>
-
-      <section class="panel-section">
-        <h3>본문 배치</h3>
-        <label class="field">
-          <span>글쓰기 방향</span>
-          <select id="writingMode">
-            <option value="horizontal">가로쓰기</option><option value="vertical">세로쓰기</option>
-          </select>
-        </label>
-        <label id="verticalFlowWrap" class="field">
-          <span>세로쓰기 진행 방향</span>
-          <select id="verticalFlow"><option value="rtl">오른쪽 → 왼쪽</option><option value="ltr">왼쪽 → 오른쪽</option></select>
-        </label>
-
-        <label class="field">
-          <span>단 나누기</span>
-          <select id="columnCount">
-            <option value="1">1단</option>
-            <option value="2">2단</option>
-            <option value="3">3단</option>
-          </select>
-        </label>
-
-        <label class="range-field">
-          <span>단 사이 간격</span>
-          <input id="columnGap" type="range" min="12" max="64" value="28">
-          <output id="columnGapOut">28px</output>
-        </label>
-
-        <p class="hint">2단·3단은 한 페이지 안에서 본문을 신문/책처럼 나눕니다. 세로쓰기에서는 단 나누기를 1단으로 자동 표시합니다.</p>
-      </section>
-
-      <section class="panel-section">
-        <h3>제목 · 소제목</h3>
-
-        <label class="check-field layout-check">
-          <input id="coverTitleFirstPage" type="checkbox">
-          <span>제목과 소제목을 첫 페이지에만 표시</span>
-        </label>
-      </section>
-    </div>
-
-    <div class="panel-body" data-panel="background">
-      <section class="panel-section">
-        <h3>문서 배경</h3>
-        <div class="segmented">
-          <button class="bg-mode active" data-mode="solid">단색</button>
-          <button class="bg-mode" data-mode="gradient">그라데이션</button>
-          <button class="bg-mode" data-mode="image">이미지</button>
-        </div>
-      </section>
-
-      <section class="panel-section bg-options active" data-bg-options="solid">
-        <h3>단색</h3>
-        <label class="field"><span>배경색</span><input id="solidColor" type="color" value="#ffffff"></label>
-      </section>
-
-      <section class="panel-section bg-options" data-bg-options="gradient">
-        <h3>그라데이션</h3>
-        <label class="field"><span>색상 1</span><input id="grad1" type="color" value="#ffffff"></label>
-        <label class="field"><span>색상 2</span><input id="grad2" type="color" value="#e8e2da"></label>
-        <label class="range-field">
-          <span>각도</span>
-          <input id="gradAngle" type="range" min="0" max="360" value="135">
-          <output id="gradAngleOut">135°</output>
-        </label>
-      </section>
-
-      <section class="panel-section bg-options" data-bg-options="image">
-        <h3>배경 이미지</h3>
-        <label class="upload" for="bgUpload">＋ 이미지 추가</label>
-        <input id="bgUpload" type="file" accept="image/*" hidden>
-        <label class="field">
-          <span>맞춤</span>
-          <select id="bgSize">
-            <option value="cover">화면 채우기</option>
-            <option value="contain">전체 보이기</option>
-            <option value="auto">원본 크기</option>
-          </select>
-        </label>
-        <label class="range-field">
-          <span>밝기</span>
-          <input id="bgBrightness" type="range" min="40" max="140" value="100">
-          <output id="bgBrightnessOut">100%</output>
-        </label>
-      </section>
-
-
-      <section class="panel-section">
-              <h3>효과</h3>
-              <p class="hint">배경 위에 종이결·줄지·모눈 등의 효과를 덧입힐 수 있어요.</p>
-              <div class="paper-presets">
-                <button class="effect-btn active" data-effect="none">없음</button>
-                <button class="effect-btn" data-effect="grain">종이결</button>
-                <button class="effect-btn" data-effect="lines">줄지</button>
-                <button class="effect-btn" data-effect="grid">모눈</button>
-                <button class="effect-btn" data-effect="dots">점지</button>
-                <button class="effect-btn" data-effect="vignette">테두리 음영</button>
-              </div>
-              <label class="range-field">
-                <span>효과 농도</span>
-                <input id="effectOpacity" type="range" min="0" max="100" value="18">
-                <output id="effectOpacityOut">18%</output>
-              </label>
-              <label class="field">
-                <span>효과 색상</span>
-                <input id="effectColor" type="color" value="#8f887f">
-              </label>
-              <label class="check-field">
-                <input id="effectAutoColor" type="checkbox" checked>
-                <span>자동 색상 적용</span>
-              </label>
-            </section>
-
-    </div>
-
-
-      
-
-    <div class="panel-body" data-panel="symbol">
-      <section class="panel-section">
-        <h3>무단 구분</h3>
-        <div class="symbol-scroll">
-          <div class="symbol-grid star-flower-grid">
-            <button data-symbol="🜸" title="🜸">🜸</button>
-<button data-symbol="🜚" title="🜚">🜚</button>
-<button data-symbol="★" title="★">★</button>
-<button data-symbol="☆" title="☆">☆</button>
-<button data-symbol="✡" title="✡">✡</button>
-<button data-symbol="✦" title="✦">✦</button>
-<button data-symbol="⯎" title="⯎">⯎</button>
-<button data-symbol="⯌" title="⯌">⯌</button>
-<button data-symbol="⟡" title="⟡">⟡</button>
-<button data-symbol="✧" title="✧">✧</button>
-<button data-symbol="✩" title="✩">✩</button>
-<button data-symbol="✪" title="✪">✪</button>
-<button data-symbol="✫" title="✫">✫</button>
-<button data-symbol="✬" title="✬">✬</button>
-<button data-symbol="✭" title="✭">✭</button>
-<button data-symbol="✮" title="✮">✮</button>
-<button data-symbol="✯" title="✯">✯</button>
-<button data-symbol="✰" title="✰">✰</button>
-<button data-symbol="⛤" title="⛤">⛤</button>
-<button data-symbol="⛧" title="⛧">⛧</button>
-<button data-symbol="⁂" title="⁂">⁂</button>
-<button data-symbol="⁎" title="⁎">⁎</button>
-<button data-symbol="⁑" title="⁑">⁑</button>
-<button data-symbol="✢" title="✢">✢</button>
-<button data-symbol="✣" title="✣">✣</button>
-<button data-symbol="✤" title="✤">✤</button>
-<button data-symbol="✥" title="✥">✥</button>
-<button data-symbol="✱" title="✱">✱</button>
-<button data-symbol="✲" title="✲">✲</button>
-<button data-symbol="✳" title="✳">✳</button>
-<button data-symbol="✴" title="✴">✴</button>
-<button data-symbol="✵" title="✵">✵</button>
-<button data-symbol="✶" title="✶">✶</button>
-<button data-symbol="✷" title="✷">✷</button>
-<button data-symbol="✸" title="✸">✸</button>
-<button data-symbol="✹" title="✹">✹</button>
-<button data-symbol="✺" title="✺">✺</button>
-<button data-symbol="𑁍" title="𑁍">𑁍</button>
-<button data-symbol="✻" title="✻">✻</button>
-<button data-symbol="✼" title="✼">✼</button>
-<button data-symbol="✽" title="✽">✽</button>
-<button data-symbol="✾" title="✾">✾</button>
-<button data-symbol="✿" title="✿">✿</button>
-<button data-symbol="❀" title="❀">❀</button>
-<button data-symbol="❁" title="❁">❁</button>
-<button data-symbol="❂" title="❂">❂</button>
-<button data-symbol="❃" title="❃">❃</button>
-<button data-symbol="❇" title="❇">❇</button>
-<button data-symbol="❈" title="❈">❈</button>
-<button data-symbol="❉" title="❉">❉</button>
-<button data-symbol="❊" title="❊">❊</button>
-<button data-symbol="❋" title="❋">❋</button>
-<button data-symbol="❄" title="❄">❄</button>
-<button data-symbol="❆" title="❆">❆</button>
-<button data-symbol="❅" title="❅">❅</button>
-<button data-symbol="⋆" title="⋆">⋆</button>
-<button data-symbol="⭑" title="⭑">⭑</button>
-<button data-symbol="⚝" title="⚝">⚝</button>
-<button data-symbol="⍟" title="⍟">⍟</button>
-<button data-symbol="⊛" title="⊛">⊛</button>
-<button data-symbol="⍣" title="⍣">⍣</button>
-<button data-symbol="☪︎" title="☪︎">☪︎</button>
-<button data-symbol="𖤐" title="𖤐">𖤐</button>
-<button data-symbol="🎕" title="🎕">🎕</button>
-<button data-symbol="⚘" title="⚘">⚘</button>
-<button data-symbol="ꕤ" title="ꕤ">ꕤ</button>
-<button data-symbol="ꕥ" title="ꕥ">ꕥ</button>
-<button data-symbol="◇" title="◇">◇</button>
-<button data-symbol="◆" title="◆">◆</button>
-<button data-symbol="※" title="※">※</button>
-          </div>
-        </div>
-        <label class="field">
-          <span>직접 문자</span>
-          <input id="customDividerText" type="text" placeholder="예: ✦ ✦ ✦">
-        </label>
-        <button id="insertCustomDividerBtn" class="wide-btn">현재 문단 뒤에 삽입</button>
-        <label class="range-field">
-          <span>장식 크기</span>
-          <input id="dividerSize" type="range" min="10" max="32" value="16">
-          <output id="dividerSizeOut">16px</output>
-        </label>
-        <label class="range-field">
-          <span>위아래 여백</span>
-          <input id="dividerMargin" type="range" min="4" max="48" value="18">
-          <output id="dividerMarginOut">18px</output>
-        </label>
-
-<label class="check-field">
-          <input id="dividerLineEnabled" type="checkbox">
-          <span>구분선 함께 사용</span>
-        </label>
-
-        <label id="dividerLineOpacityWrap" class="range-field">
-          <span>구분선 투명도</span>
-          <input id="dividerLineOpacity" type="range" min="10" max="100" value="35">
-          <output id="dividerLineOpacityOut">35%</output>
-        </label>
-
-<p class="hint">별·꽃 기호는 SNS Keyboard의 ‘별과 꽃’ 범주를 참고해 구분에 어울리는 문자들을 골라 구성했습니다.</p>
-      </section>
-
-      <section class="panel-section">
-        <h3>문서 꾸밈</h3>
-        <label class="field">
-          <span>테두리</span>
-          <select id="paperBorderStyle">
-            <option value="none">없음</option>
-            <option value="solid">실선</option>
-            <option value="double">이중선</option>
-            <option value="dashed">점선</option>
-          </select>
-        </label>
-        <label class="field"><span>테두리색</span><input id="paperBorderColor" type="color" value="#d8d2c8"></label>
-        
-        <label class="range-field">
-          <span>테두리 굵기</span>
-          <input id="paperBorderWidth" type="range" min="0" max="8" value="1">
-          <output id="paperBorderWidthOut">1px</output>
-        </label>
-        <label class="range-field">
-          <span>안쪽 여백</span>
-          <input id="paperInnerInset" type="range" min="0" max="36" value="0">
-          <output id="paperInnerInsetOut">0px</output>
-        </label>
-        <label class="range-field">
-          <span>테두리 투명도</span>
-          <input id="paperBorderOpacity" type="range" min="0" max="100" value="100">
-          <output id="paperBorderOpacityOut">100%</output>
-        </label>
-        <label class="check-field">
-                  <input id="paperBorderAutoColor" type="checkbox" checked>
-                  <span>자동 색상 적용</span>
-                </label>
-        <label class="field">
-          <span>내부 프레임</span>
-          <select id="paperFrameStyle">
-            <option value="none">없음</option>
-            <option value="simple">심플</option>
-            <option value="double">이중 프레임</option>
-            <option value="corner">모서리 포인트</option>
-          </select>
-        </label>
-        <label class="field"><span>프레임 색</span><input id="paperFrameColor" type="color" value="#bdb5a8"></label>
-        
-        <label class="range-field">
-          <span>그림자</span>
-          <input id="paperShadow" type="range" min="0" max="40" value="16">
-          <output id="paperShadowOut">16</output>
-        </label>
-      
-        <label class="range-field">
-          <span>내부 프레임 투명도</span>
-          <input id="paperFrameOpacity" type="range" min="0" max="100" value="100">
-          <output id="paperFrameOpacityOut">100%</output>
-        </label>
-        <label class="check-field">
-                  <input id="paperFrameAutoColor" type="checkbox" checked>
-                  <span>자동 색상 적용</span>
-                </label>
-</section>
-    </div>
-  </aside>
-</div>
-
-<div id="linkModal" class="modal compact-modal" hidden>
-  <div class="modal-backdrop" data-close-link></div>
-  <div class="compact-dialog">
-    <header class="modal-head">
-      <div>
-        <span class="panel-kicker">LINK</span>
-        <h2>링크 삽입</h2>
-      </div>
-      <button class="close-btn" data-close-link>×</button>
-    </header>
-    <div class="compact-dialog-body">
-      <label class="modal-field">
-        <span>링크명</span>
-        <input id="linkNameInput" type="text" placeholder="보여줄 이름">
-      </label>
-      <label class="modal-field">
-        <span>링크 주소</span>
-        <input id="linkUrlInput" type="url" placeholder="https://">
-      </label>
-      <div class="compact-actions">
-        <button id="insertLinkBtn" class="top-btn primary">링크 넣기</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="slotEditorModal" class="modal slot-editor-modal" hidden>
-  <div class="modal-backdrop" data-close-slot-editor></div>
-  <div class="slot-dialog">
-    <header class="modal-head slot-modal-head">
-      <div>
-        <span class="panel-kicker">SLOT MANAGER</span>
-        <h2>슬롯 편집</h2>
-      </div>
-      <button class="close-btn" data-close-slot-editor>×</button>
-    </header>
-    <div class="slot-dialog-body">
-      <div class="slot-modal-preview">
-        <div class="slot-modal-image-wrap">
-          <div class="slot-modal-badge" id="slotModalBadge">01</div>
-          <img id="slotModalImagePreview" class="slot-modal-image" alt="" hidden>
-        </div>
+  <div class="slot-backdrop" id="slotBackdrop" hidden>
+    <section class="slot-modal" role="dialog" aria-modal="true" aria-labelledby="slotModalTitle">
+      <div class="slot-modal-head">
         <div>
-          <div class="slot-modal-label" id="slotModalLabel">SLOT 01</div>
-          <div class="slot-modal-pages" id="slotModalPages">1 PAGE</div>
+          <small>SLOT</small>
+          <h2 id="slotModalTitle">저장 / 불러오기</h2>
+          <p>현재 작업을 슬롯에 보관하거나 이전 작업을 불러올 수 있어요.</p>
+        </div>
+        <button class="slot-close-btn" id="slotCloseBtn" type="button" aria-label="닫기">×</button>
+      </div>
+
+      <div class="autosave-card">
+        <div class="autosave-mark">↻</div>
+        <div class="autosave-copy">
+          <b>작업 자동 저장</b>
+          <small id="autosaveStatus">저장 준비 중...</small>
+        </div>
+        <span class="autosave-badge">ON</span>
+      </div>
+
+      <div class="slot-modal-list" id="slotList">
+        <div class="slot-row" data-slot="1">
+          <div class="slot-info">
+            <input class="slot-name-input" type="text" value="슬롯 1" maxlength="24" aria-label="슬롯 1 이름">
+            <small class="slot-status">비어 있음</small>
+          </div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="2">
+          <div class="slot-info">
+            <input class="slot-name-input" type="text" value="슬롯 2" maxlength="24" aria-label="슬롯 2 이름">
+            <small class="slot-status">비어 있음</small>
+          </div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="3">
+          <div class="slot-info">
+            <input class="slot-name-input" type="text" value="슬롯 3" maxlength="24" aria-label="슬롯 3 이름">
+            <small class="slot-status">비어 있음</small>
+          </div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="4">
+          <div class="slot-info">
+            <input class="slot-name-input" type="text" value="슬롯 4" maxlength="24" aria-label="슬롯 4 이름">
+            <small class="slot-status">비어 있음</small>
+          </div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="5">
+          <div class="slot-info">
+            <input class="slot-name-input" type="text" value="슬롯 5" maxlength="24" aria-label="슬롯 5 이름">
+            <small class="slot-status">비어 있음</small>
+          </div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
         </div>
       </div>
-      <div class="slot-image-controls">
-        <label class="upload" for="slotImageInput">＋ 슬롯 이미지 추가 (선택)</label>
-        <input id="slotImageInput" type="file" accept="image/*" hidden>
-        <button id="removeSlotImageBtn" class="subtle-btn">기본 슬롯 모양으로</button>
-      </div>
-      <label class="modal-field">
-        <span>슬롯 이름 · 제목과 자동 연동</span>
-        <input id="slotModalName" type="text" readonly>
-      </label>
-      <div class="slot-modal-actions-grid">
-        <button id="slotModalSaveBtn">지금 저장</button>
-                <button id="slotModalDuplicateBtn">슬롯 복제</button>
-        <button id="slotModalDeleteBtn" class="danger">슬롯 삭제</button>
-      </div>
-      <p class="hint slot-drag-hint">슬롯 순서는 왼쪽 슬롯 카드를 마우스로 드래그해서 바꿀 수 있어요.</p>
-    </div>
+      <p class="slot-modal-note">슬롯과 자동 저장 데이터는 현재 브라우저에만 저장됩니다.</p>
+    </section>
   </div>
-</div>
 
-<div id="previewModal" class="modal" hidden>
-  <div class="modal-dialog preview-dialog">
-    <header class="modal-head">
-      <div>
-        <div class="eyebrow">PREVIEW</div>
-        <h2>미리보기</h2>
-      </div>
-
-      <div class="preview-toolbar">
-        <button id="previewPrevBtn" class="top-btn">‹ 이전</button>
-        <span id="previewPageLabel" class="preview-page-label">01 / 01</span>
-        <button id="previewNextBtn" class="top-btn">다음 ›</button>
-        <button id="previewZoomOutBtn" class="top-btn">−</button>
-        <button id="previewZoomResetBtn" class="top-btn preview-zoom-label">맞춤</button>
-        <button id="previewZoomInBtn" class="top-btn">＋</button>
-        <button id="previewCopyBtn" class="top-btn">복사</button>
-
-        <div class="save-wrap preview-save-wrap">
-          <button id="previewSaveBtn" class="top-btn primary">저장 ▾</button>
-          <div id="previewSaveMenu" class="save-menu save-menu-step">
-            <div class="save-step active" data-preview-save-step="scope">
-              <div class="save-menu-title">저장 범위</div>
-              <button data-preview-save-scope="current">현재 페이지 저장</button>
-              <button data-preview-save-scope="all">전체 페이지 저장</button>
+  <div class="preview-backdrop" id="previewBackdrop" hidden>
+    <div class="preview-modal">
+      <div class="preview-modal-head">
+        <div>
+          <b>미리보기</b>
+          <span>실제 저장되는 화면과 동일하게 표시됩니다.</span>
+        </div>
+        <div class="preview-head-actions">
+          <div class="save-menu-wrap">
+            <button class="btn btn-primary" id="previewSaveBtn" type="button">저장 ▾</button>
+            <div class="save-menu" id="previewSaveMenu" hidden>
+              <button type="button" data-preview-save-format="png">PNG 이미지</button>
+              <button type="button" data-preview-save-format="jpg">JPG 이미지</button>
+              <button type="button" data-preview-save-format="pdf">PDF 파일</button>
             </div>
-            <div class="save-step" data-preview-save-step="format">
-              <div class="save-menu-head">
-                <button id="previewSaveBackBtn" class="save-back-btn">‹</button>
-                <div>
-                  <div class="save-menu-title">파일 형식</div>
-                  <div id="previewSaveScopeLabel" class="save-menu-sub">현재 페이지</div>
-                </div>
-              </div>
-              <button data-preview-export="png">PNG</button>
-              <button data-preview-export="jpg">JPG</button>
-              <button data-preview-export="pdf">PDF</button>
-              <button data-preview-export="txt">TXT</button>
-            </div>
           </div>
+          <button class="btn btn-subtle" id="previewCloseBtn" type="button">닫기</button>
         </div>
-
-        <button class="close-btn" data-close-preview>×</button>
       </div>
-    </header>
-
-    <div class="modal-stage">
-      <div id="previewHost"></div>
-    </div>
-  </div>
-</div>
-
-
-<div id="documentMarginModal" class="modal" hidden>
-  <div class="modal-dialog margin-dialog">
-    <header class="modal-head">
-      <div>
-        <div class="eyebrow">PAGE SETUP</div>
-        <h2>문서 여백</h2>
-      </div>
-      <button class="close-btn" data-close-document-margin>×</button>
-    </header>
-
-    <div class="margin-modal-body">
-      <section class="margin-preset-section">
-        <div class="margin-section-title">
-          <h3>기본 여백</h3>
-          <p>문서 전체 여백을 빠르게 선택합니다.</p>
-        </div>
-        <div class="margin-preset-grid">
-          <button type="button" class="margin-preset-btn" data-margin-preset="narrow">
-            <span class="margin-preset-preview narrow-preview"><i></i></span>
-            <strong>좁게</strong>
-          </button>
-          <button type="button" class="margin-preset-btn active" data-margin-preset="normal">
-            <span class="margin-preset-preview normal-preview"><i></i></span>
-            <strong>보통</strong>
-          </button>
-          <button type="button" class="margin-preset-btn" data-margin-preset="wide">
-            <span class="margin-preset-preview wide-preview"><i></i></span>
-            <strong>넓게</strong>
-          </button>
-        </div>
-      </section>
-
-      <section class="margin-detail-section">
-        <div class="margin-detail-head">
-          <div>
-            <h3>용지 여백</h3>
-            <p>종이 가장자리부터 문서 내용 영역까지의 여백입니다.</p>
-          </div>
-        </div>
-        <div class="margin-detail-grid">
-          <label class="number-field"><span>위</span><div><input id="pageMarginTop" type="number" min="-30" max="80" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>아래</span><div><input id="pageMarginBottom" type="number" min="-30" max="80" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>왼쪽</span><div><input id="pageMarginLeft" type="number" min="-30" max="80" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>오른쪽</span><div><input id="pageMarginRight" type="number" min="-30" max="80" step="1"><span>mm</span></div></label>
-        </div>
-      </section>
-
-      <section class="margin-detail-section">
-        <div class="margin-detail-head">
-          <div>
-            <h3>머리말 · 바닥글</h3>
-            <p>위쪽 머리말 영역과 아래쪽 바닥글 영역을 따로 조정합니다.</p>
-          </div>
-        </div>
-        <div class="margin-detail-grid two">
-          <label class="number-field"><span>머리말</span><div><input id="headerMarginInput" type="number" min="-30" max="50" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>바닥글</span><div><input id="footerMarginInput" type="number" min="-30" max="50" step="1"><span>mm</span></div></label>
-        </div>
-      </section>
-
-      <section class="margin-detail-section body-margin-section">
-        <div class="margin-detail-head">
-          <div>
-            <h3>본문 여백</h3>
-            <p>용지 여백 안쪽에서 실제 본문 영역의 여백을 다시 조절합니다.</p>
-          </div>
-        </div>
-        <div class="margin-detail-grid">
-          <label class="number-field"><span>위</span><div><input id="bodyMarginTop" type="number" min="-30" max="50" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>아래</span><div><input id="bodyMarginBottom" type="number" min="-30" max="50" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>왼쪽</span><div><input id="bodyMarginLeft" type="number" min="-30" max="50" step="1"><span>mm</span></div></label>
-          <label class="number-field"><span>오른쪽</span><div><input id="bodyMarginRight" type="number" min="-30" max="50" step="1"><span>mm</span></div></label>
-        </div>
-      </section>
-
-      <div class="margin-modal-actions">
-        <button id="resetDocumentMarginBtn" class="top-btn" type="button">보통으로 초기화</button>
-        <div class="margin-modal-action-right">
-          <button id="cancelDocumentMarginBtn" class="top-btn" type="button">취소</button>
-          <button id="applyDocumentMarginBtn" class="top-btn primary" type="button">적용</button>
-        </div>
+      <div class="preview-modal-body">
+        <div id="previewMount"></div>
       </div>
     </div>
   </div>
-</div>
-<div id="patchNoticeModal" class="patch-notice-modal" hidden>
-  <div class="patch-notice-card" role="dialog" aria-modal="true" aria-labelledby="patchNoticeTitle">
-    <div class="patch-notice-mark">✦</div>
-    <h2 id="patchNoticeTitle">MY EDITOR 업데이트 안내</h2>
-    <p id="patchNoticeText"></p>
-    <div class="patch-notice-actions">
-      <button id="patchNoticeConfirm" class="top-btn primary">확인</button>
-    </div>
+
+  <div class="notice-backdrop" id="noticeBackdrop" hidden>
+    <section class="notice-modal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+      <div class="notice-kicker">DEARLOG NOTICE</div>
+      <h2 id="noticeTitle">Dearlog 안내</h2>
+      <div class="notice-content" id="noticeContent"></div>
+      <div class="notice-actions">
+        <label><input type="checkbox" id="noticeSessionCheck"> 이번 접속 중 다시 보지 않기</label>
+        <button class="btn btn-primary" id="noticeCloseBtn" type="button">확인</button>
+      </div>
+    </section>
   </div>
-</div>
 
-
-
-<div id="developerNoticeModal" class="developer-notice-modal" hidden>
-  <div class="developer-notice-card developer-notice-card-wide">
-    <header class="developer-notice-head">
-      <div>
-        <div class="developer-notice-kicker">DEVELOPER</div>
-        <h2>공지 관리</h2>
-      </div>
-      <button id="developerNoticeClose" class="close-btn">×</button>
-    </header>
-
-    <div class="developer-notice-tabs">
-      <button class="developer-notice-tab active" data-developer-tab="write">공지 작성</button>
-      <button class="developer-notice-tab" data-developer-tab="history">이전 공지</button>
-    </div>
-
-    <div class="developer-notice-panel active" data-developer-panel="write">
-      <div class="developer-form-grid">
-        <label class="modal-field">
-          <span>공지 유형</span>
-          <select id="developerNoticeType">
-            <option value="info">일반</option>
-            <option value="update">업데이트</option>
-            <option value="maintenance">점검</option>
-          </select>
-        </label>
-
-        <label class="modal-field">
-          <span>공지 날짜</span>
-          <input id="developerNoticeDate" type="date">
-        </label>
-
-        <label class="modal-field developer-form-wide">
-          <span>공지 제목</span>
-          <input id="developerNoticeTitleInput" type="text" placeholder="예: 업데이트 안내">
-        </label>
-
-        <label class="modal-field developer-form-wide">
-          <span>공지 내용</span>
-          <textarea id="developerNoticeMessage" rows="6" placeholder="공지 내용을 입력하세요."></textarea>
-        </label>
-
-        <label class="modal-field">
-          <span>버튼 문구</span>
-          <input id="developerNoticeButtonText" type="text" value="확인">
-        </label>
-
-        <label class="modal-field">
-          <span>공지 ID</span>
-          <input id="developerNoticeId" type="text" placeholder="자동 생성 가능">
-        </label>
-      </div>
-
-      <label class="developer-enabled-check">
-        <input id="developerNoticeEnabled" type="checkbox" checked>
-        <span>사이트에서 공지 띄우기</span>
-      </label>
-
-      <div class="developer-notice-actions">
-        <button id="developerNoticeFillCurrent" class="top-btn">현재 공지 불러오기</button>
-        <button id="developerNoticeGenerateId" class="top-btn">새 ID 생성</button>
-        <button id="developerNoticeDisable" class="top-btn">공지 끄기 파일 만들기</button>
-        <button id="developerNoticeDownload" class="top-btn primary">notice.js 만들기</button>
-      </div>
-
-      <p class="developer-notice-help">
-        생성된 notice.js를 GitHub 저장소의 기존 notice.js와 교체하면 공지가 적용됩니다.
-        새 공지를 올릴 때는 공지 ID가 이전 공지와 달라야 합니다.
-      </p>
-    </div>
-
-    <div class="developer-notice-panel" data-developer-panel="history">
-      <div id="developerNoticeList" class="developer-notice-list"></div>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="notice.js?v=77"></script>
-<script src="script.js?v=77"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="./notice.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
