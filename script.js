@@ -1626,6 +1626,55 @@ $('#chatBgImageInput').addEventListener('change',e=>{
 $('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chatBgImageInput').value='';syncVars()});
 
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
+
+async function waitForCaptureImages(root,timeout=5000){
+  const imgs=[...root.querySelectorAll('img')];
+  if(!imgs.length)return;
+
+  await Promise.all(imgs.map(img=>new Promise(resolve=>{
+    if(img.complete){
+      // Broken image must not block the entire export.
+      if(!img.naturalWidth){
+        img.src=DEFAULT_AVATAR();
+      }
+      resolve();
+      return;
+    }
+
+    let done=false;
+    const finish=()=>{
+      if(done)return;
+      done=true;
+      clearTimeout(timer);
+      img.removeEventListener('load',finish);
+      img.removeEventListener('error',onError);
+      resolve();
+    };
+    const onError=()=>{
+      try{img.src=DEFAULT_AVATAR()}catch{}
+      finish();
+    };
+    const timer=setTimeout(finish,timeout);
+
+    img.addEventListener('load',finish,{once:true});
+    img.addEventListener('error',onError,{once:true});
+  })));
+}
+
+function exportRasterScale(root){
+  const w=Math.max(1,root.scrollWidth||root.offsetWidth||390);
+  const h=Math.max(1,root.scrollHeight||root.offsetHeight||844);
+
+  // Chrome/canvas implementations become unstable with extremely large
+  // dimensions or pixel counts. Preserve high quality while staying safe.
+  const maxSide=14000;
+  const maxPixels=56_000_000;
+  const bySide=Math.min(maxSide/w,maxSide/h);
+  const byPixels=Math.sqrt(maxPixels/(w*h));
+
+  return Math.max(1,Math.min(4,bySide,byPixels));
+}
+
 async function saveCleanCapture(format='png',sourceNode=null){
   let tempWrap=null;
   try{
@@ -1649,18 +1698,33 @@ async function saveCleanCapture(format='png',sourceNode=null){
       clean=createCleanPreviewClone();
     }
 
+    // Export must use the template's real 1:1 layout, not the editor zoom.
+    clean.style.setProperty('transform','none','important');
+    clean.style.setProperty('transform-origin','top left','important');
+    clean.style.margin='0';
+
     tempWrap.appendChild(clean);
     document.body.appendChild(tempWrap);
 
+    await waitForCaptureImages(clean);
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+
     const bgColor=state.backgrounds?.[state.template]?.color || state.bg || '#f5f4f1';
+    const rasterScale=exportRasterScale(clean);
 
     const canvas=await html2canvas(clean,{
-      scale:4,
+      scale:rasterScale,
       backgroundColor:format==='png'?null:bgColor,
       useCORS:true,
+      allowTaint:false,
       logging:false,
-      imageTimeout:0
+      imageTimeout:5000,
+      removeContainer:true
     });
+
+    if(!canvas.width||!canvas.height){
+      throw new Error('Export canvas is empty');
+    }
 
     const d=new Date();
     const stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
@@ -1679,8 +1743,8 @@ async function saveCleanCapture(format='png',sourceNode=null){
 
       const {jsPDF}=window.jspdf;
       const pxToMm=0.264583;
-      const w=flat.width*pxToMm/4;
-      const h=flat.height*pxToMm/4;
+      const w=flat.width*pxToMm/rasterScale;
+      const h=flat.height*pxToMm/rasterScale;
       const pdf=new jsPDF({orientation:w>h?'landscape':'portrait',unit:'mm',format:[w,h]});
       pdf.addImage(flat.toDataURL('image/png'),'PNG',0,0,w,h,undefined,'FAST');
       pdf.save(`${base}.pdf`);
@@ -1706,6 +1770,9 @@ async function saveCleanCapture(format='png',sourceNode=null){
     }
 
     a.click();
+  }catch(err){
+    console.error('[Dearlog export failed]',err);
+    throw err;
   }finally{
     tempWrap?.remove();
   }
