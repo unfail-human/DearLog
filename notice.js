@@ -18,8 +18,6 @@ window.DEARLOG_NOTICE={enabled:true,version:"v101",title:"Dearlog 업데이트",
       sessionStorage.setItem(sessionKey,'1');
     }catch{}
   }else{
-    // Older Dearlog code wrote this key before the user actually confirmed the notice.
-    // Clear that premature record so an unconfirmed notice can still appear once.
     try{
       if(localStorage.getItem(legacySeenKey)===version)localStorage.removeItem(legacySeenKey);
       sessionStorage.removeItem(sessionKey);
@@ -40,4 +38,56 @@ window.DEARLOG_NOTICE={enabled:true,version:"v101",title:"Dearlog 업데이트",
       sessionStorage.setItem(sessionKey,'1');
     }catch{}
   },true);
+})();
+
+// X-only layout refinement: reduce excess top gap and reaction-row whitespace.
+(()=>{
+  const style=document.createElement('style');
+  style.id='dearlog-x-layout-refine';
+  style.textContent=`
+    .stage:has(.capture[data-template="x"]){
+      padding-top:16px !important;
+    }
+    .stage:has(.capture[data-template="x"]) .capture-shell{
+      top:0 !important;
+      margin-top:0 !important;
+    }
+    .capture[data-template="x"] .x-post{
+      padding-bottom:10px !important;
+    }
+    .capture[data-template="x"] .x-media{
+      margin-bottom:7px !important;
+    }
+    .capture[data-template="x"] .x-actions{
+      margin-top:0 !important;
+      padding:4px 2px 1px 8px !important;
+      min-height:28px !important;
+      align-items:center !important;
+    }
+    .capture[data-template="x"] .x-action-btn{
+      min-height:24px !important;
+      height:24px !important;
+      padding:0 !important;
+      line-height:1 !important;
+    }
+    .capture[data-template="x"] .x-action-btn.share{
+      height:24px !important;
+      min-height:24px !important;
+    }
+    .clean-output[data-template="x"] .x-post,
+    #previewCapture[data-template="x"] .x-post{
+      padding-bottom:10px !important;
+    }
+    .clean-output[data-template="x"] .x-media,
+    #previewCapture[data-template="x"] .x-media{
+      margin-bottom:7px !important;
+    }
+    .clean-output[data-template="x"] .x-actions,
+    #previewCapture[data-template="x"] .x-actions{
+      margin-top:0 !important;
+      padding:4px 2px 1px 8px !important;
+      min-height:28px !important;
+    }
+  `;
+  document.head.appendChild(style);
 })();
