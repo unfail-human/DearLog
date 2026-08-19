@@ -2393,3 +2393,87 @@ body{
 .capture.clean-output .kakao-compose{
   margin-bottom:-2px !important;
 }
+
+
+/* v38 — uploaded images start in a clean automatic fit */
+
+/* X: entire photo fits inside the fixed frame first.
+   User can zoom/drag afterwards. */
+.x-media.has-image img{
+  object-fit:contain !important;
+  object-position:center center !important;
+}
+
+/* Instagram profile/avatar: centered crop without distortion */
+.ig-avatar-picker img,
+.sidebar-avatar-preview,
+.x-post-avatar,
+.chat-side-avatar,
+.kakao-avatar{
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+
+/* Instagram feed intentionally fills the square cell */
+.ig-tile.has-image img{
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+
+/* DM / Kakao photo messages show the full uploaded photo by default */
+.dm-page .chat-photo.has-image img,
+.kakao-page .chat-photo.has-image img,
+.kakao-page .kakao-photo.has-image img{
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  display:block !important;
+}
+
+
+/* v39 — clearer/larger X post avatars */
+.x-post .x-post-avatar{
+  width:48px !important;
+  height:48px !important;
+  min-width:48px !important;
+  min-height:48px !important;
+  border-radius:50% !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  display:block !important;
+  image-rendering:auto !important;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+  background:#ece9e3 !important;
+  border:1px solid #ded9d0 !important;
+}
+.x-post .x-user{
+  gap:10px !important;
+}
+.x-post .x-user>div{
+  padding-top:2px !important;
+}
+
+/* bigger inspector preview for post avatar */
+#inspectPostAvatarPreview{
+  width:72px !important;
+  height:72px !important;
+  min-width:72px !important;
+  min-height:72px !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  image-rendering:auto !important;
+  border-radius:50% !important;
+}
+.inspect-post-avatar-row{
+  grid-template-columns:72px 1fr !important;
+  gap:12px !important;
+}
+
+/* selection outline stays visible but not intrusive */
+.is-selected-item{
+  outline:2px solid rgba(93,90,85,.30) !important;
+  outline-offset:-2px !important;
+}
