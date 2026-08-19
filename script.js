@@ -477,9 +477,9 @@ function xPost(post,i){
   const authorHandle=post.authorHandle??state.handle;
   const fmt=v=>String(Math.max(0,Number(String(v).replace(/\D/g,''))||0)).padStart(3,'0').slice(-3);
   return `<article class="x-post" data-index="${i}">
-    <div class="x-post-header"><div class="x-user"><img class="x-post-avatar" src="${post.authorAvatar||state.avatar}" alt="" decoding="async"><div>
-    <div class="x-user-name"><span class="editable x-author-name" contenteditable="true">${esc(authorName)}</span></div>
-    <div class="x-meta">@<span class="editable x-author-handle" contenteditable="true">${esc(authorHandle)}</span> · <span class="editable x-time" contenteditable="true">${esc(post.time)}</span></div>
+    <div class="x-post-header"><div class="x-user"><img class="x-post-avatar" src="${post.authorAvatar||state.avatar||DEFAULT_AVATAR()}" alt="" decoding="async"><div>
+    <div class="x-user-name"><span class="x-author-name">${esc(authorName)}</span></div>
+    <div class="x-meta">@<span class="x-author-handle">${esc(authorHandle)}</span> · <span class="x-time">${esc(post.time)}</span></div>
     </div></div>
     <div class="x-more-wrap"><button class="x-more-btn" type="button">•••</button>
       <div class="x-more-menu" hidden>
@@ -493,19 +493,19 @@ function xPost(post,i){
         </div>
         <div class="x-author-photo-editor" hidden>
           <div class="x-author-photo-row">
-            <img class="x-author-photo-preview" src="${post.authorAvatar||state.avatar}" alt="">
+            <img class="x-author-photo-preview" src="${post.authorAvatar||state.avatar||DEFAULT_AVATAR()}" alt="">
             <label class="x-author-photo-upload">사진 선택<input class="x-author-photo-input" type="file" accept="image/*"></label>
           </div>
           <button class="x-use-my-avatar" type="button">내 프로필 사진 사용</button>
         </div>
       </div>
     </div></div>
-    <div class="x-body editable x-body-edit" contenteditable="true">${esc(post.body)}</div>
+    <div class="x-body x-body-edit">${esc(post.body)}</div>
     ${post.quote?`<div class="quote-card">
-      <div class="quote-user"><img class="avatar" src="${state.avatar}" alt=""><div class="quote-user-main">
-      <span class="quote-name editable quote-name-edit" contenteditable="true">${esc(post.quoteName||'Original')}</span>
-      <span class="quote-meta">@<span class="editable quote-handle-edit" contenteditable="true">${esc(post.quoteHandle||'original')}</span></span></div></div>
-      <div class="quote-body editable quote-body-edit" contenteditable="true">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
+      <div class="quote-user"><img class="avatar" src="${state.avatar||DEFAULT_AVATAR()}" alt=""><div class="quote-user-main">
+      <span class="quote-name quote-name-edit">${esc(post.quoteName||'Original')}</span>
+      <span class="quote-meta">@<span class="quote-handle-edit">${esc(post.quoteHandle||'original')}</span></span></div></div>
+      <div class="quote-body quote-body-edit">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
     </div>`:''}
     ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-bg:${post.imageBg||'#f5f4f1'}"><input type="file" accept="image/*" class="x-image-input">
       ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
@@ -524,7 +524,7 @@ function xPost(post,i){
 function renderX(){
   $('#stageTitle').textContent='X 템플릿';$('#stageDesc').textContent='게시물과 답글 느낌의 화면을 만들어보세요.';
   capture.innerHTML=`<div class="x-page">${sharedTop('Dearlog')}
-    <section class="x-compose"><img class="avatar sync-avatar" src="${state.avatar}" alt=""><div class="x-compose-main">
+    <section class="x-compose"><img class="avatar sync-avatar" src="${state.avatar||DEFAULT_AVATAR()}" alt=""><div class="x-compose-main">
     <div class="x-compose-text editable" contenteditable="true">무슨 일이 일어나고 있나요?</div><div class="x-post-author-note">내 프로필로 작성</div>
     <div class="x-compose-bottom"><span class="x-compose-tools" aria-hidden="true">
   <i class="x-tool-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m5 17 4-4 3 3 2-2 5 5"/></svg></i>
@@ -542,7 +542,7 @@ function renderInstagram(){
   $('#stageTitle').textContent='Instagram 템플릿';$('#stageDesc').textContent='9칸 프로필 피드와 사진을 만들어보세요.';
   capture.innerHTML=`<div class="ig-page">${sharedTop('Dearlog')}
     <section class="ig-profile">
-      <label class="ig-avatar-picker"><input type="file" accept="image/*" class="avatar-local-input" hidden><img class="avatar sync-avatar" src="${state.avatar}" alt="" decoding="async"></label>
+      <label class="ig-avatar-picker"><input type="file" accept="image/*" class="avatar-local-input" hidden><img class="avatar sync-avatar" src="${state.avatar||DEFAULT_AVATAR()}" alt="" decoding="async"></label>
       <div class="ig-profile-info">
         <div class="ig-name-row"><span class="ig-handle editable sync-handle" contenteditable="true">${esc(state.handle)}</span><button class="ig-follow editable" contenteditable="true">팔로우</button></div>
         <div class="ig-counts"><span>게시물 <b class="editable" contenteditable="true">${state.igTiles.length}</b></span><span>팔로워 <b class="editable" contenteditable="true">1.2K</b></span><span>팔로잉 <b class="editable" contenteditable="true">87</b></span></div>
@@ -596,7 +596,7 @@ function dmTyping(m,i){
 function renderDM(){
   $('#stageTitle').textContent='DM 템플릿';$('#stageDesc').textContent='양쪽 프로필과 사진 메시지까지 포함한 DM을 만들어보세요.';
   capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
-    <img class="avatar" src="${state.theirAvatar}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></div>
+    <img class="avatar" src="${state.theirAvatar||DEFAULT_AVATAR('#8f8a81','#ece9e3')}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></div>
     <div class="chat-bio-preview editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</div></div></div><span>☎　ⓘ</span></header>
     <main class="dm-body chat-wallpaper"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
     <footer class="dm-compose"><span>＋</span><div class="dm-input editable" contenteditable="true">메시지 입력...</div><button class="dm-send">보내기</button></footer></div>`;
@@ -839,8 +839,6 @@ function bindPreview(){
       card.addEventListener('click',e=>{
         if(!e.target.closest('button,input,label,[contenteditable="true"]'))selectItem('x',i);
       });
-      $('.x-body-edit',card).addEventListener('focus',()=>ensureSelectedItem('x',i));
-      $('.x-body-edit',card).addEventListener('input',e=>{p.body=e.target.textContent;updateInspector()});
       $('.x-author-edit-toggle',card)?.addEventListener('click',e=>{
         e.stopPropagation();
         const editor=$('.x-author-editor',card);
@@ -875,10 +873,6 @@ function bindPreview(){
         render();
         requestAnimationFrame(()=>selectItem('x',i));
       });
-      $('.x-time',card).addEventListener('input',e=>p.time=e.target.textContent);
-      $('.x-author-name',card)?.addEventListener('focus',()=>ensureSelectedItem('x',i));
-      $('.x-author-name',card)?.addEventListener('input',e=>{p.authorName=e.target.textContent.trim();updateInspector()});
-      $('.x-author-handle',card)?.addEventListener('input',e=>{p.authorHandle=safeHandle(e.target.textContent);updateInspector()});
       const bump=(key,flag)=>{
         const current=Math.max(0,Number(String(p[key]).replace(/\D/g,''))||0);
         p[flag]=!p[flag];
@@ -893,9 +887,6 @@ function bindPreview(){
       $('.x-quote-toggle',card)?.addEventListener('click',e=>{
         e.stopPropagation();p.quote=!p.quote;render();
       });
-      $('.quote-name-edit',card)?.addEventListener('input',e=>p.quoteName=e.target.textContent);
-      $('.quote-handle-edit',card)?.addEventListener('input',e=>p.quoteHandle=e.target.textContent);
-      $('.quote-body-edit',card)?.addEventListener('input',e=>p.quoteBody=e.target.textContent);
       $('.x-media-enable',card)?.addEventListener('click',e=>{
         e.preventDefault();e.stopPropagation();
         p.mediaEnabled=!p.mediaEnabled;
@@ -1413,17 +1404,38 @@ document.addEventListener('keydown',e=>{
 
 $('#inspectName').addEventListener('input',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
-  d.item.authorName=e.target.value;refreshSelected();
+  d.item.authorName=e.target.value;
+  const el=capture.querySelector(`.x-post[data-index="${d.index}"] .x-author-name`);
+  if(el)el.textContent=e.target.value;
+  if(typeof queueAutosave==='function')queueAutosave(500);
 });
 $('#inspectHandle').addEventListener('input',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
-  d.item.authorHandle=safeHandle(e.target.value);refreshSelected();
+  d.item.authorHandle=safeHandle(e.target.value);
+  const el=capture.querySelector(`.x-post[data-index="${d.index}"] .x-author-handle`);
+  if(el)el.textContent=d.item.authorHandle;
+  if(typeof queueAutosave==='function')queueAutosave(500);
 });
 $('#inspectBody').addEventListener('input',e=>{
   const d=selectedData();if(!d)return;
-  if(d.kind==='x')d.item.body=e.target.value;
-  else d.item.text=e.target.value;
-  refreshSelected();
+  const value=e.target.value;
+
+  if(d.kind==='x'){
+    d.item.body=value;
+    const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+    const body=card?.querySelector('.x-body-edit');
+    if(body)body.textContent=value;
+  }else{
+    d.item.text=value;
+    const selector=d.kind==='kakao'
+      ? `.kakao-page [data-index="${d.index}"]`
+      : `.dm-page [data-index="${d.index}"]`;
+    const row=capture.querySelector(selector);
+    const text=row?.querySelector('.chat-text,.kakao-text,.bubble-text');
+    if(text)text.textContent=value;
+  }
+
+  if(typeof queueAutosave==='function')queueAutosave(500);
 });
 $('#inspectPostAvatarInput').addEventListener('change',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
@@ -1530,6 +1542,41 @@ function restoreStateObject(saved){
   // Replace top-level values while preserving the same state object reference.
   Object.keys(state).forEach(k=>delete state[k]);
   Object.assign(state,incoming);
+
+  // Image files are intentionally excluded from slots/autosave.
+  // Always rebuild missing avatar fields with Dearlog's default person icon.
+  const fallbackAvatar=DEFAULT_AVATAR();
+  const fallbackTheirAvatar=DEFAULT_AVATAR('#8f8a81','#ece9e3');
+
+  state.commonProfile=state.commonProfile||{};
+  if(!state.commonProfile.name)state.commonProfile.name=state.name||'Dearlog';
+  if(!state.commonProfile.handle)state.commonProfile.handle=state.handle||'dearlog';
+  if(!state.commonProfile.avatar)state.commonProfile.avatar=fallbackAvatar;
+
+  if(!state.avatar)state.avatar=state.commonProfile.avatar;
+  if(!state.myAvatar)state.myAvatar=state.commonProfile.avatar;
+  if(!state.theirAvatar)state.theirAvatar=fallbackTheirAvatar;
+
+  if(state.profiles){
+    if(state.profiles.x && !state.profiles.x.avatar)state.profiles.x.avatar=state.commonProfile.avatar;
+    if(state.profiles.instagram && !state.profiles.instagram.avatar)state.profiles.instagram.avatar=state.commonProfile.avatar;
+    if(state.profiles.dm){
+      if(!state.profiles.dm.myAvatar)state.profiles.dm.myAvatar=state.commonProfile.avatar;
+      if(!state.profiles.dm.theirAvatar)state.profiles.dm.theirAvatar=fallbackTheirAvatar;
+    }
+    if(state.profiles.kakao){
+      if(!state.profiles.kakao.myAvatar)state.profiles.kakao.myAvatar=state.commonProfile.avatar;
+      if(!state.profiles.kakao.theirAvatar)state.profiles.kakao.theirAvatar=fallbackTheirAvatar;
+    }
+  }
+
+  if(Array.isArray(state.xPosts)){
+    state.xPosts.forEach(post=>{
+      if(!post.authorAvatar)post.authorAvatar=state.commonProfile.avatar;
+      if(!post.image)post.image='';
+    });
+  }
+
   syncCommonProfileToState();
 
   // compatibility defaults for older/missing values
