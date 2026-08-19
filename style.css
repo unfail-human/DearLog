@@ -2335,3 +2335,61 @@ body{
 @media(max-width:520px){
   .slot-name-input{width:100%}
 }
+
+
+/* v37 — Kakao bottom area fix */
+.kakao-page{
+  width:100% !important;
+  min-height:720px !important;
+  height:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:inherit !important;
+  box-sizing:border-box !important;
+}
+
+.kakao-room{
+  flex:1 1 auto !important;
+  min-height:580px !important;
+  padding-bottom:22px !important;
+  box-sizing:border-box !important;
+}
+
+/* Make the white input bar fully cover the rounded bottom edge */
+.kakao-compose{
+  flex:0 0 auto !important;
+  min-height:72px !important;
+  margin-top:auto !important;
+  margin-bottom:-2px !important;
+  padding:10px 14px 18px !important;
+  box-sizing:border-box !important;
+  background:#ffffff !important;
+  border-radius:0 0 28px 28px !important;
+  position:relative !important;
+  z-index:5 !important;
+}
+
+/* Extend white fill below the toolbar so no template/capture background peeks through */
+.kakao-compose::after{
+  content:"";
+  position:absolute;
+  left:-1px;
+  right:-1px;
+  bottom:-18px;
+  height:20px;
+  background:#ffffff;
+  pointer-events:none;
+}
+
+.kakao-input{
+  min-height:34px !important;
+  display:flex !important;
+  align-items:center !important;
+  box-sizing:border-box !important;
+}
+
+/* clean exported / preview bottom too */
+.capture.clean-output .kakao-compose{
+  margin-bottom:-2px !important;
+}

@@ -167,12 +167,10 @@ function xPost(post,i){
         <div class="menu-sep"></div>
         <button class="x-media-enable" type="button">${post.mediaEnabled?'사진 첨부 끄기':'사진 첨부하기'}</button>
         <div class="menu-sep"></div>
-        <button class="x-author-edit-toggle" type="button">작성자 이름 · 아이디 수정</button>
         <div class="x-author-editor" hidden>
           <label>이름<input class="x-author-menu-name" type="text" value="${esc(authorName)}"></label>
           <label>아이디<input class="x-author-menu-handle" type="text" value="${esc(authorHandle)}"></label>
         </div>
-        <button class="x-author-photo-toggle" type="button">작성자 프로필 사진 수정</button>
         <div class="x-author-photo-editor" hidden>
           <div class="x-author-photo-row">
             <img class="x-author-photo-preview" src="${post.authorAvatar||state.avatar}" alt="">
