@@ -994,7 +994,103 @@ function formatSlotTime(iso){
 }
 
 function updateSlotUI(){
-  $$('.slot-row').forEach(row=>{
+  
+const AUTOSAVE_KEY='dearlog-autosave-v1';
+let autosaveTimer=null;
+let autosaveBusy=false;
+
+function openSlotModal(){
+  updateSlotUI();
+  updateAutosaveStatus();
+  $('#slotBackdrop').hidden=false;
+}
+function closeSlotModal(){
+  $('#slotBackdrop').hidden=true;
+}
+$('#slotOpenBtn').addEventListener('click',openSlotModal);
+$('#slotCloseBtn').addEventListener('click',closeSlotModal);
+$('#slotBackdrop').addEventListener('click',e=>{
+  if(e.target===$('#slotBackdrop'))closeSlotModal();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!$('#slotBackdrop').hidden)closeSlotModal();
+});
+
+function readAutosave(){
+  try{
+    const raw=localStorage.getItem(AUTOSAVE_KEY);
+    return raw?JSON.parse(raw):null;
+  }catch(err){
+    console.error(err);
+    return null;
+  }
+}
+
+function updateAutosaveStatus(saved=null){
+  const el=$('#autosaveStatus');
+  if(!el)return;
+  const data=saved||readAutosave();
+  if(!data?.savedAt){
+    el.textContent='아직 자동 저장된 작업이 없어요.';
+    return;
+  }
+  el.textContent=`마지막 저장 ${formatSlotTime(data.savedAt)}`;
+}
+
+function performAutosave(){
+  if(autosaveBusy)return;
+  autosaveBusy=true;
+  try{
+    const payload=JSON.parse(serializeState());
+    localStorage.setItem(AUTOSAVE_KEY,JSON.stringify(payload));
+    updateAutosaveStatus(payload);
+  }catch(err){
+    console.error('autosave failed',err);
+    const el=$('#autosaveStatus');
+    if(el)el.textContent='자동 저장 공간이 부족해요.';
+  }finally{
+    autosaveBusy=false;
+  }
+}
+
+function queueAutosave(delay=900){
+  clearTimeout(autosaveTimer);
+  autosaveTimer=setTimeout(performAutosave,delay);
+}
+
+/* Catch normal editing interactions without having to wire every individual field. */
+document.addEventListener('input',e=>{
+  if(e.target.closest('.slot-modal'))return;
+  queueAutosave();
+},true);
+document.addEventListener('change',e=>{
+  if(e.target.closest('.slot-modal'))return;
+  queueAutosave();
+},true);
+document.addEventListener('click',e=>{
+  if(e.target.closest('.slot-modal,.utility-dock'))return;
+  if(e.target.closest('button,.template-card,.x-post,.bubble-row,.kakao-message,.typing-row'))queueAutosave(500);
+},true);
+window.addEventListener('beforeunload',performAutosave);
+
+/* Also persist drag/zoom state shortly after pointer/wheel interaction. */
+capture.addEventListener('pointerup',()=>queueAutosave(250),true);
+capture.addEventListener('wheel',()=>queueAutosave(400),{passive:true,capture:true});
+
+function restoreAutosaveOnStartup(){
+  const saved=readAutosave();
+  if(!saved?.data)return false;
+  try{
+    return restoreStateObject(saved);
+  queueAutosave(250);
+  }catch(err){
+    console.error('autosave restore failed',err);
+    return false;
+  }
+}
+
+
+$$('.slot-row').forEach(row=>{
     const n=row.dataset.slot;
     const saved=readSlot(n);
     const status=$('.slot-status',row);
@@ -1050,10 +1146,15 @@ $$('.slot-row').forEach(row=>{
 });
 
 applyRecommendedPalette();
-loadTemplateProfile();
-$('#sidebarAvatarPreview').src=state.template==='x'||state.template==='instagram'?state.avatar:state.theirAvatar;
-$('#brandSymbolSelect').value=state.brandSymbol;
-syncTemplateBackgroundControls();
-render();
+const restoredAutosave=restoreAutosaveOnStartup();
+if(!restoredAutosave){
+  loadTemplateProfile();
+  $('#sidebarAvatarPreview').src=state.template==='x'||state.template==='instagram'?state.avatar:state.theirAvatar;
+  $('#brandSymbolSelect').value=state.brandSymbol;
+  syncTemplateBackgroundControls();
+  render();
+}
 updateSlotUI();
+updateAutosaveStatus();
+if(!readAutosave())queueAutosave(1200);
 if(window.DEARLOG_NOTICE?.enabled && !sessionStorage.getItem('dearlogNoticeHidden')) openNotice();

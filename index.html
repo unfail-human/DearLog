@@ -249,37 +249,6 @@
         </div>
       </section>
 
-
-      <section class="inspector-slots">
-        <div class="inspector-section-title">
-          <b>슬롯 저장</b>
-          <small>브라우저에 저장</small>
-        </div>
-        <div class="slot-list" id="slotList">
-          <div class="slot-row" data-slot="1">
-            <div class="slot-info"><b>슬롯 1</b><small class="slot-status">비어 있음</small></div>
-            <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
-          </div>
-          <div class="slot-row" data-slot="2">
-            <div class="slot-info"><b>슬롯 2</b><small class="slot-status">비어 있음</small></div>
-            <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
-          </div>
-          <div class="slot-row" data-slot="3">
-            <div class="slot-info"><b>슬롯 3</b><small class="slot-status">비어 있음</small></div>
-            <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
-          </div>
-          <div class="slot-row" data-slot="4">
-            <div class="slot-info"><b>슬롯 4</b><small class="slot-status">비어 있음</small></div>
-            <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
-          </div>
-          <div class="slot-row" data-slot="5">
-            <div class="slot-info"><b>슬롯 5</b><small class="slot-status">비어 있음</small></div>
-            <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
-          </div>
-        </div>
-        <p class="slot-note">같은 브라우저에서 다시 접속해도 저장 내용이 유지돼요.</p>
-      </section>
-
       <div class="inspector-empty" id="inspectorEmpty">
         미리보기에서 게시물이나 메시지를 클릭하면<br>여기에서 편하게 수정할 수 있어요.
       </div>
@@ -316,6 +285,60 @@
       </div>
     </aside>
   </main>
+
+
+  <nav class="utility-dock" aria-label="빠른 도구">
+    <button class="utility-dock-btn" id="slotOpenBtn" type="button" title="슬롯 저장 / 불러오기">
+      <span class="utility-dock-icon">⇅</span>
+      <span>슬롯</span>
+    </button>
+  </nav>
+
+  <div class="slot-backdrop" id="slotBackdrop" hidden>
+    <section class="slot-modal" role="dialog" aria-modal="true" aria-labelledby="slotModalTitle">
+      <div class="slot-modal-head">
+        <div>
+          <small>SLOT</small>
+          <h2 id="slotModalTitle">저장 / 불러오기</h2>
+          <p>현재 작업을 슬롯에 보관하거나 이전 작업을 불러올 수 있어요.</p>
+        </div>
+        <button class="slot-close-btn" id="slotCloseBtn" type="button" aria-label="닫기">×</button>
+      </div>
+
+      <div class="autosave-card">
+        <div class="autosave-mark">↻</div>
+        <div class="autosave-copy">
+          <b>작업 자동 저장</b>
+          <small id="autosaveStatus">저장 준비 중...</small>
+        </div>
+        <span class="autosave-badge">ON</span>
+      </div>
+
+      <div class="slot-modal-list" id="slotList">
+        <div class="slot-row" data-slot="1">
+          <div class="slot-info"><b>슬롯 1</b><small class="slot-status">비어 있음</small></div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="2">
+          <div class="slot-info"><b>슬롯 2</b><small class="slot-status">비어 있음</small></div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="3">
+          <div class="slot-info"><b>슬롯 3</b><small class="slot-status">비어 있음</small></div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="4">
+          <div class="slot-info"><b>슬롯 4</b><small class="slot-status">비어 있음</small></div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+        <div class="slot-row" data-slot="5">
+          <div class="slot-info"><b>슬롯 5</b><small class="slot-status">비어 있음</small></div>
+          <div class="slot-actions"><button type="button" class="slot-save">저장</button><button type="button" class="slot-load">불러오기</button><button type="button" class="slot-delete">삭제</button></div>
+        </div>
+      </div>
+      <p class="slot-modal-note">슬롯과 자동 저장 데이터는 현재 브라우저에만 저장됩니다.</p>
+    </section>
+  </div>
 
   <div class="preview-backdrop" id="previewBackdrop" hidden>
     <div class="preview-modal">

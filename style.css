@@ -2262,3 +2262,181 @@ body{
 @media(max-width:520px){
   .slot-list{grid-template-columns:1fr}
 }
+
+
+/* v31 — floating slot utility */
+.utility-dock{
+  position:fixed;
+  left:12px;
+  bottom:14px;
+  z-index:140;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.utility-dock-btn{
+  width:48px;
+  min-height:58px;
+  border:1px solid #dedad3;
+  border-radius:11px;
+  background:rgba(41,40,38,.94);
+  color:#f7f5f0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  box-shadow:0 7px 22px rgba(41,40,38,.12);
+  cursor:pointer;
+  font-size:8px;
+}
+.utility-dock-btn:hover{background:#292826}
+.utility-dock-icon{
+  font-size:18px;
+  line-height:1;
+  color:#d8a06a;
+}
+
+/* slot modal */
+.slot-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  background:rgba(30,29,27,.34);
+  backdrop-filter:blur(5px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.slot-modal{
+  width:min(460px,100%);
+  max-height:min(760px,calc(100vh - 36px));
+  overflow:auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 28px 80px rgba(41,40,38,.22);
+  padding:20px;
+}
+.slot-modal-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding-bottom:15px;
+  border-bottom:1px solid var(--line);
+}
+.slot-modal-head>div{display:grid;gap:4px}
+.slot-modal-head small{
+  font-size:8px;
+  letter-spacing:.17em;
+  color:var(--muted);
+}
+.slot-modal-head h2{
+  margin:0;
+  font-size:17px;
+  color:var(--text);
+}
+.slot-modal-head p{
+  margin:1px 0 0;
+  font-size:9px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.slot-close-btn{
+  width:30px;height:30px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fbfaf8;
+  color:var(--text);
+  font-size:19px;
+  line-height:1;
+  cursor:pointer;
+}
+.autosave-card{
+  display:grid;
+  grid-template-columns:38px 1fr auto;
+  align-items:center;
+  gap:10px;
+  margin:15px 0 13px;
+  padding:11px;
+  border:1px solid #e2ded7;
+  border-radius:12px;
+  background:#f7f5f1;
+}
+.autosave-mark{
+  width:36px;height:36px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:#ece9e3;
+  color:#5d5a55;
+  font-size:17px;
+}
+.autosave-copy{display:grid;gap:3px}
+.autosave-copy b{font-size:10px;color:var(--text)}
+.autosave-copy small{font-size:8px;color:var(--muted)}
+.autosave-badge{
+  border-radius:999px;
+  background:#e9eee8;
+  color:#60705d;
+  font-size:7px;
+  font-weight:800;
+  padding:5px 7px;
+}
+.slot-modal-list{
+  display:grid;
+  gap:7px;
+}
+.slot-modal-note{
+  margin:10px 1px 0;
+  color:var(--muted);
+  font-size:8px;
+  line-height:1.5;
+}
+
+/* override old slot layout rules inside modal */
+.slot-modal .slot-row{
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:10px;
+}
+.slot-modal .slot-actions{
+  display:flex;
+  grid-template-columns:none;
+  gap:5px;
+}
+.slot-modal .slot-actions button{
+  min-width:48px;
+  padding:0 7px;
+}
+
+@media(max-width:900px){
+  .utility-dock{
+    left:auto;
+    right:10px;
+    bottom:10px;
+  }
+  .utility-dock-btn{
+    width:46px;
+    min-height:54px;
+  }
+  .slot-modal{
+    padding:16px;
+  }
+  .slot-modal .slot-row{
+    grid-template-columns:1fr;
+  }
+  .slot-modal .slot-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(max-width:520px){
+  .slot-modal{
+    border-radius:14px;
+    padding:14px;
+  }
+}
