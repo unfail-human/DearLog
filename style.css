@@ -2940,3 +2940,37 @@ body{
 .ig-tile.has-image > img{
   object-fit:cover !important;
 }
+
+
+/* v45 — editor guide equals the actual target frame */
+.profile-editor-canvas-wrap{
+  position:relative !important;
+  background:#dfe5e8 !important;
+  border:0 !important;
+  border-radius:10px !important;
+  overflow:hidden !important;
+}
+.profile-editor-canvas-wrap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:3px solid #2498e8;
+  border-radius:8px;
+  box-sizing:border-box;
+  pointer-events:none;
+  z-index:5;
+}
+.profile-editor-circle-guide{
+  display:none !important;
+}
+
+/* image editor is intentionally limited to zoom + position */
+.profile-editor-controls{
+  grid-template-columns:1fr auto !important;
+}
+.profile-editor-preview-row{
+  display:none !important;
+}
+#profileEditorReset{
+  white-space:nowrap;
+}
