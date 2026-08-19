@@ -1699,12 +1699,22 @@ $('#inspectUseMyAvatarBtn').addEventListener('click',()=>{
 
 function setInspectorTab(tab){
   const edit=tab==='edit';
-  $('#editTabBtn')?.classList.toggle('is-active',edit);
-  $('#designTabBtn')?.classList.toggle('is-active',!edit);
-  $('#editTabPanel')?.classList.toggle('is-active',edit);
-  $('#designTabPanel')?.classList.toggle('is-active',!edit);
-  if($('#editTabPanel'))$('#editTabPanel').hidden=!edit;
-  if($('#designTabPanel'))$('#designTabPanel').hidden=edit;
+  const editBtn=$('#editTabBtn');
+  const designBtn=$('#designTabBtn');
+  const editPanel=$('#editTabPanel');
+  const designPanel=$('#designTabPanel');
+
+  editBtn?.classList.toggle('is-active',edit);
+  designBtn?.classList.toggle('is-active',!edit);
+
+  if(editPanel){
+    editPanel.hidden=!edit;
+    editPanel.classList.toggle('is-active',edit);
+  }
+  if(designPanel){
+    designPanel.hidden=edit;
+    designPanel.classList.toggle('is-active',!edit);
+  }
 }
 $('#editTabBtn')?.addEventListener('click',()=>setInspectorTab('edit'));
 $('#designTabBtn')?.addEventListener('click',()=>setInspectorTab('design'));
