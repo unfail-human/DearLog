@@ -15,6 +15,11 @@ const state={
   template:'x',brandSymbol:'✦',selected:null,
   name:'Dearlog',handle:'dearlog',chatBio:'너와의 추억을 기록하는 중',
   avatar:DEFAULT_AVATAR(),
+  commonProfile:{
+    name:'Dearlog',
+    handle:'dearlog',
+    avatar:DEFAULT_AVATAR()
+  },
   theirName:'상대방',myName:'나',
   theirAvatar:DEFAULT_AVATAR('#8f8a81','#ece9e3'),
   myAvatar:DEFAULT_AVATAR('#746f67','#e5e1da'),
@@ -55,28 +60,102 @@ const state={
 
 const capture=$('#captureArea');
 
+
+function syncCommonProfileToState(){
+  const p=state.commonProfile||{
+    name:state.name||'Dearlog',
+    handle:state.handle||'dearlog',
+    avatar:state.avatar||DEFAULT_AVATAR()
+  };
+  state.commonProfile=p;
+
+  // X / Instagram use the same basic profile.
+  state.name=p.name;
+  state.handle=p.handle;
+  state.avatar=p.avatar;
+
+  if(state.profiles?.x){
+    state.profiles.x.name=p.name;
+    state.profiles.x.handle=p.handle;
+    state.profiles.x.avatar=p.avatar;
+  }
+  if(state.profiles?.instagram){
+    state.profiles.instagram.name=p.name;
+    state.profiles.instagram.handle=p.handle;
+    state.profiles.instagram.avatar=p.avatar;
+  }
+
+  // DM / Kakao: only "나" profile is unified.
+  if(state.profiles?.dm){
+    state.profiles.dm.myName=p.name;
+    state.profiles.dm.myAvatar=p.avatar;
+  }
+  if(state.profiles?.kakao){
+    state.profiles.kakao.myName=p.name;
+    state.profiles.kakao.myAvatar=p.avatar;
+  }
+
+  state.myName=p.name;
+  state.myAvatar=p.avatar;
+}
+
+function updateCommonProfile(part,value){
+  state.commonProfile=state.commonProfile||{
+    name:state.name||'Dearlog',
+    handle:state.handle||'dearlog',
+    avatar:state.avatar||DEFAULT_AVATAR()
+  };
+  state.commonProfile[part]=value;
+  syncCommonProfileToState();
+}
+
 function loadTemplateProfile(){
+  syncCommonProfileToState();
   const p=state.profiles[state.template];
+
   if(state.template==='x'||state.template==='instagram'){
-    state.name=p.name;state.handle=p.handle;state.avatar=p.avatar;
-    $('#nameInput').value=p.name;$('#handleInput').value=p.handle;$('#sidebarAvatarPreview').src=p.avatar;
+    state.name=state.commonProfile.name;
+    state.handle=state.commonProfile.handle;
+    state.avatar=state.commonProfile.avatar;
+    $('#nameInput').value=state.name;
+    $('#handleInput').value=state.handle;
+    $('#sidebarAvatarPreview').src=state.avatar;
   }else{
-    state.theirName=p.name;state.myName=p.myName;state.chatBio=p.bio;
-    
-    state.theirAvatar=p.theirAvatar;state.myAvatar=p.myAvatar;
-    $('#theirNameInput').value=p.name;$('#myNameInput').value=p.myName;$('#chatBioInput').value=p.bio;$('#sidebarAvatarPreview').src=p.theirAvatar;
-    
+    state.theirName=p.name;
+    state.chatBio=p.bio;
+    state.theirAvatar=p.theirAvatar;
+
+    state.myName=state.commonProfile.name;
+    state.myAvatar=state.commonProfile.avatar;
+
+    $('#theirNameInput').value=state.theirName;
+    $('#myNameInput').value=state.myName;
+    $('#chatBioInput').value=state.chatBio;
+    $('#sidebarAvatarPreview').src=state.myAvatar;
   }
 }
 function saveCurrentProfile(){
-  const p=state.profiles[state.template];
+  state.commonProfile=state.commonProfile||{
+    name:state.name||'Dearlog',
+    handle:state.handle||'dearlog',
+    avatar:state.avatar||DEFAULT_AVATAR()
+  };
+
   if(state.template==='x'||state.template==='instagram'){
-    p.name=state.name;p.handle=state.handle;p.avatar=state.avatar;
+    state.commonProfile.name=state.name;
+    state.commonProfile.handle=state.handle;
+    state.commonProfile.avatar=state.avatar;
   }else{
-    p.name=state.theirName;p.myName=state.myName;p.bio=state.chatBio;
-    
-    p.theirAvatar=state.theirAvatar;p.myAvatar=state.myAvatar;
+    const p=state.profiles[state.template];
+    p.name=state.theirName;
+    p.bio=state.chatBio;
+    p.theirAvatar=state.theirAvatar;
+
+    state.commonProfile.name=state.myName;
+    state.commonProfile.avatar=state.myAvatar;
   }
+
+  syncCommonProfileToState();
 }
 function syncTemplateBackgroundControls(){
   const b=state.backgrounds[state.template];
@@ -727,9 +806,8 @@ function bindPreview(){
   bindNames();
   $$('.avatar-local-input',capture).forEach(inp=>inp.addEventListener('change',e=>{
     openProfileEditor(e.target.files[0],src=>{
-      state.avatar=src;
+      updateCommonProfile('avatar',src);
       $('#sidebarAvatarPreview').src=src;
-      saveCurrentProfile();
       render();
       queueAutosave?.(250);
     });
@@ -863,21 +941,20 @@ $$('.template-card').forEach(btn=>btn.addEventListener('click',()=>{
 
 
 $('#brandSymbolSelect').addEventListener('change',e=>{state.brandSymbol=e.target.value;render()});
-$('#nameInput').addEventListener('input',e=>{state.name=e.target.value||'Dearlog';saveCurrentProfile();render()});
-$('#handleInput').addEventListener('input',e=>{state.handle=safeHandle(e.target.value);saveCurrentProfile();render()});
+$('#nameInput').addEventListener('input',e=>{updateCommonProfile('name',e.target.value||'Dearlog');render()});
+$('#handleInput').addEventListener('input',e=>{updateCommonProfile('handle',safeHandle(e.target.value));render()});
 $('#chatBioInput').addEventListener('input',e=>{state.chatBio=e.target.value;saveCurrentProfile();render()});
 $('#avatarInput').addEventListener('change',e=>{
   openProfileEditor(e.target.files[0],src=>{
-    state.avatar=src;
+    updateCommonProfile('avatar',src);
     $('#sidebarAvatarPreview').src=src;
-    saveCurrentProfile();
     render();
     queueAutosave?.(250);
   });
   e.target.value='';
 });
 $('#theirNameInput').addEventListener('input',e=>{state.theirName=e.target.value||'상대방';saveCurrentProfile();render()});
-$('#myNameInput').addEventListener('input',e=>{state.myName=e.target.value||'나';saveCurrentProfile();render()});
+$('#myNameInput').addEventListener('input',e=>{updateCommonProfile('name',e.target.value||'나');$('#nameInput').value=state.commonProfile.name;render()});
 $('#theirAvatarInput').addEventListener('change',e=>{
   openProfileEditor(e.target.files[0],src=>{
     state.theirAvatar=src;
@@ -889,8 +966,8 @@ $('#theirAvatarInput').addEventListener('change',e=>{
 });
 $('#myAvatarInput').addEventListener('change',e=>{
   openProfileEditor(e.target.files[0],src=>{
-    state.myAvatar=src;
-    saveCurrentProfile();
+    updateCommonProfile('avatar',src);
+    $('#sidebarAvatarPreview').src=src;
     render();
     queueAutosave?.(250);
   });
@@ -932,7 +1009,7 @@ $('#addTypingBtn').addEventListener('click',()=>{
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.name,authorHandle:state.handle,authorAvatar:state.avatar,imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.commonProfile.name,authorHandle:state.commonProfile.handle,authorAvatar:state.commonProfile.avatar,imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);state.igScales.push(1);state.igXs.push(0);state.igYs.push(0);}
   render();
 });
@@ -1362,10 +1439,18 @@ function serializeState(){
 function restoreStateObject(saved){
   if(!saved||!saved.data)return false;
   const incoming=saved.data;
+  if(!incoming.commonProfile){
+    incoming.commonProfile={
+      name:incoming.name||incoming.profiles?.x?.name||'Dearlog',
+      handle:incoming.handle||incoming.profiles?.x?.handle||'dearlog',
+      avatar:incoming.avatar||incoming.profiles?.x?.avatar||DEFAULT_AVATAR()
+    };
+  }
 
   // Replace top-level values while preserving the same state object reference.
   Object.keys(state).forEach(k=>delete state[k]);
   Object.assign(state,incoming);
+  syncCommonProfileToState();
 
   // compatibility defaults for older/missing values
   state.template=state.template||'x';
