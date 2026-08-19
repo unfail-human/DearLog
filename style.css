@@ -4719,3 +4719,154 @@ body{
 .kakao-head>span{
   font-size:14px !important;
 }
+
+
+/* v80 — workspace must always be fully visible, no stage scrolling */
+.stage{
+  overflow:hidden !important;
+}
+.capture-shell{
+  overflow:visible !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+}
+@media(min-width:901px){
+  .capture{
+    width:390px !important;
+    min-width:390px !important;
+    max-width:390px !important;
+  }
+}
+
+/* v80 — left/right panel readability */
+.sidebar,
+.inspector{
+  font-size:11px !important;
+  line-height:1.5 !important;
+}
+.sidebar .section-title span,
+.sidebar .sidebar-section-title,
+.sidebar h2,
+.sidebar h3,
+.inspector .section-title span,
+.inspector .inspector-section-title b,
+.inspector .inspector-head b,
+.inspector h2,
+.inspector h3{
+  font-size:13px !important;
+  line-height:1.35 !important;
+  font-weight:800 !important;
+}
+.sidebar .section-title small,
+.sidebar small,
+.sidebar .field-note,
+.inspector .section-title small,
+.inspector small,
+.inspector .field-note{
+  font-size:9.5px !important;
+  line-height:1.5 !important;
+}
+.sidebar .field > span,
+.sidebar label > span,
+.inspector .field > span,
+.inspector label > span,
+.inspector .inspect-label{
+  font-size:10.5px !important;
+  line-height:1.4 !important;
+  font-weight:700 !important;
+}
+.sidebar input,
+.sidebar select,
+.sidebar textarea,
+.inspector input,
+.inspector select,
+.inspector textarea{
+  font-size:11px !important;
+  line-height:1.45 !important;
+}
+.sidebar .btn,
+.sidebar button,
+.inspector .btn,
+.inspector button{
+  font-size:10.5px !important;
+  line-height:1.35 !important;
+}
+
+/* Right panel especially: larger and easier to scan */
+.inspector-head small{
+  font-size:8.5px !important;
+}
+.inspector-head b{
+  font-size:14px !important;
+}
+#inspectorType{
+  font-size:9.5px !important;
+}
+.inspector-tabs{
+  gap:5px !important;
+}
+.inspector-tab{
+  font-size:10.5px !important;
+  font-weight:800 !important;
+  padding:11px 7px !important;
+}
+#contentControls .inspector-section-title{
+  margin-bottom:10px !important;
+}
+#contentControls .inspector-section-title b{
+  font-size:12px !important;
+}
+#contentToolHint{
+  font-size:9px !important;
+}
+.inspector-empty{
+  font-size:10.5px !important;
+  line-height:1.7 !important;
+}
+.inspector-fields{
+  gap:12px !important;
+}
+#designTabPanel .tool-section{
+  padding:14px !important;
+}
+#designTabPanel .section-title{
+  margin-bottom:12px !important;
+}
+#designTabPanel .section-title span{
+  font-size:12px !important;
+}
+#designTabPanel .section-title small{
+  font-size:9px !important;
+}
+.toggle-row b,
+.source-skip-copy b,
+.sticker-studio-switch b{
+  font-size:10.5px !important;
+}
+.toggle-row small,
+.source-skip-copy small,
+.sticker-studio-switch small,
+.sticker-help{
+  font-size:9px !important;
+  line-height:1.55 !important;
+}
+.palette-preview small,
+.bg-control-copy small,
+.bg-scale-bar,
+.inspect-source-preview{
+  font-size:9px !important;
+}
+
+/* A little more spacing so larger type does not feel cramped */
+.sidebar section,
+.inspector .tool-section,
+.inspector-content-tools{
+  margin-bottom:18px !important;
+}
+.sidebar .field,
+.inspector .field{
+  margin-bottom:11px !important;
+}
+.button-stack{
+  gap:8px !important;
+}

@@ -862,23 +862,34 @@ function refreshSelected(){
 
 function fitCaptureToStage(){
   const shell=document.querySelector('.capture-shell');
-  if(!shell||!capture.offsetWidth||!capture.offsetHeight)return;
+  const stage=document.querySelector('.stage');
+  if(!shell||!stage||!capture.offsetWidth||!capture.offsetHeight)return;
 
   const naturalW=capture.offsetWidth;
   const naturalH=capture.offsetHeight;
 
   if(window.innerWidth<=900){
     const availableW=Math.max(280,shell.clientWidth-4);
-    const scale=Math.min(1,availableW/naturalW);
+    const scale=Math.min(.94,availableW/naturalW);
     capture.style.transform=`scale(${scale})`;
-    shell.style.minHeight=`${naturalH*scale}px`;
+    shell.style.height=`${naturalH*scale}px`;
+    shell.style.minHeight='0';
     return;
   }
 
-  // Desktop: keep the 390px working canvas at its real size.
-  // Do not shrink it just because the template is tall.
-  capture.style.transform='scale(1)';
-  shell.style.minHeight=`${naturalH}px`;
+  // Desktop: always keep the complete workspace visible inside the stage.
+  // Slightly smaller than the maximum available size for breathing room.
+  const stageStyle=getComputedStyle(stage);
+  const padX=(parseFloat(stageStyle.paddingLeft)||0)+(parseFloat(stageStyle.paddingRight)||0);
+  const padY=(parseFloat(stageStyle.paddingTop)||0)+(parseFloat(stageStyle.paddingBottom)||0);
+  const availableW=Math.max(260,stage.clientWidth-padX-18);
+  const availableH=Math.max(320,stage.clientHeight-padY-18);
+
+  const scale=Math.min(.90,availableW/naturalW,availableH/naturalH);
+  capture.style.transform=`scale(${scale})`;
+  capture.style.transformOrigin='top center';
+  shell.style.height=`${naturalH*scale}px`;
+  shell.style.minHeight='0';
 }
 
 
