@@ -4149,3 +4149,415 @@ body{
 @media(max-width:1100px){
   .utility-dock{right:12px !important;bottom:12px !important}
 }
+
+
+/* v73 — Instagram profile proportions */
+.capture[data-template="instagram"]{
+  min-height:0 !important;
+  height:auto !important;
+}
+.ig-page{
+  min-height:0 !important;
+  height:auto !important;
+}
+.ig-profile{
+  grid-template-columns:64px minmax(0,1fr) !important;
+  gap:12px !important;
+  padding:14px 16px !important;
+  min-height:0 !important;
+}
+.ig-avatar-picker,
+.ig-profile > .image-picker{
+  width:64px !important;
+  height:64px !important;
+  min-width:64px !important;
+  min-height:64px !important;
+  max-width:64px !important;
+  max-height:64px !important;
+}
+.ig-avatar-picker .avatar,
+.ig-profile > .image-picker .avatar{
+  width:64px !important;
+  height:64px !important;
+  min-width:64px !important;
+  min-height:64px !important;
+}
+.ig-name-row{
+  margin-bottom:5px !important;
+}
+.ig-handle{
+  font-size:12px !important;
+}
+.ig-follow{
+  padding:5px 8px !important;
+  font-size:8px !important;
+}
+.ig-counts{
+  gap:10px !important;
+  margin-bottom:5px !important;
+  font-size:9px !important;
+}
+.ig-counts b{
+  font-size:10px !important;
+}
+.ig-bio{
+  font-size:9px !important;
+  line-height:1.35 !important;
+}
+.ig-tabs span{
+  padding:8px !important;
+  font-size:10px !important;
+}
+.ig-grid{
+  width:390px !important;
+  grid-template-columns:repeat(3,130px) !important;
+  grid-auto-rows:130px !important;
+  gap:0 !important;
+  background:#fff !important;
+}
+.ig-tile{
+  width:130px !important;
+  height:130px !important;
+  aspect-ratio:1 / 1 !important;
+  border-right:1px solid var(--preview-line) !important;
+  border-bottom:1px solid var(--preview-line) !important;
+  box-sizing:border-box !important;
+}
+.ig-tile:nth-child(3n){
+  border-right:0 !important;
+}
+.clean-output .ig-grid{
+  grid-template-columns:repeat(3,130px) !important;
+  grid-auto-rows:130px !important;
+}
+.clean-output .ig-grid .ig-tile{
+  width:130px !important;
+  height:130px !important;
+  aspect-ratio:1 / 1 !important;
+}
+
+/* v73 — DM/Kakao slightly taller */
+.dm-page,.kakao-page{
+  height:600px !important;
+  min-height:600px !important;
+}
+.dm-body,.kakao-room{
+  min-height:0 !important;
+}
+
+/* v73 — refined Sticker Studio */
+.sticker-studio{
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+.sticker-studio-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.sticker-studio-head > div{
+  display:grid;
+  gap:2px;
+}
+.sticker-studio-head small{
+  font-size:7px;
+  letter-spacing:.12em;
+  color:var(--muted);
+}
+.sticker-studio-head b{
+  font-size:13px;
+  color:var(--text);
+}
+.sticker-state-pill{
+  flex:0 0 auto;
+  padding:5px 9px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#f3f0eb;
+  color:var(--muted);
+  font-size:8px;
+  font-weight:700;
+}
+.sticker-state-pill.is-active{
+  background:#292724;
+  border-color:#292724;
+  color:#fff;
+}
+.sticker-studio-switch{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:12px;
+  margin-bottom:10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fbfaf8;
+}
+.sticker-studio-switch > div{
+  display:grid;
+  gap:4px;
+}
+.sticker-studio-switch b{
+  font-size:10px;
+}
+.sticker-studio-switch small{
+  font-size:8px;
+  line-height:1.45;
+  color:var(--muted);
+}
+.sticker-mode-btn{
+  flex:0 0 auto;
+  border:0;
+  border-radius:9px;
+  padding:8px 11px;
+  background:#ece8e2;
+  color:var(--text);
+  font-size:9px;
+  font-weight:700;
+  cursor:pointer;
+}
+.sticker-mode-btn[aria-pressed="true"]{
+  background:#292724;
+  color:#fff;
+}
+.sticker-add-card{
+  position:relative;
+  display:grid;
+  grid-template-columns:32px 1fr;
+  align-items:center;
+  gap:10px;
+  padding:11px 12px;
+  margin-bottom:14px;
+  border:1px dashed var(--line-strong);
+  border-radius:12px;
+  background:#fff;
+  cursor:pointer;
+}
+.sticker-add-card input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
+.sticker-add-icon{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#f3f0eb;
+  font-size:17px;
+}
+.sticker-add-card > span:last-of-type{
+  display:grid;
+  gap:2px;
+}
+.sticker-add-card b{
+  font-size:10px;
+}
+.sticker-add-card small{
+  font-size:7px;
+  color:var(--muted);
+}
+.sticker-library-head{
+  margin:0 0 7px !important;
+}
+.sticker-library{
+  grid-template-columns:repeat(4,1fr) !important;
+  gap:6px !important;
+  min-height:68px !important;
+  margin-bottom:10px !important;
+}
+.sticker-thumb{
+  border-radius:9px !important;
+  padding:4px !important;
+}
+.sticker-thumb.is-selected{
+  outline:2px solid #6c665e !important;
+}
+.sticker-thumb-lock{
+  right:3px !important;
+  bottom:2px !important;
+  padding:1px 2px;
+  border-radius:4px;
+  background:rgba(255,255,255,.82);
+  font-size:8px !important;
+}
+.sticker-selection-tools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfaf8;
+}
+.sticker-selection-copy{
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+.sticker-selection-copy small{
+  font-size:7px;
+  color:var(--muted);
+}
+.sticker-selection-copy b{
+  font-size:9px;
+}
+.sticker-selection-actions{
+  display:flex;
+  gap:5px;
+}
+.sticker-icon-btn{
+  width:30px;
+  height:30px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  font-size:12px;
+  cursor:pointer;
+}
+.sticker-icon-btn:disabled{
+  opacity:.35;
+  cursor:default;
+}
+.sticker-delete-icon{
+  color:#a95454;
+  font-size:18px;
+  line-height:1;
+}
+.sticker-help{
+  margin:9px 2px 0 !important;
+  line-height:1.55 !important;
+}
+
+
+/* v74 — DM/Kakao colors follow main color automatically */
+.dm-page .theirs .bubble{
+  background:var(--dm-their-bubble,#e9e9eb) !important;
+  color:var(--dm-their-text,#111) !important;
+}
+.dm-page .mine .bubble{
+  background:var(--dm-my-bubble,#0a84ff) !important;
+  color:var(--dm-my-text,#fff) !important;
+}
+.dm-send{
+  background:var(--dm-my-bubble,#0a84ff) !important;
+  color:var(--dm-my-text,#fff) !important;
+}
+.dm-head-actions{
+  color:var(--dm-my-bubble,#0a84ff) !important;
+}
+
+.kakao-message .bubble{
+  background:var(--kakao-their-bubble,#fff) !important;
+  color:var(--kakao-their-text,#252525) !important;
+}
+.kakao-message.mine .bubble{
+  background:var(--kakao-my-bubble,#fee500) !important;
+  color:var(--kakao-my-text,#252525) !important;
+}
+.kakao-read-one{
+  color:var(--preview-accent) !important;
+}
+
+
+/* v74 — preview/export follows actual visible template height */
+.clean-output,
+.preview-capture,
+.preview-modal .capture{
+  min-height:0 !important;
+  height:auto !important;
+}
+.clean-output .x-page,
+.clean-output .ig-page,
+.clean-output .dm-page,
+.clean-output .kakao-page,
+.preview-modal .x-page,
+.preview-modal .ig-page,
+.preview-modal .dm-page,
+.preview-modal .kakao-page{
+  min-height:0 !important;
+}
+.clean-output .x-page,
+.preview-modal .x-page{
+  height:auto !important;
+}
+.clean-output .ig-page,
+.preview-modal .ig-page{
+  height:auto !important;
+}
+
+/* DM/Kakao keep their designed card height, then source tail attaches immediately. */
+.clean-output .dm-page,
+.clean-output .kakao-page,
+.preview-modal .dm-page,
+.preview-modal .kakao-page{
+  height:600px !important;
+  min-height:600px !important;
+}
+
+.clean-output .workspace-source-credit,
+.preview-modal .workspace-source-credit{
+  margin-top:0 !important;
+  position:relative !important;
+}
+
+.capture[data-template="x"]{
+  min-height:0 !important;
+  height:auto !important;
+}
+.x-page{
+  min-height:0 !important;
+  height:auto !important;
+}
+
+
+/* v74 — Kakao composer uses the full width like DM */
+.kakao-compose{
+  display:grid !important;
+  grid-template-columns:28px minmax(0,1fr) 42px !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:9px 12px !important;
+  box-sizing:border-box !important;
+}
+.kakao-input{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:34px !important;
+  box-sizing:border-box !important;
+  padding:9px 11px !important;
+  border:1px solid #e2e2e5 !important;
+  border-radius:18px !important;
+  background:#fff !important;
+  color:#8e8e93 !important;
+}
+.kakao-compose>span:first-child{
+  width:28px !important;
+  height:28px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:50% !important;
+  background:#ededf0 !important;
+}
+.kakao-compose>span:last-child{
+  width:42px !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+
+.workspace-source-credit.source-left-hidden,
+.export-source.source-left-hidden{
+  grid-template-columns:1fr auto !important;
+}
+.workspace-source-credit.source-left-hidden .workspace-source-right,
+.export-source.source-left-hidden .workspace-source-right{
+  grid-column:2 !important;
+  justify-self:end !important;
+}

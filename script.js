@@ -38,7 +38,6 @@ const state={
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   fontMode:'Noto Sans KR',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
   sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',sourceSkip:false,
-  dmStyle:{theirBubble:'#e9e9eb',myBubble:'#0a84ff',theirText:'#111111',myText:'#ffffff'},
   stickerLayers:{x:[],instagram:[],dm:[],kakao:[]},selectedSticker:null,stickerStudioActive:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
@@ -505,6 +504,30 @@ function fileToDataURL(file){
   });
 }
 
+
+function hexToRgb(hex){
+  const h=String(hex||'#5d5a55').replace('#','').trim();
+  const v=h.length===3?h.split('').map(c=>c+c).join(''):h.padEnd(6,'0').slice(0,6);
+  return {
+    r:parseInt(v.slice(0,2),16)||0,
+    g:parseInt(v.slice(2,4),16)||0,
+    b:parseInt(v.slice(4,6),16)||0
+  };
+}
+function rgbToHex({r,g,b}){
+  const c=v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0');
+  return `#${c(r)}${c(g)}${c(b)}`;
+}
+function mixHex(a,b,amount){
+  const x=hexToRgb(a),y=hexToRgb(b),t=Math.max(0,Math.min(1,amount));
+  return rgbToHex({r:x.r+(y.r-x.r)*t,g:x.g+(y.g-x.g)*t,b:x.b+(y.b-x.b)*t});
+}
+function contrastText(hex){
+  const {r,g,b}=hexToRgb(hex);
+  const lum=(0.299*r+0.587*g+0.114*b)/255;
+  return lum>.62?'#24211f':'#ffffff';
+}
+
 function syncVars(){
   const tb=state.backgrounds[state.template];
   capture.style.setProperty('--template-bg-color',tb.color);
@@ -516,11 +539,25 @@ function syncVars(){
   capture.classList.toggle('dark',state.dark);
   capture.style.setProperty('--chat-bg',state.chatBg);
   capture.style.setProperty('--chat-bg-image',state.chatBgImage ? `url("${state.chatBgImage}")` : 'none');
-  const dmStyle=state.dmStyle||{};
-  capture.style.setProperty('--dm-their-bubble',dmStyle.theirBubble||'#e9e9eb');
-  capture.style.setProperty('--dm-my-bubble',dmStyle.myBubble||'#0a84ff');
-  capture.style.setProperty('--dm-their-text',dmStyle.theirText||'#111111');
-  capture.style.setProperty('--dm-my-text',dmStyle.myText||'#ffffff');
+  const theme=state.main||state.accent||'#5d5a55';
+  const dmMine=theme;
+  const dmMineText=contrastText(dmMine);
+  const dmTheirs=mixHex(theme,'#ffffff',.86);
+  const dmTheirsText=contrastText(dmTheirs);
+
+  capture.style.setProperty('--dm-my-bubble',dmMine);
+  capture.style.setProperty('--dm-my-text',dmMineText);
+  capture.style.setProperty('--dm-their-bubble',dmTheirs);
+  capture.style.setProperty('--dm-their-text',dmTheirsText);
+
+  const kakaoMine=mixHex(theme,'#ffffff',.15);
+  const kakaoMineText=contrastText(kakaoMine);
+  const kakaoTheir=mixHex(theme,'#ffffff',.88);
+  const kakaoTheirText=contrastText(kakaoTheir);
+  capture.style.setProperty('--kakao-my-bubble',kakaoMine);
+  capture.style.setProperty('--kakao-my-text',kakaoMineText);
+  capture.style.setProperty('--kakao-their-bubble',kakaoTheir);
+  capture.style.setProperty('--kakao-their-text',kakaoTheirText);
 
   if(state.template==='kakao'){
     capture.style.setProperty('--chat-bg',tb.color||'#dfe8ef');
@@ -555,7 +592,6 @@ function setChatControls(){
 
   const dm=state.template==='dm';
   const kakao=state.template==='kakao';
-  if($('#dmStyleSection'))$('#dmStyleSection').hidden=!dm;
   if($('#templateBackgroundSection'))$('#templateBackgroundSection').hidden=dm;
 
   const hint=$('#contentToolHint');
@@ -784,12 +820,7 @@ function selectedData(){
 function updateInspector(){
   if($('#inspectSourceText')){
     $('#inspectSourceText').value=state.sourceText||'커미션 출처를 표기합니다.';
-  syncSourceSkipButton();
-  if($('#dmTheirBubbleColor'))$('#dmTheirBubbleColor').value=state.dmStyle?.theirBubble||'#e9e9eb';
-  if($('#dmMyBubbleColor'))$('#dmMyBubbleColor').value=state.dmStyle?.myBubble||'#0a84ff';
-  if($('#dmTheirTextColor'))$('#dmTheirTextColor').value=state.dmStyle?.theirText||'#111111';
-  if($('#dmMyTextColor'))$('#dmMyTextColor').value=state.dmStyle?.myText||'#ffffff';
-  if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
+  syncSourceSkipButton();  if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
     $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
     if($('#sourceSkipToggle'))syncSourceSkipButton();
     if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
@@ -897,7 +928,7 @@ function renderStickerLibrary(){
   const box=$('#stickerLibrary');if(!box)return;
   const items=currentStickers();
   if(!items.length){box.innerHTML='<div class="sticker-library-empty">추가한 스티커가 여기에 보여요.</div>';return;}
-  box.innerHTML=items.map((s,i)=>`<button type="button" class="sticker-thumb ${state.selectedSticker===i?'is-selected':''}" data-sticker-index="${i}" title="스티커 ${i+1}"><img src="${s.src}" alt=""><span>${s.locked?'🔒':''}</span></button>`).join('');
+  box.innerHTML=items.map((s,i)=>`<button type="button" class="sticker-thumb ${state.selectedSticker===i?'is-selected':''}" data-sticker-index="${i}" title="스티커 ${i+1}"><img src="${s.src}" alt=""><span class="sticker-thumb-lock">${s.locked?'🔒':''}</span></button>`).join('');
   box.querySelectorAll('.sticker-thumb').forEach(btn=>btn.addEventListener('click',()=>{
     state.selectedSticker=Number(btn.dataset.stickerIndex);
     renderStickers();
@@ -906,11 +937,29 @@ function renderStickerLibrary(){
 }
 function updateStickerStudioUI(){
   const toggle=$('#stickerStudioToggle'),status=$('#stickerStudioStatus');
-  if(toggle){toggle.setAttribute('aria-pressed',String(!!state.stickerStudioActive));toggle.textContent=state.stickerStudioActive?'스티커 편집 종료':'스티커 편집 시작';}
-  if(status)status.textContent=state.stickerStudioActive?'편집 활성화':'편집 잠금 상태';
   const s=currentStickers()[state.selectedSticker];
+
+  if(toggle){
+    toggle.setAttribute('aria-pressed',String(!!state.stickerStudioActive));
+    toggle.textContent=state.stickerStudioActive?'편집 종료':'편집 시작';
+  }
+  if(status){
+    status.textContent=state.stickerStudioActive?'편집 중':'잠금';
+    status.classList.toggle('is-active',!!state.stickerStudioActive);
+  }
+
+  if($('#stickerSelectionLabel')){
+    $('#stickerSelectionLabel').textContent=s
+      ? `스티커 ${Number(state.selectedSticker)+1}${s.locked?' · 잠금':''}`
+      : '선택 없음';
+  }
+
   if($('#deleteStickerBtn'))$('#deleteStickerBtn').disabled=!state.stickerStudioActive||!s||!!s.locked;
-  if($('#lockStickerBtn')){$('#lockStickerBtn').disabled=!s;$('#lockStickerBtn').textContent=s?.locked?'선택 스티커 잠금 해제':'선택 스티커 잠금';}
+  if($('#lockStickerBtn')){
+    $('#lockStickerBtn').disabled=!s;
+    $('#lockStickerBtn').textContent=s?.locked?'🔓':'🔒';
+    $('#lockStickerBtn').title=s?.locked?'잠금 해제':'잠금';
+  }
 }
 function bindStickers(){
   capture.querySelectorAll('.sticker-item').forEach(img=>{
@@ -1333,19 +1382,6 @@ $('#customFontInput').addEventListener('change',async e=>{
   }finally{
     e.target.value='';
   }
-});
-
-function updateDMStyleFromControls(){
-  state.dmStyle=state.dmStyle||{};
-  state.dmStyle.theirBubble=$('#dmTheirBubbleColor').value;
-  state.dmStyle.myBubble=$('#dmMyBubbleColor').value;
-  state.dmStyle.theirText=$('#dmTheirTextColor').value;
-  state.dmStyle.myText=$('#dmMyTextColor').value;
-  syncVars();
-  if(typeof queueAutosave==='function')queueAutosave(250);
-}
-['dmTheirBubbleColor','dmMyBubbleColor','dmTheirTextColor','dmMyTextColor'].forEach(id=>{
-  $('#'+id)?.addEventListener('input',updateDMStyleFromControls);
 });
 
 $('#mainColor').addEventListener('input',e=>{
@@ -2079,7 +2115,6 @@ function restoreStateObject(saved){
   state.sourceEnabled=true;
   state.sourceSkip=!!state.sourceSkip;
   state.sourceText=state.sourceText||'커미션 출처를 표기합니다.';
-  state.dmStyle=state.dmStyle||{theirBubble:'#e9e9eb',myBubble:'#0a84ff',theirText:'#111111',myText:'#ffffff'};
   state.stickerLayers=state.stickerLayers||{x:[],instagram:[],dm:[],kakao:[]};
   ['x','instagram','dm','kakao'].forEach(k=>{if(!Array.isArray(state.stickerLayers[k]))state.stickerLayers[k]=[]});
   state.selectedSticker=null;
