@@ -2643,3 +2643,60 @@ body{
   .profile-editor-controls{grid-template-columns:1fr}
   .profile-editor-actions .btn{flex:1}
 }
+
+
+/* v41 — keep uploaded photos untouched: no stretching, no forced crop */
+
+/* Instagram feed cells keep their square frame, but the image itself stays at
+   its natural aspect ratio. It may shrink to fit, but it is never stretched
+   or forced to fill/crop the square. */
+.ig-tile{
+  position:relative !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:var(--preview-card,#fff) !important;
+}
+.ig-tile.has-image img{
+  position:static !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  transform:none !important;
+  image-rendering:auto !important;
+  backface-visibility:visible !important;
+}
+
+/* Do not let generic image rules stretch the Instagram feed image */
+.ig-grid .ig-tile.has-image > img{
+  flex:0 1 auto !important;
+}
+
+/* X attachments: preserve source aspect ratio inside the fixed frame.
+   Manual zoom/drag still works afterwards. */
+.x-media.has-image img{
+  object-fit:contain !important;
+  object-position:center center !important;
+}
+
+/* DM / Kakao photo messages: preserve source ratio, never stretch */
+.dm-page .chat-photo.has-image img,
+.kakao-page .chat-photo.has-image img,
+.kakao-page .kakao-photo.has-image img{
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  margin:auto !important;
+}
+
+/* Profile images remain cropped intentionally because they are circular avatars;
+   feed/content photos above are not cropped. */
