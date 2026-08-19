@@ -177,7 +177,13 @@
             <button class="btn btn-wide" id="addTypingBtn" type="button">＋ 입력중 표시</button>
           </div>
           <button class="btn btn-wide btn-danger" id="removeItemBtn" type="button">− 마지막 항목 삭제</button>
+          <label class="btn btn-wide sticker-upload-btn">
+            ＋ 스티커 추가
+            <input id="stickerInput" type="file" accept="image/*">
+          </label>
+          <button class="btn btn-wide" id="deleteStickerBtn" type="button" disabled>선택 스티커 삭제</button>
         </div>
+        <small class="sticker-help">스티커를 드래그해서 이동하고, 마우스 휠로 크기를 조절할 수 있어요.</small>
       </section>
 
 
@@ -304,6 +310,19 @@
             </span>
             <input id="darkToggle" type="checkbox">
           </label>
+        </section>
+
+        <section class="tool-section" id="dmStyleSection" hidden>
+          <div class="section-title">
+            <span>iMessage 색상</span>
+            <small>DM 전용</small>
+          </div>
+          <div class="color-row dm-color-grid">
+            <label><span>상대 말풍선</span><input id="dmTheirBubbleColor" type="color" value="#e9e9eb"></label>
+            <label><span>내 말풍선</span><input id="dmMyBubbleColor" type="color" value="#0a84ff"></label>
+            <label><span>상대 글자</span><input id="dmTheirTextColor" type="color" value="#111111"></label>
+            <label><span>내 글자</span><input id="dmMyTextColor" type="color" value="#ffffff"></label>
+          </div>
         </section>
 
         <section class="tool-section inspector-template-bg" id="templateBackgroundSection">

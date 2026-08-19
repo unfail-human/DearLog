@@ -38,6 +38,8 @@ const state={
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   fontMode:'Noto Sans KR',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
   sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',sourceSkip:false,
+  dmStyle:{theirBubble:'#e9e9eb',myBubble:'#0a84ff',theirText:'#111111',myText:'#ffffff'},
+  stickerLayers:{x:[],instagram:[],dm:[],kakao:[]},selectedSticker:null,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -514,6 +516,17 @@ function syncVars(){
   capture.classList.toggle('dark',state.dark);
   capture.style.setProperty('--chat-bg',state.chatBg);
   capture.style.setProperty('--chat-bg-image',state.chatBgImage ? `url("${state.chatBgImage}")` : 'none');
+  const dmStyle=state.dmStyle||{};
+  capture.style.setProperty('--dm-their-bubble',dmStyle.theirBubble||'#e9e9eb');
+  capture.style.setProperty('--dm-my-bubble',dmStyle.myBubble||'#0a84ff');
+  capture.style.setProperty('--dm-their-text',dmStyle.theirText||'#111111');
+  capture.style.setProperty('--dm-my-text',dmStyle.myText||'#ffffff');
+
+  if(state.template==='kakao'){
+    capture.style.setProperty('--chat-bg',tb.color||'#dfe8ef');
+    capture.style.setProperty('--chat-bg-image',tb.image?`url("${tb.image}")`:'none');
+    capture.style.setProperty('--chat-bg-size',`${tb.scale||100}%`);
+  }
   updatePalettePreview();
   const fontMap={
     'Pretendard':"'Pretendard','Noto Sans KR',sans-serif",
@@ -533,12 +546,20 @@ function syncVars(){
 function setChatControls(){
   const chat=['dm','kakao'].includes(state.template);
   $('#chatProfileSection').hidden=!chat;
-  $('#chatBackgroundSection').hidden=!chat;  $('#chatAddRow').hidden=!chat;
+  $('#chatBackgroundSection').hidden=true;
+  $('#chatAddRow').hidden=!chat;
   $('#addItemBtn').hidden=chat;
   $('#handleField').hidden=chat;
   $('#chatBioField').hidden=!chat;
   $('#profileSectionTitle').textContent=state.template==='x'?'내 프로필':'프로필';
-  const hint=$('#contentToolHint');if(hint)hint.textContent=state.template==='x'?'X':state.template==='instagram'?'Instagram':state.template==='dm'?'DM':'카카오톡';
+
+  const dm=state.template==='dm';
+  const kakao=state.template==='kakao';
+  if($('#dmStyleSection'))$('#dmStyleSection').hidden=!dm;
+  if($('#templateBackgroundSection'))$('#templateBackgroundSection').hidden=dm;
+
+  const hint=$('#contentToolHint');
+  if(hint)hint.textContent=state.template==='x'?'X':state.template==='instagram'?'Instagram':dm?'DM':'카카오톡';
 }
 function sharedTop(title='Dearlog'){
   return `<div class="preview-top"><div class="preview-brand">${state.brandSymbol?`<i>${esc(state.brandSymbol)}</i>`:''}<span>${title}</span></div><button class="preview-icon-btn" type="button">•••</button></div>`;
@@ -764,6 +785,10 @@ function updateInspector(){
   if($('#inspectSourceText')){
     $('#inspectSourceText').value=state.sourceText||'커미션 출처를 표기합니다.';
   $('#sourceSkipToggle').checked=!!state.sourceSkip;
+  if($('#dmTheirBubbleColor'))$('#dmTheirBubbleColor').value=state.dmStyle?.theirBubble||'#e9e9eb';
+  if($('#dmMyBubbleColor'))$('#dmMyBubbleColor').value=state.dmStyle?.myBubble||'#0a84ff';
+  if($('#dmTheirTextColor'))$('#dmTheirTextColor').value=state.dmStyle?.theirText||'#111111';
+  if($('#dmMyTextColor'))$('#dmMyTextColor').value=state.dmStyle?.myText||'#ffffff';
   if($('#inspectSourceLeft'))$('#inspectSourceLeft').hidden=!!state.sourceSkip;
     $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
     if($('#sourceSkipToggle'))$('#sourceSkipToggle').checked=!!state.sourceSkip;
@@ -828,14 +853,113 @@ function fitCaptureToStage(){
   capture.style.transform=`scale(${scale})`;
 }
 
+
+function currentStickers(){
+  state.stickerLayers=state.stickerLayers||{x:[],instagram:[],dm:[],kakao:[]};
+  state.stickerLayers[state.template]=state.stickerLayers[state.template]||[];
+  return state.stickerLayers[state.template];
+}
+
+function renderStickers(){
+  capture.querySelector('.sticker-layer')?.remove();
+  const items=currentStickers();
+  if(!items.length){
+    state.selectedSticker=null;
+    $('#deleteStickerBtn') && ($('#deleteStickerBtn').disabled=true);
+    return;
+  }
+
+  const layer=document.createElement('div');
+  layer.className='sticker-layer';
+  items.forEach((s,i)=>{
+    if(!s?.src)return;
+    const img=document.createElement('img');
+    img.className='sticker-item';
+    img.src=s.src;
+    img.alt='스티커';
+    img.draggable=false;
+    img.dataset.index=String(i);
+    img.style.left=`${s.x??145}px`;
+    img.style.top=`${s.y??180}px`;
+    img.style.width=`${s.width??100}px`;
+    if(state.selectedSticker===i)img.classList.add('is-selected');
+    layer.appendChild(img);
+  });
+  capture.appendChild(layer);
+  bindStickers();
+}
+
+function bindStickers(){
+  capture.querySelectorAll('.sticker-item').forEach(img=>{
+    const i=Number(img.dataset.index);
+    img.addEventListener('click',e=>{
+      e.stopPropagation();
+      state.selectedSticker=i;
+      capture.querySelectorAll('.sticker-item').forEach(el=>el.classList.toggle('is-selected',el===img));
+      $('#deleteStickerBtn').disabled=false;
+    });
+
+    img.addEventListener('wheel',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const s=currentStickers()[i];
+      if(!s)return;
+      s.width=Math.max(28,Math.min(260,(s.width||100)+(e.deltaY<0?8:-8)));
+      img.style.width=`${s.width}px`;
+      if(typeof queueAutosave==='function')queueAutosave(300);
+    },{passive:false});
+
+    img.addEventListener('pointerdown',e=>{
+      if(e.button!==0)return;
+      e.preventDefault();
+      e.stopPropagation();
+      state.selectedSticker=i;
+      $('#deleteStickerBtn').disabled=false;
+      img.classList.add('is-selected','is-dragging');
+
+      const s=currentStickers()[i];
+      const rect=capture.getBoundingClientRect();
+      const sx=capture.offsetWidth/rect.width;
+      const sy=capture.offsetHeight/rect.height;
+      const startX=e.clientX,startY=e.clientY;
+      const baseX=s.x||0,baseY=s.y||0;
+      img.setPointerCapture(e.pointerId);
+
+      const move=ev=>{
+        const width=img.offsetWidth;
+        const height=img.offsetHeight;
+        const nx=baseX+(ev.clientX-startX)*sx;
+        const ny=baseY+(ev.clientY-startY)*sy;
+        s.x=Math.max(0,Math.min(capture.offsetWidth-width,nx));
+        s.y=Math.max(0,Math.min(Math.max(0,capture.offsetHeight-30-height),ny));
+        img.style.left=`${s.x}px`;
+        img.style.top=`${s.y}px`;
+      };
+      const up=ev=>{
+        img.classList.remove('is-dragging');
+        img.removeEventListener('pointermove',move);
+        img.removeEventListener('pointerup',up);
+        try{img.releasePointerCapture(ev.pointerId)}catch{}
+        if(typeof queueAutosave==='function')queueAutosave(300);
+      };
+      img.addEventListener('pointermove',move);
+      img.addEventListener('pointerup',up);
+    });
+  });
+}
+
 function render(){
+  capture.dataset.template=state.template;
   requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
   if(state.template==='x')renderX();
   else if(state.template==='instagram')renderInstagram();
   else if(state.template==='dm')renderDM();
   else renderKakao();
   syncVars();setChatControls();bindPreview();
-  requestAnimationFrame(updateWorkspaceSourceCredit);
+  requestAnimationFrame(()=>{
+    renderStickers();
+    updateWorkspaceSourceCredit();
+  });
 }
 function bindNames(){
   $$('.sync-name',capture).forEach(el=>el.addEventListener('input',()=>{
@@ -1185,6 +1309,20 @@ $('#customFontInput').addEventListener('change',async e=>{
     e.target.value='';
   }
 });
+
+function updateDMStyleFromControls(){
+  state.dmStyle=state.dmStyle||{};
+  state.dmStyle.theirBubble=$('#dmTheirBubbleColor').value;
+  state.dmStyle.myBubble=$('#dmMyBubbleColor').value;
+  state.dmStyle.theirText=$('#dmTheirTextColor').value;
+  state.dmStyle.myText=$('#dmMyTextColor').value;
+  syncVars();
+  if(typeof queueAutosave==='function')queueAutosave(250);
+}
+['dmTheirBubbleColor','dmMyBubbleColor','dmTheirTextColor','dmMyTextColor'].forEach(id=>{
+  $('#'+id)?.addEventListener('input',updateDMStyleFromControls);
+});
+
 $('#mainColor').addEventListener('input',e=>{
   state.main=e.target.value;
   if(state.autoPalette)
@@ -1215,6 +1353,28 @@ function addChatMessage(type){
   arr.push({side:nextSide(arr),type,text:type==='text'?'새 메시지를 입력하세요.':'',time:'now',image:'',read:false,video:false});
   render();
 }
+
+$('#stickerInput')?.addEventListener('change',e=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+  fileToData(file,src=>{
+    const items=currentStickers();
+    items.push({src,x:145,y:170,width:100});
+    state.selectedSticker=items.length-1;
+    render();
+  });
+  e.target.value='';
+});
+
+$('#deleteStickerBtn')?.addEventListener('click',()=>{
+  const items=currentStickers();
+  const i=state.selectedSticker;
+  if(i===null||i===undefined||!items[i])return;
+  items.splice(i,1);
+  state.selectedSticker=null;
+  render();
+});
+
 $('#addTextMessageBtn').addEventListener('click',()=>addChatMessage('text'));
 $('#addPhotoMessageBtn').addEventListener('click',()=>addChatMessage('photo'));
 $('#addTypingBtn').addEventListener('click',()=>{
@@ -1787,7 +1947,7 @@ function storageState(){
 
   // Slots/autosave store text and settings only. Never store uploaded files.
   const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|image|chatBgImage|customFontData)$/i;
-  const IMAGE_ARRAY_KEYS=/^(igTiles)$/i;
+  const IMAGE_ARRAY_KEYS=/^(igTiles|stickerLayers)$/i;
 
   function clean(value,key=''){
     if(value===null||value===undefined)return value;
@@ -1888,6 +2048,10 @@ function restoreStateObject(saved){
   state.sourceEnabled=true;
   state.sourceSkip=!!state.sourceSkip;
   state.sourceText=state.sourceText||'커미션 출처를 표기합니다.';
+  state.dmStyle=state.dmStyle||{theirBubble:'#e9e9eb',myBubble:'#0a84ff',theirText:'#111111',myText:'#ffffff'};
+  state.stickerLayers=state.stickerLayers||{x:[],instagram:[],dm:[],kakao:[]};
+  ['x','instagram','dm','kakao'].forEach(k=>{if(!Array.isArray(state.stickerLayers[k]))state.stickerLayers[k]=[]});
+  state.selectedSticker=null;
   applyCustomFontData();
   state.template=state.template||'x';
   state.brandSymbol=state.brandSymbol??'✦';

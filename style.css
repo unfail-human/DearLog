@@ -3964,3 +3964,110 @@ body{
   border-radius:0 0 16px 16px !important;
   box-sizing:border-box !important;
 }
+
+
+/* v71 — shorter DM/Kakao canvas */
+.capture[data-template="dm"],
+.capture[data-template="kakao"]{
+  min-height:0 !important;
+  height:auto !important;
+}
+.dm-page,
+.kakao-page{
+  height:620px !important;
+  min-height:620px !important;
+}
+
+/* iMessage: all-white shell and conversation area */
+.dm-page,
+.dm-head,
+.dm-body,
+.dm-compose{
+  background:#fff !important;
+  background-image:none !important;
+}
+.dm-page .theirs .bubble{
+  background:var(--dm-their-bubble,#e9e9eb) !important;
+  color:var(--dm-their-text,#111) !important;
+}
+.dm-page .mine .bubble{
+  background:var(--dm-my-bubble,#0a84ff) !important;
+  color:var(--dm-my-text,#fff) !important;
+}
+
+/* Kakao: top/footer remain white, middle room alone receives template background */
+.kakao-page{
+  background:#fff !important;
+  background-image:none !important;
+}
+.kakao-head,
+.kakao-compose{
+  background:#fff !important;
+  background-image:none !important;
+}
+.kakao-room{
+  background-color:var(--chat-bg,#dfe8ef) !important;
+  background-image:var(--chat-bg-image,none) !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  background-size:var(--chat-bg-size,100%) !important;
+}
+
+/* sticker layer */
+.capture{
+  position:relative !important;
+}
+.sticker-layer{
+  position:absolute;
+  inset:0 0 30px 0;
+  z-index:60;
+  pointer-events:none;
+  overflow:hidden;
+}
+.sticker-item{
+  position:absolute;
+  height:auto;
+  max-width:none !important;
+  user-select:none;
+  touch-action:none;
+  cursor:grab;
+  pointer-events:auto;
+  filter:none;
+}
+.sticker-item.is-dragging{cursor:grabbing}
+.sticker-item.is-selected{
+  outline:2px dashed rgba(93,90,85,.55);
+  outline-offset:3px;
+}
+.clean-output .sticker-item,
+.preview-modal .sticker-item{
+  outline:none !important;
+}
+.sticker-upload-btn{
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+  cursor:pointer;
+}
+.sticker-upload-btn input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
+.sticker-help{
+  display:block;
+  margin-top:7px;
+  color:var(--muted);
+  font-size:8px;
+  line-height:1.5;
+}
+.dm-color-grid{
+  grid-template-columns:1fr 1fr !important;
+}
+
+/* Shorter template leaves no giant empty block above the credit tail. */
+.capture[data-template="dm"] .workspace-source-credit,
+.capture[data-template="kakao"] .workspace-source-credit{
+  position:relative !important;
+}
