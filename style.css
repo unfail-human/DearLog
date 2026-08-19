@@ -4561,3 +4561,38 @@ body{
   grid-column:2 !important;
   justify-self:end !important;
 }
+
+
+/* v75 — Instagram photo grid: slightly taller portrait ratio */
+.ig-grid{
+  width:390px !important;
+  grid-template-columns:repeat(3,130px) !important;
+  grid-auto-rows:156px !important;
+  gap:0 !important;
+  background:#fff !important;
+}
+.ig-tile{
+  width:130px !important;
+  height:156px !important;
+  aspect-ratio:5 / 6 !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+.ig-tile img,
+.ig-tile .media-image,
+.ig-tile .ig-media{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+}
+.clean-output .ig-grid,
+.preview-modal .ig-grid{
+  grid-template-columns:repeat(3,130px) !important;
+  grid-auto-rows:156px !important;
+}
+.clean-output .ig-grid .ig-tile,
+.preview-modal .ig-grid .ig-tile{
+  width:130px !important;
+  height:156px !important;
+  aspect-ratio:5 / 6 !important;
+}

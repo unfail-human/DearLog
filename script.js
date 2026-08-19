@@ -2012,9 +2012,11 @@ const SLOT_NAME_PREFIX='dearlog-slot-name-v1-';
 function storageState(){
   saveCurrentProfile();
 
-  // Slots/autosave store text and settings only. Never store uploaded files.
+  // Slots/autosave still exclude media images.
+  // Exception: the unified basic profile image is kept with the slot.
   const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|image|chatBgImage|customFontData)$/i;
   const IMAGE_ARRAY_KEYS=/^(igTiles|stickerLayers)$/i;
+  const basicProfileAvatar=state.commonProfile?.avatar||state.avatar||'';
 
   function clean(value,key=''){
     if(value===null||value===undefined)return value;
@@ -2043,14 +2045,21 @@ function storageState(){
     return undefined;
   }
 
-  return clean(state);
-}
+  const saved=clean(state);
 
+  // Keep exactly one image: the slot's shared/basic profile image.
+  // It is restored into every template's own profile field when loading.
+  saved.commonProfile=saved.commonProfile||{};
+  saved.commonProfile.avatar=basicProfileAvatar;
+
+  return saved;
+}
 function serializeState(){
   return JSON.stringify({
-    version:3,
-    textAndSettingsOnly:true,
+    version:4,
+    textAndSettingsOnly:false,
     imagesExcluded:true,
+    basicProfileImageIncluded:true,
     savedAt:new Date().toISOString(),
     data:storageState()
   });
@@ -2081,26 +2090,29 @@ function restoreStateObject(saved){
   if(!state.commonProfile.handle)state.commonProfile.handle=state.handle||'dearlog';
   if(!state.commonProfile.avatar)state.commonProfile.avatar=fallbackAvatar;
 
-  if(!state.avatar)state.avatar=state.commonProfile.avatar;
-  if(!state.myAvatar)state.myAvatar=state.commonProfile.avatar;
+  // The shared/basic profile image is the only uploaded image retained in slots.
+  // Apply it consistently to the user's profile across every template.
+  const savedBasicAvatar=state.commonProfile.avatar||fallbackAvatar;
+  state.avatar=savedBasicAvatar;
+  state.myAvatar=savedBasicAvatar;
   if(!state.theirAvatar)state.theirAvatar=fallbackTheirAvatar;
 
   if(state.profiles){
-    if(state.profiles.x && !state.profiles.x.avatar)state.profiles.x.avatar=state.commonProfile.avatar;
-    if(state.profiles.instagram && !state.profiles.instagram.avatar)state.profiles.instagram.avatar=state.commonProfile.avatar;
+    if(state.profiles.x)state.profiles.x.avatar=savedBasicAvatar;
+    if(state.profiles.instagram)state.profiles.instagram.avatar=savedBasicAvatar;
     if(state.profiles.dm){
-      if(!state.profiles.dm.myAvatar)state.profiles.dm.myAvatar=state.commonProfile.avatar;
+      state.profiles.dm.myAvatar=savedBasicAvatar;
       if(!state.profiles.dm.theirAvatar)state.profiles.dm.theirAvatar=fallbackTheirAvatar;
     }
     if(state.profiles.kakao){
-      if(!state.profiles.kakao.myAvatar)state.profiles.kakao.myAvatar=state.commonProfile.avatar;
+      state.profiles.kakao.myAvatar=savedBasicAvatar;
       if(!state.profiles.kakao.theirAvatar)state.profiles.kakao.theirAvatar=fallbackTheirAvatar;
     }
   }
 
   if(Array.isArray(state.xPosts)){
     state.xPosts.forEach(post=>{
-      if(!post.authorAvatar)post.authorAvatar=state.commonProfile.avatar;
+      post.authorAvatar=savedBasicAvatar;
       if(!post.image)post.image='';
     });
   }
@@ -2198,7 +2210,10 @@ function updateSlotUI(){
     const load=$('.slot-load',row);
     const del=$('.slot-delete',row);
     const nameInput=$('.slot-name-input',row);
-    if(nameInput && document.activeElement!==nameInput)nameInput.value=getSlotName(n);
+    if(nameInput && document.activeElement!==nameInput){
+      const savedName=getSlotName(n);
+      if(nameInput.value!==savedName)nameInput.value=savedName;
+    }
     if(saved){
       status.textContent=formatSlotTime(saved.savedAt);
       load.disabled=false;
@@ -2218,7 +2233,7 @@ function saveToSlot(n){
     return true;
   }catch(err){
     console.error(err);
-    alert('슬롯 저장 공간이 부족해 저장하지 못했어요. v50부터 이미지는 저장하지 않고 텍스트와 설정만 저장합니다. 오래된 슬롯을 삭제한 뒤 다시 시도해 주세요.');
+    alert('슬롯 저장 공간이 부족해 저장하지 못했어요. 게시물·배경·스티커 이미지는 저장하지 않고, 기본 프로필 이미지만 슬롯에 함께 저장합니다. 오래된 슬롯을 삭제한 뒤 다시 시도해 주세요.');
     return false;
   }
 }
@@ -2239,13 +2254,45 @@ function deleteSlot(n){
 
 $$('.slot-row').forEach(row=>{
   const n=row.dataset.slot;
-  $('.slot-save',row).addEventListener('click',()=>{
-    const existing=readSlot(n);
-    if(existing&&!confirm(`“${getSlotName(n)}”에 이미 저장된 내용이 있어요.\n덮어쓸까요?`))return;
-    saveToSlot(n);
+  const nameInput=$('.slot-name-input',row);
+
+  const commitSlotName=()=>{
+    if(!nameInput)return getSlotName(n);
+    const savedName=saveSlotName(n,nameInput.value);
+    nameInput.value=savedName;
+    return savedName;
+  };
+
+  nameInput?.addEventListener('input',()=>{
+    saveSlotName(n,nameInput.value);
   });
-  $('.slot-load',row).addEventListener('click',()=>loadFromSlot(n));
-  $('.slot-delete',row).addEventListener('click',()=>deleteSlot(n));
+  nameInput?.addEventListener('change',commitSlotName);
+  nameInput?.addEventListener('blur',commitSlotName);
+  nameInput?.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      commitSlotName();
+      nameInput.blur();
+    }
+  });
+
+  $('.slot-save',row).addEventListener('click',()=>{
+    const slotName=commitSlotName();
+    const existing=readSlot(n);
+    if(existing&&!confirm(`“${slotName}”에 이미 저장된 내용이 있어요.\n덮어쓸까요?`))return;
+    saveToSlot(n);
+    if(nameInput)nameInput.value=slotName;
+  });
+
+  $('.slot-load',row).addEventListener('click',()=>{
+    commitSlotName();
+    loadFromSlot(n);
+  });
+
+  $('.slot-delete',row).addEventListener('click',()=>{
+    commitSlotName();
+    deleteSlot(n);
+  });
 });
 
 
