@@ -2786,3 +2786,74 @@ body{
   line-height:1.6;
   color:var(--muted);
 }
+
+
+/* v43 — Instagram feed becomes 4:5 portrait cards */
+.ig-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-auto-rows:auto !important;
+  gap:1px !important;
+}
+.ig-tile{
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:4 / 5 !important;
+  min-height:0 !important;
+  position:relative !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:var(--preview-card,#fff) !important;
+  cursor:grab;
+}
+.ig-tile.is-dragging{cursor:grabbing}
+
+.ig-tile.has-image > img{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  transform:
+    translate(calc(-50% + var(--ig-x,0px)),calc(-50% + var(--ig-y,0px)))
+    scale(var(--ig-scale,1)) !important;
+  transform-origin:center center !important;
+  user-select:none !important;
+  pointer-events:none !important;
+  image-rendering:auto !important;
+}
+.ig-edit-hint{
+  position:absolute;
+  left:6px;
+  bottom:6px;
+  z-index:4;
+  padding:4px 6px;
+  border-radius:999px;
+  background:rgba(20,27,38,.56);
+  color:#fff;
+  font-size:7px;
+  line-height:1;
+  pointer-events:none;
+  backdrop-filter:blur(3px);
+}
+.capture.clean-output .ig-edit-hint{display:none !important}
+
+.ig-tile.is-flattened-output > img{
+  position:absolute !important;
+  inset:0 !important;
+  left:0 !important;
+  top:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:fill !important;
+  transform:none !important;
+}
