@@ -1469,12 +1469,50 @@ window.addEventListener('resize',()=>requestAnimationFrame(fitCaptureToStage));
 const SLOT_PREFIX='dearlog-slot-v1-';
 const SLOT_NAME_PREFIX='dearlog-slot-name-v1-';
 
-function serializeState(){
+function storageState(){
   saveCurrentProfile();
+
+  // Slots/autosave store text and settings only. Never store uploaded files.
+  const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|image|chatBgImage)$/i;
+  const IMAGE_ARRAY_KEYS=/^(igTiles)$/i;
+
+  function clean(value,key=''){
+    if(value===null||value===undefined)return value;
+
+    if(typeof value==='string'){
+      if(/^data:/i.test(value)||/^blob:/i.test(value))return '';
+      if(IMAGE_KEYS.test(key))return '';
+      return value;
+    }
+    if(typeof value==='number'||typeof value==='boolean')return value;
+
+    if(Array.isArray(value)){
+      if(IMAGE_ARRAY_KEYS.test(key))return value.map(()=>'');
+      return value.map(v=>clean(v,key));
+    }
+
+    if(typeof value==='object'){
+      const out={};
+      for(const [k,v] of Object.entries(value)){
+        if(IMAGE_KEYS.test(k)){out[k]='';continue}
+        if(IMAGE_ARRAY_KEYS.test(k)){out[k]=Array.isArray(v)?v.map(()=>''):[];continue}
+        out[k]=clean(v,k);
+      }
+      return out;
+    }
+    return undefined;
+  }
+
+  return clean(state);
+}
+
+function serializeState(){
   return JSON.stringify({
-    version:1,
+    version:3,
+    textAndSettingsOnly:true,
+    imagesExcluded:true,
     savedAt:new Date().toISOString(),
-    data:state
+    data:storageState()
   });
 }
 
@@ -1594,7 +1632,7 @@ function saveToSlot(n){
     return true;
   }catch(err){
     console.error(err);
-    alert('슬롯 저장에 실패했어요. 이미지가 너무 많으면 브라우저 저장 공간이 부족할 수 있어요.');
+    alert('슬롯 저장 공간이 부족해 저장하지 못했어요. v50부터 이미지는 저장하지 않고 텍스트와 설정만 저장합니다. 오래된 슬롯을 삭제한 뒤 다시 시도해 주세요.');
     return false;
   }
 }
@@ -1649,6 +1687,17 @@ function updateAutosaveStatus(saved=null){
   const data=saved||readAutosave();
   el.textContent=data?.savedAt?`마지막 저장 ${formatSlotTime(data.savedAt)}`:'아직 자동 저장된 작업이 없어요.';
 }
+
+function migrateStorageV50(){
+  const key='dearlog-v50-storage-migrated';
+  try{
+    if(localStorage.getItem(key))return;
+    const raw=localStorage.getItem(AUTOSAVE_KEY);
+    if(raw && /data:image|data:video|blob:/i.test(raw))localStorage.removeItem(AUTOSAVE_KEY);
+    localStorage.setItem(key,'1');
+  }catch{}
+}
+
 function performAutosave(){
   if(autosaveBusy)return;
   autosaveBusy=true;
@@ -1700,3 +1749,5 @@ updateSlotUI();
 updateAutosaveStatus();
 if(!readAutosave())queueAutosave(1200);
 if(window.DEARLOG_NOTICE?.enabled && !sessionStorage.getItem(noticeSessionKey())) openNotice();
+
+try{migrateStorageV50()}catch{}
