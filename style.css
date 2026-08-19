@@ -2857,3 +2857,86 @@ body{
   object-fit:fill !important;
   transform:none !important;
 }
+
+
+/* v44 — universal photo editing workflow */
+.profile-editor-canvas-wrap{
+  width:min(500px,100%) !important;
+  aspect-ratio:var(--editor-aspect,1 / 1) !important;
+  max-height:62vh !important;
+}
+#profileEditorCanvas{
+  width:100% !important;
+  height:100% !important;
+}
+.profile-editor-circle-guide{
+  display:none;
+}
+.profile-editor-canvas-wrap.is-profile-mode .profile-editor-circle-guide{
+  display:block;
+}
+#profileEditorPreview{
+  border-radius:10px !important;
+  object-fit:contain;
+}
+.profile-editor-preview-row.is-profile-mode #profileEditorPreview{
+  border-radius:50% !important;
+}
+
+/* The template itself no longer has direct drag/zoom editing UI.
+   Images are edited only in the photo editor popup. */
+.x-media-scale-hint,
+.ig-edit-hint{
+  display:none !important;
+}
+.x-media,
+.ig-tile{
+  cursor:default !important;
+}
+.x-media.is-dragging,
+.ig-tile.is-dragging{
+  cursor:default !important;
+}
+
+.photo-edit-badge{
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  z-index:6;
+  padding:5px 8px;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:999px;
+  background:rgba(24,24,24,.58);
+  color:#fff;
+  font-size:8px;
+  line-height:1;
+  pointer-events:none;
+  backdrop-filter:blur(4px);
+}
+.capture.clean-output .photo-edit-badge{
+  display:none !important;
+}
+
+/* Edited media is already baked into the correct crop.
+   Do not re-stretch it in the template. */
+.x-media.has-image > img,
+.ig-tile.has-image > img,
+.dm-page .chat-photo.has-image > img,
+.kakao-page .chat-photo.has-image > img,
+.kakao-page .kakao-photo.has-image > img{
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  transform:none !important;
+  left:auto !important;
+  top:auto !important;
+  position:relative !important;
+}
+
+/* Instagram's edited output is 4:5 and therefore fills its 4:5 cell cleanly. */
+.ig-tile.has-image > img{
+  object-fit:cover !important;
+}

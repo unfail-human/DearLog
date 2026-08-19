@@ -101,12 +101,39 @@ const profileEditor={
   startX:0,
   startY:0,
   baseX:0,
-  baseY:0
+  baseY:0,
+  aspect:1,
+  outputW:1024,
+  outputH:1024,
+  profileMode:false,
+  bg:'#ffffff'
 };
 
-function profileEditorCanvasSize(){
+function configureEditorCanvas(){
   const canvas=$('#profileEditorCanvas');
-  return {w:canvas.width,h:canvas.height};
+  const preview=$('#profileEditorPreview');
+  const wrap=document.querySelector('.profile-editor-canvas-wrap');
+  const previewRow=document.querySelector('.profile-editor-preview-row');
+  if(!canvas||!preview||!wrap)return;
+
+  const base=480;
+  const aspect=Math.max(.25,Math.min(4,profileEditor.aspect||1));
+
+  if(aspect>=1){
+    canvas.width=base;
+    canvas.height=Math.max(120,Math.round(base/aspect));
+  }else{
+    canvas.height=base;
+    canvas.width=Math.max(120,Math.round(base*aspect));
+  }
+
+  const ratio=`${canvas.width} / ${canvas.height}`;
+  wrap.style.setProperty('--editor-aspect',ratio);
+  wrap.classList.toggle('is-profile-mode',profileEditor.profileMode);
+  previewRow?.classList.toggle('is-profile-mode',profileEditor.profileMode);
+
+  preview.width=profileEditor.profileMode?112:Math.max(112,Math.round(112*Math.min(1.65,aspect)));
+  preview.height=profileEditor.profileMode?112:Math.max(80,Math.round(preview.width/aspect));
 }
 
 function drawProfileEditor(){
@@ -117,12 +144,14 @@ function drawProfileEditor(){
   const ctx=canvas.getContext('2d');
   const pctx=preview.getContext('2d');
   const img=profileEditor.img;
-  const {w,h}=profileEditorCanvasSize();
+  const w=canvas.width,h=canvas.height;
 
   ctx.clearRect(0,0,w,h);
-  ctx.fillStyle='#ece9e3';
+  ctx.fillStyle=profileEditor.bg||'#ffffff';
   ctx.fillRect(0,0,w,h);
 
+  // Always preserve the source aspect ratio. "cover" establishes the initial crop;
+  // zoom only scales uniformly, never stretches the photo.
   const base=Math.max(w/img.naturalWidth,h/img.naturalHeight);
   const scale=base*profileEditor.zoom;
   const dw=img.naturalWidth*scale;
@@ -135,37 +164,60 @@ function drawProfileEditor(){
   ctx.drawImage(img,dx,dy,dw,dh);
 
   pctx.clearRect(0,0,preview.width,preview.height);
-  pctx.save();
-  pctx.beginPath();
-  pctx.arc(preview.width/2,preview.height/2,preview.width/2,0,Math.PI*2);
-  pctx.clip();
-  const ratio=preview.width/w;
+  pctx.fillStyle=profileEditor.bg||'#ffffff';
+  pctx.fillRect(0,0,preview.width,preview.height);
+
+  if(profileEditor.profileMode){
+    pctx.save();
+    pctx.beginPath();
+    pctx.arc(preview.width/2,preview.height/2,preview.width/2,0,Math.PI*2);
+    pctx.clip();
+  }
   pctx.imageSmoothingEnabled=true;
   pctx.imageSmoothingQuality='high';
   pctx.drawImage(canvas,0,0,w,h,0,0,preview.width,preview.height);
-  pctx.restore();
+  if(profileEditor.profileMode)pctx.restore();
 
   $('#profileEditorZoomValue').textContent=`${Math.round(profileEditor.zoom*100)}%`;
 }
 
-function openProfileEditor(file,callback){
+function openPhotoEditor(file,options={},callback){
   if(!file)return;
+
   const reader=new FileReader();
   reader.onload=()=>{
     const img=new Image();
     img.onload=()=>{
+      let aspect=options.aspect;
+      if(aspect==='source'||!aspect)aspect=img.naturalWidth/img.naturalHeight;
+
       profileEditor.img=img;
       profileEditor.zoom=1;
       profileEditor.offsetX=0;
       profileEditor.offsetY=0;
       profileEditor.callback=callback;
+      profileEditor.aspect=aspect;
+      profileEditor.profileMode=!!options.profile;
+      profileEditor.bg=options.bg||'#ffffff';
+
+      const defaultOutputW=options.profile?1024:1600;
+      profileEditor.outputW=options.outputW||defaultOutputW;
+      profileEditor.outputH=options.outputH||Math.max(1,Math.round(profileEditor.outputW/aspect));
+
+      configureEditorCanvas();
       $('#profileEditorZoom').value='1';
+      $('#profileEditorTitle').textContent='사진 편집';
       $('#profileEditorBackdrop').hidden=false;
       drawProfileEditor();
     };
     img.src=reader.result;
   };
   reader.readAsDataURL(file);
+}
+
+/* Compatibility wrapper: all profile uploads now use the same photo editor. */
+function openProfileEditor(file,callback){
+  openPhotoEditor(file,{aspect:1,profile:true,outputW:1024,outputH:1024,bg:'#ece9e3'},callback);
 }
 
 function closeProfileEditor(){
@@ -178,24 +230,24 @@ function exportEditedProfile(){
   if(!profileEditor.img)return null;
 
   const output=document.createElement('canvas');
-  output.width=1024;
-  output.height=1024;
+  output.width=profileEditor.outputW;
+  output.height=profileEditor.outputH;
+
   const ctx=output.getContext('2d');
   const img=profileEditor.img;
-
   const editor=$('#profileEditorCanvas');
-  const editorW=editor.width;
-  const editorH=editor.height;
-  const ratio=output.width/editorW;
+  const editorW=editor.width,editorH=editor.height;
+  const ratioX=output.width/editorW;
+  const ratioY=output.height/editorH;
 
   const base=Math.max(editorW/img.naturalWidth,editorH/img.naturalHeight);
   const editorScale=base*profileEditor.zoom;
-  const dw=img.naturalWidth*editorScale*ratio;
-  const dh=img.naturalHeight*editorScale*ratio;
-  const dx=((editorW-img.naturalWidth*editorScale)/2+profileEditor.offsetX)*ratio;
-  const dy=((editorH-img.naturalHeight*editorScale)/2+profileEditor.offsetY)*ratio;
+  const dw=img.naturalWidth*editorScale*ratioX;
+  const dh=img.naturalHeight*editorScale*ratioY;
+  const dx=((editorW-img.naturalWidth*editorScale)/2+profileEditor.offsetX)*ratioX;
+  const dy=((editorH-img.naturalHeight*editorScale)/2+profileEditor.offsetY)*ratioY;
 
-  ctx.fillStyle='#ece9e3';
+  ctx.fillStyle=profileEditor.bg||'#ffffff';
   ctx.fillRect(0,0,output.width,output.height);
   ctx.imageSmoothingEnabled=true;
   ctx.imageSmoothingQuality='high';
@@ -244,8 +296,9 @@ profileCanvasWrap?.addEventListener('pointerdown',e=>{
 profileCanvasWrap?.addEventListener('pointermove',e=>{
   if(!profileEditor.dragging)return;
   const rect=profileCanvasWrap.getBoundingClientRect();
-  const scaleX=420/rect.width;
-  const scaleY=420/rect.height;
+  const canvas=$('#profileEditorCanvas');
+  const scaleX=canvas.width/rect.width;
+  const scaleY=canvas.height/rect.height;
   profileEditor.offsetX=profileEditor.baseX+(e.clientX-profileEditor.startX)*scaleX;
   profileEditor.offsetY=profileEditor.baseY+(e.clientY-profileEditor.startY)*scaleY;
   drawProfileEditor();
@@ -359,10 +412,10 @@ function xPost(post,i){
       <span class="quote-meta">@<span class="editable quote-handle-edit" contenteditable="true">${esc(post.quoteHandle||'original')}</span></span></div></div>
       <div class="quote-body editable quote-body-edit" contenteditable="true">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
     </div>`:''}
-    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-scale:${post.mediaScale??1};--media-x:${post.mediaX??0}px;--media-y:${post.mediaY??0}px;--media-bg:${post.imageBg||'#f5f4f1'}"><input type="file" accept="image/*" class="x-image-input">
+    ${post.mediaEnabled?`<label class="x-media image-picker ${post.image?'has-image':''}" style="--media-bg:${post.imageBg||'#f5f4f1'}"><input type="file" accept="image/*" class="x-image-input">
       ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
-      ${post.image?`<div class="x-media-scale-hint">휠 확대·축소 · 드래그 위치 조절</div>`:''}
+      ${post.image?`<div class="photo-edit-badge">사진 편집</div>`:''}
       <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
     </label>`:''}
     <div class="x-actions">
@@ -402,17 +455,17 @@ function renderInstagram(){
       </div>
     </section>
     <div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
-    <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}" style="--ig-scale:${state.igScales?.[i]??1};--ig-x:${state.igXs?.[i]??0}px;--ig-y:${state.igYs?.[i]??0}px">
+    <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}" >
       <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
-      ${src?`<div class="ig-edit-hint">휠 확대·축소 · 드래그 이동</div>`:''}
+      ${src?`<div class="photo-edit-badge">사진 편집</div>`:''}
       <button class="media-play-toggle ig-video-toggle" type="button">${state.igVideos?.[i]?'ON':'▶'}</button>
     </label>`).join('')}</div></div>`;
 }
 function chatMedia(m, cls){
   if(m.type!=='photo') return `<div class="bubble editable chat-text" contenteditable="true">${esc(m.text)}</div>`;
   return `<label class="${cls} chat-photo image-picker ${m.image?'has-image':''}"><input type="file" accept="image/*" class="chat-photo-input">
-    ${m.image?`<img src="${m.image}" alt="메시지 사진">`:`<div class="image-placeholder"><b>＋</b><span>사진 메시지</span></div>`}
+    ${m.image?`<img src="${m.image}" alt="메시지 사진"><div class="photo-edit-badge">사진 편집</div>`:`<div class="image-placeholder"><b>＋</b><span>사진 메시지</span></div>`}
     ${m.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
     <button class="media-play-toggle chat-video-toggle" type="button">${m.video?'동영상 ON':'▶'}</button>
   </label>`;
@@ -624,10 +677,18 @@ function bindChat(listName){
     if(m.type==='typing')return;
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
-    $('.chat-photo-input',row)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{
-      m.image=src;
-      render();
-    }));
+    $('.chat-photo-input',row)?.addEventListener('change',e=>{
+      openPhotoEditor(e.target.files[0],{
+        aspect:'source',
+        outputW:1400,
+        bg:'#ffffff'
+      },src=>{
+        m.image=src;
+        render();
+        if(typeof queueAutosave==='function')queueAutosave(250);
+      });
+      e.target.value='';
+    });
     $('.chat-video-toggle',row)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();m.video=!m.video;render()});
     const toggle=()=>{
       m.read=!m.read;
@@ -722,90 +783,40 @@ function bindPreview(){
         p.mediaEnabled=!p.mediaEnabled;
         render();
       });
-      $('.x-image-input',card)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{
-        p.image=src;
-        p.mediaScale=1;
-        p.mediaX=0;
-        p.mediaY=0;
-        render();
-      }));
-      $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
-      const media=$('.x-media',card);
-      media?.addEventListener('wheel',e=>{
-        if(!p.image)return;
-        e.preventDefault();
-        e.stopPropagation();
-        p.mediaScale=Math.max(.5,Math.min(4,(p.mediaScale??1)+(e.deltaY<0?.08:-.08)));
-        media.style.setProperty('--media-scale',p.mediaScale);
-      },{passive:false});
-      media?.addEventListener('pointerdown',e=>{
-        if(!p.image||e.button!==0)return;
-        if(e.target.closest('button,input'))return;
-        e.preventDefault();
-        media.classList.add('is-dragging');
-        const startX=e.clientX,startY=e.clientY;
-        const baseX=p.mediaX??0,baseY=p.mediaY??0;
-        media.setPointerCapture(e.pointerId);
-        const move=ev=>{
-          p.mediaX=baseX+(ev.clientX-startX);
-          p.mediaY=baseY+(ev.clientY-startY);
-          media.style.setProperty('--media-x',`${p.mediaX}px`);
-          media.style.setProperty('--media-y',`${p.mediaY}px`);
-        };
-        const up=ev=>{
-          media.classList.remove('is-dragging');
-          media.removeEventListener('pointermove',move);
-          media.removeEventListener('pointerup',up);
-          try{media.releasePointerCapture(ev.pointerId)}catch{}
-        };
-        media.addEventListener('pointermove',move);
-        media.addEventListener('pointerup',up);
+      $('.x-image-input',card)?.addEventListener('change',e=>{
+        openPhotoEditor(e.target.files[0],{
+          aspect:390/240,
+          outputW:1560,
+          outputH:960,
+          bg:p.imageBg||'#f5f4f1'
+        },src=>{
+          p.image=src;
+          p.mediaScale=1;p.mediaX=0;p.mediaY=0;
+          render();
+          if(typeof queueAutosave==='function')queueAutosave(250);
+        });
+        e.target.value='';
       });
+      $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
     });
   }else if(state.template==='instagram'){
     $$('.ig-tile',capture).forEach(tile=>{
       const i=+tile.dataset.index;
-      $('.ig-image-input',tile).addEventListener('change',e=>fileToData(e.target.files[0],src=>{
-        state.igTiles[i]=src;
-        state.igScales[i]=1;
-        state.igXs[i]=0;
-        state.igYs[i]=0;
-        render();
-      }));
-      $('.ig-video-toggle',tile)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.igVideos[i]=!state.igVideos[i];render()});
-
-      tile.addEventListener('wheel',e=>{
-        if(!state.igTiles[i])return;
-        e.preventDefault();
-        e.stopPropagation();
-        state.igScales[i]=Math.max(.5,Math.min(4,(state.igScales[i]??1)+(e.deltaY<0?.08:-.08)));
-        tile.style.setProperty('--ig-scale',state.igScales[i]);
-      },{passive:false});
-
-      tile.addEventListener('pointerdown',e=>{
-        if(!state.igTiles[i]||e.button!==0)return;
-        if(e.target.closest('button,input'))return;
-        e.preventDefault();
-        tile.classList.add('is-dragging');
-        const startX=e.clientX,startY=e.clientY;
-        const baseX=state.igXs[i]??0,baseY=state.igYs[i]??0;
-        tile.setPointerCapture(e.pointerId);
-        const move=ev=>{
-          state.igXs[i]=baseX+(ev.clientX-startX);
-          state.igYs[i]=baseY+(ev.clientY-startY);
-          tile.style.setProperty('--ig-x',`${state.igXs[i]}px`);
-          tile.style.setProperty('--ig-y',`${state.igYs[i]}px`);
-        };
-        const up=ev=>{
-          tile.classList.remove('is-dragging');
-          tile.removeEventListener('pointermove',move);
-          tile.removeEventListener('pointerup',up);
-          try{tile.releasePointerCapture(ev.pointerId)}catch{}
+      $('.ig-image-input',tile).addEventListener('change',e=>{
+        openPhotoEditor(e.target.files[0],{
+          aspect:4/5,
+          outputW:1200,
+          outputH:1500,
+          bg:'#ffffff'
+        },src=>{
+          state.igTiles[i]=src;
+          state.igScales[i]=1;state.igXs[i]=0;state.igYs[i]=0;
+          render();
           if(typeof queueAutosave==='function')queueAutosave(250);
-        };
-        tile.addEventListener('pointermove',move);
-        tile.addEventListener('pointerup',up);
+        });
+        e.target.value='';
       });
+      $('.ig-video-toggle',tile)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.igVideos[i]=!state.igVideos[i];render()});
     });
   }else if(state.template==='dm') bindChat('dm');
   else bindChat('kakao');
@@ -913,10 +924,21 @@ $('#templateBgColor').addEventListener('input',e=>{
   state.backgrounds[state.template].color=e.target.value;
   syncVars();
 });
-$('#templateBgImageInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{
-  state.backgrounds[state.template].image=src;
-  syncVars();
-}));
+$('#templateBgImageInput').addEventListener('change',e=>{
+  openPhotoEditor(e.target.files[0],{
+    aspect:390/844,
+    outputW:1560,
+    outputH:3376,
+    bg:state.backgrounds[state.template].color||'#f5f4f1'
+  },src=>{
+    state.backgrounds[state.template].image=src;
+    state.backgrounds[state.template].scale=100;
+    syncTemplateBackgroundControls();
+    syncVars();
+    if(typeof queueAutosave==='function')queueAutosave(250);
+  });
+  e.target.value='';
+});
 $('#clearTemplateBgBtn').addEventListener('click',()=>{
   state.backgrounds[state.template].image='';
   $('#templateBgImageInput').value='';
@@ -933,7 +955,19 @@ capture.addEventListener('wheel',e=>{
 },{passive:false});
 
 $('#chatBgColor').addEventListener('input',e=>{state.chatBg=e.target.value;syncVars()});
-$('#chatBgImageInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.chatBgImage=src;syncVars()}));
+$('#chatBgImageInput').addEventListener('change',e=>{
+  openPhotoEditor(e.target.files[0],{
+    aspect:390/700,
+    outputW:1560,
+    outputH:2800,
+    bg:state.chatBg||'#dfe8ef'
+  },src=>{
+    state.chatBgImage=src;
+    syncVars();
+    if(typeof queueAutosave==='function')queueAutosave(250);
+  });
+  e.target.value='';
+});
 $('#clearChatBgBtn').addEventListener('click',()=>{state.chatBgImage='';$('#chatBgImageInput').value='';syncVars()});
 
 $('#resetBtn').addEventListener('click',()=>{if(confirm('편집 내용을 모두 초기화할까요?'))location.reload()});
