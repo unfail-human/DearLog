@@ -355,6 +355,46 @@
     </section>
   </div>
 
+
+  <div class="profile-editor-backdrop" id="profileEditorBackdrop" hidden>
+    <section class="profile-editor-modal" role="dialog" aria-modal="true" aria-labelledby="profileEditorTitle">
+      <div class="profile-editor-head">
+        <div>
+          <small>PROFILE IMAGE</small>
+          <h2 id="profileEditorTitle">프로필 사진 편집</h2>
+          <p>사진을 드래그해서 위치를 맞추고 확대·축소한 뒤 적용하세요.</p>
+        </div>
+        <button class="profile-editor-close" id="profileEditorClose" type="button" aria-label="닫기">×</button>
+      </div>
+
+      <div class="profile-editor-work">
+        <div class="profile-editor-canvas-wrap">
+          <canvas id="profileEditorCanvas" width="420" height="420"></canvas>
+          <div class="profile-editor-circle-guide"></div>
+        </div>
+
+        <div class="profile-editor-controls">
+          <label class="profile-editor-zoom">
+            <span>확대</span>
+            <input id="profileEditorZoom" type="range" min="1" max="4" step="0.01" value="1">
+            <b id="profileEditorZoomValue">100%</b>
+          </label>
+          <button class="mini-ghost-btn" id="profileEditorReset" type="button">위치 초기화</button>
+        </div>
+
+        <div class="profile-editor-preview-row">
+          <span>적용 미리보기</span>
+          <canvas id="profileEditorPreview" width="112" height="112"></canvas>
+        </div>
+      </div>
+
+      <div class="profile-editor-actions">
+        <button class="btn btn-subtle" id="profileEditorCancel" type="button">취소</button>
+        <button class="btn btn-primary" id="profileEditorApply" type="button">적용</button>
+      </div>
+    </section>
+  </div>
+
   <div class="preview-backdrop" id="previewBackdrop" hidden>
     <div class="preview-modal">
       <div class="preview-modal-head">

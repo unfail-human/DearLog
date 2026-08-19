@@ -88,6 +88,175 @@ function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt
 function safeHandle(s=''){return String(s).replace(/^@+/,'').trim()||'dearlog'}
 function fileToData(file,cb){if(!file)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file)}
 
+const profileEditor={
+  img:null,
+  zoom:1,
+  offsetX:0,
+  offsetY:0,
+  callback:null,
+  dragging:false,
+  startX:0,
+  startY:0,
+  baseX:0,
+  baseY:0
+};
+
+function profileEditorCanvasSize(){
+  const canvas=$('#profileEditorCanvas');
+  return {w:canvas.width,h:canvas.height};
+}
+
+function drawProfileEditor(){
+  const canvas=$('#profileEditorCanvas');
+  const preview=$('#profileEditorPreview');
+  if(!canvas||!preview||!profileEditor.img)return;
+
+  const ctx=canvas.getContext('2d');
+  const pctx=preview.getContext('2d');
+  const img=profileEditor.img;
+  const {w,h}=profileEditorCanvasSize();
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#ece9e3';
+  ctx.fillRect(0,0,w,h);
+
+  const base=Math.max(w/img.naturalWidth,h/img.naturalHeight);
+  const scale=base*profileEditor.zoom;
+  const dw=img.naturalWidth*scale;
+  const dh=img.naturalHeight*scale;
+  const dx=(w-dw)/2+profileEditor.offsetX;
+  const dy=(h-dh)/2+profileEditor.offsetY;
+
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
+  ctx.drawImage(img,dx,dy,dw,dh);
+
+  pctx.clearRect(0,0,preview.width,preview.height);
+  pctx.save();
+  pctx.beginPath();
+  pctx.arc(preview.width/2,preview.height/2,preview.width/2,0,Math.PI*2);
+  pctx.clip();
+  const ratio=preview.width/w;
+  pctx.imageSmoothingEnabled=true;
+  pctx.imageSmoothingQuality='high';
+  pctx.drawImage(canvas,0,0,w,h,0,0,preview.width,preview.height);
+  pctx.restore();
+
+  $('#profileEditorZoomValue').textContent=`${Math.round(profileEditor.zoom*100)}%`;
+}
+
+function openProfileEditor(file,callback){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      profileEditor.img=img;
+      profileEditor.zoom=1;
+      profileEditor.offsetX=0;
+      profileEditor.offsetY=0;
+      profileEditor.callback=callback;
+      $('#profileEditorZoom').value='1';
+      $('#profileEditorBackdrop').hidden=false;
+      drawProfileEditor();
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function closeProfileEditor(){
+  $('#profileEditorBackdrop').hidden=true;
+  profileEditor.img=null;
+  profileEditor.callback=null;
+}
+
+function exportEditedProfile(){
+  if(!profileEditor.img)return null;
+
+  const output=document.createElement('canvas');
+  output.width=1024;
+  output.height=1024;
+  const ctx=output.getContext('2d');
+  const img=profileEditor.img;
+
+  const editor=$('#profileEditorCanvas');
+  const editorW=editor.width;
+  const editorH=editor.height;
+  const ratio=output.width/editorW;
+
+  const base=Math.max(editorW/img.naturalWidth,editorH/img.naturalHeight);
+  const editorScale=base*profileEditor.zoom;
+  const dw=img.naturalWidth*editorScale*ratio;
+  const dh=img.naturalHeight*editorScale*ratio;
+  const dx=((editorW-img.naturalWidth*editorScale)/2+profileEditor.offsetX)*ratio;
+  const dy=((editorH-img.naturalHeight*editorScale)/2+profileEditor.offsetY)*ratio;
+
+  ctx.fillStyle='#ece9e3';
+  ctx.fillRect(0,0,output.width,output.height);
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
+  ctx.drawImage(img,dx,dy,dw,dh);
+
+  return output.toDataURL('image/png',1);
+}
+
+$('#profileEditorZoom').addEventListener('input',e=>{
+  profileEditor.zoom=Number(e.target.value)||1;
+  drawProfileEditor();
+});
+
+$('#profileEditorReset').addEventListener('click',()=>{
+  profileEditor.zoom=1;
+  profileEditor.offsetX=0;
+  profileEditor.offsetY=0;
+  $('#profileEditorZoom').value='1';
+  drawProfileEditor();
+});
+
+$('#profileEditorApply').addEventListener('click',()=>{
+  const result=exportEditedProfile();
+  const cb=profileEditor.callback;
+  closeProfileEditor();
+  if(result&&cb)cb(result);
+});
+
+$('#profileEditorCancel').addEventListener('click',closeProfileEditor);
+$('#profileEditorClose').addEventListener('click',closeProfileEditor);
+$('#profileEditorBackdrop').addEventListener('click',e=>{
+  if(e.target===$('#profileEditorBackdrop'))closeProfileEditor();
+});
+
+const profileCanvasWrap=document.querySelector('.profile-editor-canvas-wrap');
+profileCanvasWrap?.addEventListener('pointerdown',e=>{
+  if(!profileEditor.img||e.button!==0)return;
+  profileEditor.dragging=true;
+  profileEditor.startX=e.clientX;
+  profileEditor.startY=e.clientY;
+  profileEditor.baseX=profileEditor.offsetX;
+  profileEditor.baseY=profileEditor.offsetY;
+  profileCanvasWrap.classList.add('is-dragging');
+  profileCanvasWrap.setPointerCapture(e.pointerId);
+});
+profileCanvasWrap?.addEventListener('pointermove',e=>{
+  if(!profileEditor.dragging)return;
+  const rect=profileCanvasWrap.getBoundingClientRect();
+  const scaleX=420/rect.width;
+  const scaleY=420/rect.height;
+  profileEditor.offsetX=profileEditor.baseX+(e.clientX-profileEditor.startX)*scaleX;
+  profileEditor.offsetY=profileEditor.baseY+(e.clientY-profileEditor.startY)*scaleY;
+  drawProfileEditor();
+});
+function endProfileDrag(e){
+  if(!profileEditor.dragging)return;
+  profileEditor.dragging=false;
+  profileCanvasWrap?.classList.remove('is-dragging');
+  try{profileCanvasWrap?.releasePointerCapture(e.pointerId)}catch{}
+}
+profileCanvasWrap?.addEventListener('pointerup',endProfileDrag);
+profileCanvasWrap?.addEventListener('pointercancel',endProfileDrag);
+
+
 function hexToRgb(hex){
   const h=hex.replace('#','');
   if(h.length!==6)return {r:120,g:150,b:198};
@@ -471,7 +640,16 @@ function bindChat(listName){
 }
 function bindPreview(){
   bindNames();
-  $$('.avatar-local-input',capture).forEach(inp=>inp.addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.avatar=src;saveCurrentProfile();render()})));
+  $$('.avatar-local-input',capture).forEach(inp=>inp.addEventListener('change',e=>{
+    openProfileEditor(e.target.files[0],src=>{
+      state.avatar=src;
+      $('#sidebarAvatarPreview').src=src;
+      saveCurrentProfile();
+      render();
+      queueAutosave?.(250);
+    });
+    e.target.value='';
+  }));
   if(state.template==='x'){
     $$('.x-post',capture).forEach(card=>{
       const i=+card.dataset.index,p=state.xPosts[i];
@@ -500,11 +678,14 @@ function bindPreview(){
         const editor=$('.x-author-photo-editor',card);
         editor.hidden=!editor.hidden;
       });
-      $('.x-author-photo-input',card)?.addEventListener('change',e=>fileToData(e.target.files[0],src=>{
-        p.authorAvatar=src;
-        render();
-        requestAnimationFrame(()=>selectItem('x',i));
-      }));
+      $('.x-author-photo-input',card)?.addEventListener('change',e=>{
+        openProfileEditor(e.target.files[0],src=>{
+          p.authorAvatar=src;
+          render();
+          requestAnimationFrame(()=>selectItem('x',i));
+        });
+        e.target.value='';
+      });
       $('.x-use-my-avatar',card)?.addEventListener('click',e=>{
         e.stopPropagation();
         p.authorAvatar=state.avatar;
@@ -609,11 +790,36 @@ $('#brandSymbolSelect').addEventListener('change',e=>{state.brandSymbol=e.target
 $('#nameInput').addEventListener('input',e=>{state.name=e.target.value||'Dearlog';saveCurrentProfile();render()});
 $('#handleInput').addEventListener('input',e=>{state.handle=safeHandle(e.target.value);saveCurrentProfile();render()});
 $('#chatBioInput').addEventListener('input',e=>{state.chatBio=e.target.value;saveCurrentProfile();render()});
-$('#avatarInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.avatar=src;$('#sidebarAvatarPreview').src=src;saveCurrentProfile();render()}));
+$('#avatarInput').addEventListener('change',e=>{
+  openProfileEditor(e.target.files[0],src=>{
+    state.avatar=src;
+    $('#sidebarAvatarPreview').src=src;
+    saveCurrentProfile();
+    render();
+    queueAutosave?.(250);
+  });
+  e.target.value='';
+});
 $('#theirNameInput').addEventListener('input',e=>{state.theirName=e.target.value||'상대방';saveCurrentProfile();render()});
 $('#myNameInput').addEventListener('input',e=>{state.myName=e.target.value||'나';saveCurrentProfile();render()});
-$('#theirAvatarInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.theirAvatar=src;saveCurrentProfile();render()}));
-$('#myAvatarInput').addEventListener('change',e=>fileToData(e.target.files[0],src=>{state.myAvatar=src;saveCurrentProfile();render()}));
+$('#theirAvatarInput').addEventListener('change',e=>{
+  openProfileEditor(e.target.files[0],src=>{
+    state.theirAvatar=src;
+    saveCurrentProfile();
+    render();
+    queueAutosave?.(250);
+  });
+  e.target.value='';
+});
+$('#myAvatarInput').addEventListener('change',e=>{
+  openProfileEditor(e.target.files[0],src=>{
+    state.myAvatar=src;
+    saveCurrentProfile();
+    render();
+    queueAutosave?.(250);
+  });
+  e.target.value='';
+});
 
 $('#mainColor').addEventListener('input',e=>{
   state.main=e.target.value;
@@ -907,10 +1113,12 @@ $('#inspectBody').addEventListener('input',e=>{
 });
 $('#inspectPostAvatarInput').addEventListener('change',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
-  fileToData(e.target.files[0],src=>{
+  openProfileEditor(e.target.files[0],src=>{
     d.item.authorAvatar=src;
     refreshSelected();
+    queueAutosave?.(250);
   });
+  e.target.value='';
 });
 $('#inspectUseMyAvatarBtn').addEventListener('click',()=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
