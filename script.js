@@ -1867,9 +1867,44 @@ function appendSourceCredit(root){
   const credit=document.createElement('div');
   credit.className='workspace-source-credit export-source';
 
-  const left=state.sourceSkip?'':`<span class="workspace-source-left">ⓒ ${esc(artworkSource)}</span>`;
-  credit.innerHTML=`${left}<span class="workspace-source-right">Made with Dearlog</span>`;
-  credit.classList.toggle('source-left-hidden',!!state.sourceSkip);
+  // Export/preview uses explicit coordinates because html2canvas may ignore
+  // flex/grid auto alignment in cloned content.
+  credit.style.position='relative';
+  credit.style.display='block';
+  credit.style.width='100%';
+  credit.style.minHeight='30px';
+  credit.style.boxSizing='border-box';
+  credit.style.padding='7px 11px';
+
+  if(!state.sourceSkip){
+    const left=document.createElement('span');
+    left.className='workspace-source-left';
+    left.textContent=`ⓒ ${artworkSource}`;
+    left.style.position='absolute';
+    left.style.left='11px';
+    left.style.top='50%';
+    left.style.transform='translateY(-50%)';
+    left.style.maxWidth='68%';
+    left.style.whiteSpace='nowrap';
+    left.style.overflow='hidden';
+    left.style.textOverflow='ellipsis';
+    credit.appendChild(left);
+  }
+
+  const right=document.createElement('span');
+  right.className='workspace-source-right';
+  right.textContent='Made with Dearlog';
+  right.style.position='absolute';
+  right.style.right='11px';
+  right.style.left='auto';
+  right.style.top='50%';
+  right.style.transform='translateY(-50%)';
+  right.style.margin='0';
+  right.style.textAlign='right';
+  right.style.whiteSpace='nowrap';
+  credit.appendChild(right);
+
+  if(state.sourceSkip)credit.classList.add('source-left-hidden');
 
   root.appendChild(credit);
 }
