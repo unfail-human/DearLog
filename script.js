@@ -37,6 +37,7 @@ const state={
   },
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   fontMode:'system',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
+  sourceEnabled:true,sourceText:'Made with Dearlog',
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -1040,6 +1041,8 @@ $('#myAvatarInput').addEventListener('change',e=>{
 });
 
 
+
+
 $('#fontSelect').addEventListener('change',e=>{
   state.fontMode=e.target.value;
   syncVars();
@@ -1197,6 +1200,7 @@ async function saveCleanCapture(format='png',sourceNode=null){
       clean.querySelectorAll('input').forEach(el=>el.remove());
       flattenXMediaForOutput(sourceNode,clean);
       flattenInstagramForOutput(sourceNode,clean);
+      appendSourceCredit(clean);
     }else{
       clean=createCleanPreviewClone();
     }
@@ -1364,6 +1368,16 @@ function flattenInstagramForOutput(sourceRoot,cloneRoot){
   });
 }
 
+
+function appendSourceCredit(root){
+  root.querySelectorAll('.export-source').forEach(el=>el.remove());
+
+  const credit=document.createElement('div');
+  credit.className='export-source';
+  credit.textContent='Made with Dearlog';
+  root.appendChild(credit);
+}
+
 function createCleanPreviewClone(){
   const clone=capture.cloneNode(true);
   clone.id='previewCapture';
@@ -1374,6 +1388,7 @@ function createCleanPreviewClone(){
   clone.querySelectorAll('input').forEach(el=>el.remove());
   flattenXMediaForOutput(capture,clone);
   flattenInstagramForOutput(capture,clone);
+  appendSourceCredit(clone);
   return clone;
 }
 function openPreview(){
@@ -1653,6 +1668,8 @@ function restoreStateObject(saved){
   state.customFontName=state.customFontName||'';
   state.customFontData=state.customFontData||'';
   state.instagramPhotoBg=state.instagramPhotoBg||'#ffffff';
+  state.sourceEnabled=true;
+  state.sourceText='Made with Dearlog';
   applyCustomFontData();
   state.template=state.template||'x';
   state.brandSymbol=state.brandSymbol??'✦';
@@ -1868,8 +1885,7 @@ if(!restoredAutosave){
   $('#customFontName').textContent=state.customFontName||'폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.';
   const customOpt=$('#fontSelect option[value="custom"]');
   if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}
-  $('#instagramPhotoBgColor').value=state.instagramPhotoBg||'#ffffff';
-  syncTemplateBackgroundControls();
+  $('#instagramPhotoBgColor').value=state.instagramPhotoBg||'#ffffff';  syncTemplateBackgroundControls();
   render();
 }
 updateSlotUI();
