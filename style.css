@@ -4894,3 +4894,20 @@ body{
     transform-origin:top center !important;
   }
 }
+
+
+/* v83 — X workspace is truly centered vertically inside the editor */
+@media(min-width:901px){
+  .stage{
+    overflow:hidden !important;
+  }
+  .capture-shell{
+    padding-top:0 !important;
+    padding-bottom:0 !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+  }
+  .capture[data-template="x"]{
+    transform-origin:top center !important;
+  }
+}

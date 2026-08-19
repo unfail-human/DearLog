@@ -886,12 +886,24 @@ function fitCaptureToStage(){
   const bottomBreathingRoom=state.template==='x' ? 72 : 18;
   const availableH=Math.max(320,stage.clientHeight-padY-bottomBreathingRoom);
 
-  // X is taller than the other templates, so give only X a little extra shrink.
-  const templateScaleCap=state.template==='x' ? .72 : .90;
+  // X is taller than the other templates.
+  // Fit it with real top/bottom breathing room and vertically center the scaled result.
+  const isX=state.template==='x';
+  const templateScaleCap=isX ? .66 : .90;
   const scale=Math.min(templateScaleCap,availableW/naturalW,availableH/naturalH);
+  const scaledH=naturalH*scale;
+
   capture.style.transform=`scale(${scale})`;
   capture.style.transformOrigin='top center';
-  shell.style.height=`${naturalH*scale}px`;
+
+  if(isX){
+    const centeredSpace=Math.max(0,(availableH-scaledH)/2);
+    capture.style.marginTop=`${centeredSpace}px`;
+    shell.style.height=`${availableH}px`;
+  }else{
+    capture.style.marginTop='0px';
+    shell.style.height=`${scaledH}px`;
+  }
   shell.style.minHeight='0';
 }
 
