@@ -450,29 +450,19 @@
   </nav>
 
 
-  <div class="help-backdrop" id="helpBackdrop" hidden>
-    <section class="help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-      <div class="help-modal-head">
+  <div class="help-backdrop help-guide-backdrop" id="helpBackdrop" hidden>
+    <div class="help-guide-card" id="helpGuideCard" role="dialog" aria-modal="true" aria-labelledby="helpGuideTitle">
+      <div class="help-guide-kicker" id="helpGuideKicker">DEARLOG GUIDE · 1 / 9</div>
+      <h2 id="helpGuideTitle">템플릿 선택</h2>
+      <p id="helpGuideText">왼쪽의 템플릿 목록에서 X, Instagram, DM, 카카오톡 화면을 바꿀 수 있어요.</p>
+      <div class="help-guide-actions">
+        <button type="button" class="help-guide-skip" id="helpGuideClose">닫기</button>
         <div>
-          <small>DEARLOG GUIDE</small>
-          <h2 id="helpTitle">기능 설명</h2>
-          <p>자주 쓰는 기능들을 간단하게 정리했어요.</p>
+          <button type="button" class="help-guide-prev" id="helpGuidePrev">이전</button>
+          <button type="button" class="help-guide-next" id="helpGuideNext">다음</button>
         </div>
-        <button class="help-close-btn" id="helpCloseBtn" type="button" aria-label="닫기">×</button>
       </div>
-      <div class="help-sections">
-        <section><b>템플릿</b><p>X, Instagram, DM, 카카오톡 중 원하는 화면을 선택해 편집할 수 있어요.</p></section>
-        <section><b>오른쪽 편집 탭</b><p>화면 꾸미기에서는 메인 색상과 자동 추천 팔레트로 색을 정하고, 배경 이미지는 다크 모드 위의 `배경 이미지`에서 따로 설정할 수 있어요.</p></section>
-        <section><b>사진 편집</b><p>사진을 넣는 모든 곳에서 먼저 편집 창이 열려요. 파란 가이드가 실제 사진 틀과 같은 비율로 표시되며, 사진은 그 안에서 확대·축소와 위치 이동만 할 수 있어요. 적용하면 가이드에 보이던 구도 그대로 들어갑니다.</p></section><section><b>Instagram 사진 편집</b><p>Instagram 사진의 남는 여백 색상은 별도 설정 없이 일반 `배경` 색상을 사용해요. 사진 편집과 동영상 표시는 사진 편집 팝업에서 설정할 수 있습니다.</p></section>
-        <section><b>폰트</b><p>`화면 꾸미기 → 폰트`에서 기본 고딕·명조·둥근 고딕·고정폭을 선택할 수 있어요. 가진 TTF/OTF/WOFF/WOFF2 파일을 추가하면 사용자 폰트로도 Dearlog 전체 템플릿 글꼴을 바꿀 수 있어요.</p></section>
-        <section><b>프로필 사진</b><p>프로필 이미지를 선택하면 편집 팝업에서 확대·축소와 위치 조정을 한 뒤 적용할 수 있어요.</p></section>
-        <section><b>슬롯</b><p>슬롯에는 텍스트와 설정값만 저장돼요. 프로필·게시물·피드·메시지·배경 사진 등 업로드한 이미지 파일은 전혀 저장하지 않습니다. 슬롯을 불러온 뒤 사진만 다시 넣어 주세요.</p></section>
-        <section><b>자동 저장</b><p>작업 내용은 브라우저에 자동 저장되고, 새로고침하거나 다시 접속하면 마지막 작업을 자동으로 복원해요.</p></section>
-        <section><b>미리보기</b><p>편집용 버튼을 숨긴 실제 저장 화면을 확인할 수 있고, 미리보기에서도 바로 저장할 수 있어요.</p></section>
-        <section><b>저장</b><p>PNG는 바깥 영역을 투명하게 저장하고, JPG/PDF는 현재 템플릿 배경색으로 채워 저장해요.</p></section>
-        <section><b>저장 출처</b><p>그림 자료 출처는 직접 수정할 수 있고, `커미션 출처 표기 생략`을 체크하면 왼쪽 ⓒ 출처만 숨길 수 있어요. `Made with Dearlog`은 작업화면·미리보기·저장본 오른쪽에 항상 표시됩니다.</p></section>
-      </div>
-    </section>
+    </div>
   </div>
 
   <div class="slot-backdrop" id="slotBackdrop" hidden>

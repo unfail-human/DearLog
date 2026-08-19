@@ -1937,19 +1937,141 @@ document.addEventListener('click',e=>{
 });
 
 
+const HELP_GUIDE_STEPS=[
+  {
+    target:'#templateGrid',
+    title:'템플릿 선택',
+    text:'왼쪽의 템플릿 목록에서 X, Instagram, DM, 카카오톡 화면을 선택할 수 있어요.'
+  },
+  {
+    target:'.stage',
+    title:'작업화면',
+    text:'가운데가 실제 작업화면이에요. 게시물이나 메시지를 클릭하면 오른쪽에서 해당 항목을 편집할 수 있어요.'
+  },
+  {
+    target:'#editTabBtn',
+    title:'본문 수정하기',
+    text:'오른쪽의 「본문 수정하기」에서 게시물·메시지 내용과 프로필, X의 답글·리트윗·마음 수치 등을 편집해요.'
+  },
+  {
+    target:'#designTabBtn',
+    title:'화면 꾸미기',
+    text:'「화면 꾸미기」에서 폰트, 메인 색상, 추천 팔레트, 배경 이미지와 출처 표기를 설정할 수 있어요.'
+  },
+  {
+    target:'#stickerTabBtn',
+    title:'스티커 스튜디오',
+    text:'「스티커 스튜디오」를 활성화하면 이미지를 스티커로 추가하고 이동·크기 조절·잠금·삭제할 수 있어요.'
+  },
+  {
+    target:'.workspace-zoom',
+    title:'작업화면 확대 · 축소',
+    text:'− / ＋ 버튼으로 작업화면 표시 배율을 조절하고, 「초기화」를 누르면 100%로 돌아와요.'
+  },
+  {
+    target:'#previewBtn',
+    title:'미리보기',
+    text:'미리보기에서는 편집용 표시를 제외한 실제 저장 결과를 먼저 확인할 수 있어요.'
+  },
+  {
+    target:'#saveMenuBtn',
+    title:'파일 저장',
+    text:'여기에서 PNG, JPG, PDF 형식으로 결과물을 저장할 수 있어요.'
+  },
+  {
+    target:'.utility-dock',
+    title:'슬롯과 도움말',
+    text:'오른쪽 아래의 「슬롯」에서 작업을 저장·불러오기하고, 「설명」을 누르면 이 가이드를 언제든 다시 볼 수 있어요.'
+  }
+];
+
+let helpGuideIndex=0;
+let helpGuideTarget=null;
+
+function clearHelpGuideTarget(){
+  if(helpGuideTarget){
+    helpGuideTarget.classList.remove('help-guide-target');
+    helpGuideTarget=null;
+  }
+}
+
+function positionHelpGuide(){
+  const card=$('#helpGuideCard');
+  const step=HELP_GUIDE_STEPS[helpGuideIndex];
+  const target=document.querySelector(step.target);
+  if(!card||!target)return;
+
+  clearHelpGuideTarget();
+  helpGuideTarget=target;
+  target.classList.add('help-guide-target');
+
+  const r=target.getBoundingClientRect();
+  const cw=Math.min(330,window.innerWidth-28);
+  const estimatedH=190;
+  const gap=18;
+
+  let left=r.right+gap;
+  let top=r.top;
+
+  if(left+cw>window.innerWidth-14){
+    left=r.left-cw-gap;
+  }
+  if(left<14){
+    left=Math.max(14,Math.min(window.innerWidth-cw-14,r.left+(r.width-cw)/2));
+    top=r.bottom+gap;
+    if(top+estimatedH>window.innerHeight-14)top=Math.max(14,r.top-estimatedH-gap);
+  }
+
+  top=Math.max(14,Math.min(window.innerHeight-estimatedH-14,top));
+  card.style.left=`${left}px`;
+  card.style.top=`${top}px`;
+  card.style.width=`${cw}px`;
+}
+
+function renderHelpGuideStep(){
+  const step=HELP_GUIDE_STEPS[helpGuideIndex];
+  $('#helpGuideKicker').textContent=`DEARLOG GUIDE · ${helpGuideIndex+1} / ${HELP_GUIDE_STEPS.length}`;
+  $('#helpGuideTitle').textContent=step.title;
+  $('#helpGuideText').textContent=step.text;
+  $('#helpGuidePrev').disabled=helpGuideIndex===0;
+  $('#helpGuideNext').textContent=helpGuideIndex===HELP_GUIDE_STEPS.length-1?'완료':'다음';
+
+  const target=document.querySelector(step.target);
+  if(target){
+    target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
+    requestAnimationFrame(()=>requestAnimationFrame(positionHelpGuide));
+  }
+}
+
 function openHelpModal(){
+  helpGuideIndex=0;
   $('#helpBackdrop').hidden=false;
+  document.body.classList.add('help-guide-open');
+  renderHelpGuideStep();
 }
 function closeHelpModal(){
+  clearHelpGuideTarget();
   $('#helpBackdrop').hidden=true;
+  document.body.classList.remove('help-guide-open');
 }
 $('#helpOpenBtn')?.addEventListener('click',openHelpModal);
-$('#helpCloseBtn')?.addEventListener('click',closeHelpModal);
-$('#helpBackdrop')?.addEventListener('click',e=>{
-  if(e.target===$('#helpBackdrop'))closeHelpModal();
+$('#helpGuideClose')?.addEventListener('click',closeHelpModal);
+$('#helpGuidePrev')?.addEventListener('click',()=>{
+  if(helpGuideIndex>0){helpGuideIndex--;renderHelpGuideStep();}
+});
+$('#helpGuideNext')?.addEventListener('click',()=>{
+  if(helpGuideIndex>=HELP_GUIDE_STEPS.length-1){closeHelpModal();return;}
+  helpGuideIndex++;
+  renderHelpGuideStep();
+});
+window.addEventListener('resize',()=>{
+  if(!$('#helpBackdrop')?.hidden)positionHelpGuide();
 });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&!$('#helpBackdrop')?.hidden)closeHelpModal();
+  if($('#helpBackdrop')?.hidden)return;
+  if(e.key==='Escape')closeHelpModal();
+  if(e.key==='ArrowRight')$('#helpGuideNext')?.click();
+  if(e.key==='ArrowLeft')$('#helpGuidePrev')?.click();
 });
 
 function openNotice(){
