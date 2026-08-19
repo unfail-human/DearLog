@@ -9,6 +9,20 @@ window.DEARLOG_NOTICE={enabled:true,version:"v101",title:"Dearlog 업데이트",
   const legacySeenKey='dearlog-last-notice-version';
   const sessionKey=`dearlogNoticeHidden-${version}`;
 
+  const rememberNotice=()=>{
+    try{
+      localStorage.setItem(confirmedKey,version);
+      localStorage.setItem(legacySeenKey,version);
+      sessionStorage.setItem(sessionKey,'1');
+    }catch{}
+  };
+
+  const dismissNotice=()=>{
+    rememberNotice();
+    const backdrop=document.getElementById('noticeBackdrop');
+    if(backdrop)backdrop.hidden=true;
+  };
+
   let confirmed='';
   try{confirmed=localStorage.getItem(confirmedKey)||''}catch{}
 
@@ -31,13 +45,25 @@ window.DEARLOG_NOTICE={enabled:true,version:"v101",title:"Dearlog 업데이트",
     if(label)label.style.display='none';
   }
 
-  document.getElementById('noticeCloseBtn')?.addEventListener('click',()=>{
-    try{
-      localStorage.setItem(confirmedKey,version);
-      localStorage.setItem(legacySeenKey,version);
-      sessionStorage.setItem(sessionKey,'1');
-    }catch{}
-  },true);
+  // No confirmation button: touching/clicking the notice closes it and remembers this version.
+  const closeBtn=document.getElementById('noticeCloseBtn');
+  if(closeBtn)closeBtn.style.display='none';
+
+  const actions=document.querySelector('.notice-actions');
+  if(actions)actions.style.display='none';
+
+  const backdrop=document.getElementById('noticeBackdrop');
+  const modal=document.querySelector('.notice-modal');
+  if(modal){
+    modal.style.cursor='pointer';
+    modal.setAttribute('title','터치하면 닫힙니다');
+    modal.addEventListener('click',dismissNotice);
+  }
+  if(backdrop){
+    backdrop.addEventListener('click',e=>{
+      if(e.target===backdrop)dismissNotice();
+    });
+  }
 })();
 
 // X-only layout refinement: reduce excess top gap and reaction-row whitespace.
