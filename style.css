@@ -2311,3 +2311,27 @@ body{
     bottom:10px !important;
   }
 }
+
+
+/* v35 — editable slot names */
+.slot-name-input{
+  min-width:0;
+  width:140px;
+  max-width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  font-size:10px;
+  font-weight:700;
+  padding:2px 0;
+}
+.slot-name-input:focus{
+  border-bottom:1px solid var(--line-strong);
+}
+.slot-info{
+  min-width:0;
+}
+@media(max-width:520px){
+  .slot-name-input{width:100%}
+}

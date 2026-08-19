@@ -918,6 +918,7 @@ $('#deleteSelectedBtn').addEventListener('click',()=>{
 window.addEventListener('resize',()=>requestAnimationFrame(fitCaptureToStage));
 
 const SLOT_PREFIX='dearlog-slot-v1-';
+const SLOT_NAME_PREFIX='dearlog-slot-name-v1-';
 
 function serializeState(){
   saveCurrentProfile();
@@ -971,6 +972,18 @@ function restoreStateObject(saved){
   return true;
 }
 
+
+function slotNameKey(n){return SLOT_NAME_PREFIX+n}
+function getSlotName(n){
+  try{return localStorage.getItem(slotNameKey(n))||`슬롯 ${n}`}
+  catch{return `슬롯 ${n}`}
+}
+function saveSlotName(n,name){
+  const clean=(name||'').trim()||`슬롯 ${n}`;
+  try{localStorage.setItem(slotNameKey(n),clean)}catch{}
+  return clean;
+}
+
 function slotKey(n){return SLOT_PREFIX+n}
 
 function readSlot(n){
@@ -1000,6 +1013,8 @@ function updateSlotUI(){
     const status=$('.slot-status',row);
     const load=$('.slot-load',row);
     const del=$('.slot-delete',row);
+    const nameInput=$('.slot-name-input',row);
+    if(nameInput && document.activeElement!==nameInput)nameInput.value=getSlotName(n);
     if(saved){
       status.textContent=formatSlotTime(saved.savedAt);
       load.disabled=false;
@@ -1027,13 +1042,13 @@ function saveToSlot(n){
 function loadFromSlot(n){
   const saved=readSlot(n);
   if(!saved)return;
-  if(!confirm(`슬롯 ${n}의 내용을 불러올까요?\n현재 편집 중인 내용은 덮어씌워집니다.`))return;
+  if(!confirm(`“${getSlotName(n)}”의 내용을 불러올까요?\n현재 편집 중인 내용은 덮어씌워집니다.`))return;
   restoreStateObject(saved);
 }
 
 function deleteSlot(n){
   if(!readSlot(n))return;
-  if(!confirm(`슬롯 ${n}의 저장 내용을 삭제할까요?`))return;
+  if(!confirm(`“${getSlotName(n)}”의 저장 내용을 삭제할까요?`))return;
   localStorage.removeItem(slotKey(n));
   updateSlotUI();
 }
@@ -1042,7 +1057,7 @@ $$('.slot-row').forEach(row=>{
   const n=row.dataset.slot;
   $('.slot-save',row).addEventListener('click',()=>{
     const existing=readSlot(n);
-    if(existing&&!confirm(`슬롯 ${n}에 이미 저장된 내용이 있어요.\n덮어쓸까요?`))return;
+    if(existing&&!confirm(`“${getSlotName(n)}”에 이미 저장된 내용이 있어요.\n덮어쓸까요?`))return;
     saveToSlot(n);
   });
   $('.slot-load',row).addEventListener('click',()=>loadFromSlot(n));
