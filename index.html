@@ -214,6 +214,34 @@
         </div>
         <label class="field" id="inspectBodyField"><span>본문</span><textarea id="inspectBody" rows="7"></textarea></label>
 
+        <section class="inspect-quote-profile" id="inspectQuoteProfile" hidden>
+          <div class="inspect-quote-profile-head">
+            <span>인용 원본 프로필</span>
+            <small>인용 트윗에서만 사용</small>
+          </div>
+
+          <label class="field">
+            <span>원본 트윗 아이디</span>
+            <div class="prefix-input"><i>@</i><input id="inspectQuoteHandle" type="text" value="original" maxlength="30"></div>
+          </label>
+
+          <label class="field">
+            <span>인용할 원문 내용</span>
+            <textarea id="inspectQuoteBody" rows="4" placeholder="인용할 원문 내용을 입력하세요."></textarea>
+          </label>
+
+          <div class="inspect-post-avatar">
+            <span class="inspect-label">원본 프로필 사진</span>
+            <div class="inspect-post-avatar-row">
+              <img id="inspectQuoteAvatarPreview" alt="인용 원본 프로필 사진">
+              <div class="inspect-post-avatar-actions">
+                <label class="mini-upload-btn">사진 편집<input id="inspectQuoteAvatarInput" type="file" accept="image/*"></label>
+                <button class="mini-ghost-btn" id="inspectQuoteUseMyAvatarBtn" type="button">내 프로필 사진 사용</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="inspect-x-metrics" id="inspectXMetrics" hidden>
           <div class="inspect-x-metrics-head">
             <span>반응 수치</span>

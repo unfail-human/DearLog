@@ -53,8 +53,8 @@ const state={
   stickerLayers:{x:[],instagram:[],dm:[],kakao:[]},selectedSticker:null,stickerStudioActive:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:randomXMetric(80,1800),replies:randomXMetric(10,850),reposts:randomXMetric(8,700),shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:randomXMetric(50,1400),replies:randomXMetric(5,620),reposts:randomXMetric(4,480),shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:randomXMetric(80,1800),replies:randomXMetric(10,850),reposts:randomXMetric(8,700),shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteAvatar:'',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:randomXMetric(50,1400),replies:randomXMetric(5,620),reposts:randomXMetric(4,480),shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteAvatar:'',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -641,7 +641,7 @@ function xPost(post,i){
     </div></div>
     <div class="x-body x-body-edit">${esc(post.body)}</div>
     ${post.quote?`<div class="quote-card">
-      <div class="quote-user"><img class="avatar" src="${state.avatar||DEFAULT_AVATAR()}" alt=""><div class="quote-user-main">
+      <div class="quote-user"><img class="avatar quote-avatar" src="${post.quoteAvatar||state.avatar||DEFAULT_AVATAR()}" alt=""><div class="quote-user-main">
       <span class="quote-name quote-name-edit">${esc(post.quoteName||'Original')}</span>
       <span class="quote-meta">@<span class="quote-handle-edit">${esc(post.quoteHandle||'original')}</span></span></div></div>
       <div class="quote-body quote-body-edit">${esc(post.quoteBody||'인용할 원문 내용을 입력하세요.')}</div>
@@ -844,6 +844,7 @@ function updateInspector(){
   $('#inspectPostAvatarField').hidden=!isX;
   $('#inspectBodyField').hidden=isTyping;
   $('#inspectXMetrics').hidden=!isX;
+  $('#inspectQuoteProfile').hidden=!(isX&&d.item.quote);
   $('#inspectSideField').hidden=isX;
   $('#inspectTimeField').hidden=isX||isTyping;
   $('#inspectImageBgField').hidden=!(isX&&d.item.mediaEnabled);
@@ -856,6 +857,11 @@ function updateInspector(){
     $('#inspectReplies').value=formatXMetric(d.item.replies);
     $('#inspectReposts').value=formatXMetric(d.item.reposts);
     $('#inspectLikes').value=formatXMetric(d.item.likes);
+    if(d.item.quote){
+      $('#inspectQuoteHandle').value=d.item.quoteHandle||'original';
+      $('#inspectQuoteBody').value=d.item.quoteBody||'인용할 원문 내용을 입력하세요.';
+      $('#inspectQuoteAvatarPreview').src=d.item.quoteAvatar||state.avatar||DEFAULT_AVATAR();
+    }
     $('#inspectImageBg').value=d.item.imageBg||'#f5f4f1';
   }else{
     $('#inspectSide').value=d.item.side;
@@ -1198,7 +1204,15 @@ function bindPreview(){
       const moreBtn=$('.x-more-btn',card), moreMenu=$('.x-more-menu',card);
       moreBtn?.addEventListener('click',e=>{e.stopPropagation();moreMenu.hidden=!moreMenu.hidden});
       $('.x-quote-toggle',card)?.addEventListener('click',e=>{
-        e.stopPropagation();p.quote=!p.quote;render();
+        e.stopPropagation();
+        p.quote=!p.quote;
+        if(p.quote){
+          p.quoteHandle=p.quoteHandle||'original';
+          p.quoteAvatar=p.quoteAvatar||state.avatar||DEFAULT_AVATAR();
+        }
+        state.selected={kind:'x',index:i};
+        render();
+        requestAnimationFrame(()=>selectItem('x',i));
       });
       $('.x-media-enable',card)?.addEventListener('click',e=>{
         e.preventDefault();e.stopPropagation();
@@ -1519,7 +1533,7 @@ $('#addItemBtn').addEventListener('click',()=>{
       mediaScale:1,
       quote:false,
       quoteName:'Original',
-      quoteHandle:'original',
+      quoteHandle:'original',quoteAvatar:'',
       quoteBody:'인용할 원문 내용을 입력하세요.',
       authorName:state.commonProfile.name,
       authorHandle:state.commonProfile.handle,
@@ -2234,6 +2248,65 @@ $('#randomizeXMetricsBtn')?.addEventListener('click',()=>{
   queueAutosave?.(250);
 });
 
+
+$('#inspectQuoteHandle')?.addEventListener('input',e=>{
+  const d=selectedData();
+  if(!d||d.kind!=='x'||!d.item.quote)return;
+  d.item.quoteHandle=safeHandle(e.target.value);
+
+  const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+  const handle=card?.querySelector('.quote-handle-edit');
+  if(handle)handle.textContent=d.item.quoteHandle;
+
+  queueAutosave?.(500);
+});
+
+
+$('#inspectQuoteBody')?.addEventListener('input',e=>{
+  const d=selectedData();
+  if(!d||d.kind!=='x'||!d.item.quote)return;
+
+  d.item.quoteBody=e.target.value;
+
+  const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+  const body=card?.querySelector('.quote-body-edit');
+  if(body)body.textContent=d.item.quoteBody;
+
+  queueAutosave?.(500);
+});
+
+$('#inspectQuoteAvatarInput')?.addEventListener('change',e=>{
+  const d=selectedData();
+  if(!d||d.kind!=='x'||!d.item.quote)return;
+
+  openProfileEditor(e.target.files[0],src=>{
+    d.item.quoteAvatar=src;
+    $('#inspectQuoteAvatarPreview').src=src;
+
+    const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+    const avatar=card?.querySelector('.quote-avatar');
+    if(avatar)avatar.src=src;
+
+    queueAutosave?.(250);
+  });
+
+  e.target.value='';
+});
+
+$('#inspectQuoteUseMyAvatarBtn')?.addEventListener('click',()=>{
+  const d=selectedData();
+  if(!d||d.kind!=='x'||!d.item.quote)return;
+
+  d.item.quoteAvatar=state.avatar||DEFAULT_AVATAR();
+  $('#inspectQuoteAvatarPreview').src=d.item.quoteAvatar;
+
+  const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+  const avatar=card?.querySelector('.quote-avatar');
+  if(avatar)avatar.src=d.item.quoteAvatar;
+
+  queueAutosave?.(250);
+});
+
 $('#inspectPostAvatarInput').addEventListener('change',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
   openProfileEditor(e.target.files[0],src=>{
@@ -2319,7 +2392,7 @@ function storageState(){
 
   // Slots/autosave still exclude media images.
   // Exception: the unified basic profile image is kept with the slot.
-  const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|image|chatBgImage|customFontData)$/i;
+  const IMAGE_KEYS=/^(avatar|theirAvatar|myAvatar|authorAvatar|quoteAvatar|image|chatBgImage|customFontData)$/i;
   const IMAGE_ARRAY_KEYS=/^(igTiles|stickerLayers)$/i;
   const basicProfileAvatar=state.commonProfile?.avatar||state.avatar||'';
 
