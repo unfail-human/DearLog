@@ -872,12 +872,12 @@ function refreshSelected(){
 }
 
 
-let workspaceZoom=0.82;
+let workspaceZoom=1;
 
 function applyWorkspaceZoom(){
   const shell=document.querySelector('.capture-shell');
   const stage=document.querySelector('.stage');
-  const valueBtn=$('#zoomResetBtn');
+  const valueBtn=$('#zoomValue');
   if(!shell||!stage||!capture.offsetWidth||!capture.offsetHeight)return;
 
   const naturalH=capture.offsetHeight;
@@ -885,10 +885,13 @@ function applyWorkspaceZoom(){
 
   capture.style.transform=`scale(${scale})`;
   capture.style.transformOrigin='top center';
-  capture.style.marginTop='0px';
+
+  // X only: keep it slightly higher in the stage.
+  const xLift=state.template==='x' ? -22 : 0;
+  capture.style.marginTop=`${xLift}px`;
   capture.style.marginBottom='0px';
 
-  shell.style.height=`${naturalH*scale}px`;
+  shell.style.height=`${Math.max(0,naturalH*scale+xLift)}px`;
   shell.style.minHeight='0';
 
   if(valueBtn)valueBtn.textContent=`${Math.round(scale*100)}%`;
@@ -1491,7 +1494,7 @@ function setWorkspaceZoom(next){
 }
 $('#zoomOutBtn')?.addEventListener('click',()=>setWorkspaceZoom(workspaceZoom-.08));
 $('#zoomInBtn')?.addEventListener('click',()=>setWorkspaceZoom(workspaceZoom+.08));
-$('#zoomResetBtn')?.addEventListener('click',()=>setWorkspaceZoom(.82));
+$('#zoomResetBtn')?.addEventListener('click',()=>setWorkspaceZoom(1));
 
 $('#addItemBtn').addEventListener('click',()=>{
   if(state.template==='x'){
@@ -1839,6 +1842,14 @@ function updateWorkspaceSourceCredit(){
   const left=state.sourceSkip?'':`<span class="workspace-source-left">ⓒ ${esc(artworkSource)}</span>`;
   credit.innerHTML=`${left}<span class="workspace-source-right">Made with Dearlog</span>`;
   credit.classList.toggle('source-left-hidden',!!state.sourceSkip);
+  credit.style.display='flex';
+  credit.style.alignItems='center';
+  credit.style.width='100%';
+  const siteCredit=credit.querySelector('.workspace-source-right');
+  if(siteCredit){
+    siteCredit.style.marginLeft='auto';
+    siteCredit.style.textAlign='right';
+  }
 }
 
 function appendSourceCredit(root){

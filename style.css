@@ -5100,3 +5100,70 @@ body{
     margin:0;
   }
 }
+
+
+/* v89 — zoom defaults to 100% with a separate reset button */
+.workspace-zoom{
+  gap:5px !important;
+}
+.workspace-zoom .zoom-value{
+  width:52px !important;
+  height:34px !important;
+  display:grid !important;
+  place-items:center !important;
+  color:var(--muted) !important;
+  font-size:9.5px !important;
+  font-weight:800 !important;
+  font-variant-numeric:tabular-nums !important;
+}
+.workspace-zoom .zoom-reset-btn{
+  width:auto !important;
+  min-width:48px !important;
+  padding:0 10px !important;
+  border-left:1px solid var(--line) !important;
+  border-radius:8px !important;
+  color:var(--muted) !important;
+  font-size:9px !important;
+  font-weight:700 !important;
+}
+.workspace-zoom .zoom-reset-btn:hover{
+  color:var(--text) !important;
+}
+
+/* X alone sits slightly higher; other templates are untouched */
+.capture[data-template="x"]{
+  position:relative !important;
+}
+
+
+/* v90 — source tail alignment must be identical in workspace, preview and saved output */
+.workspace-source-credit,
+.export-source,
+.clean-output .workspace-source-credit,
+.clean-output .export-source{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+
+.workspace-source-left{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  text-align:left !important;
+}
+
+.workspace-source-right{
+  flex:0 0 auto !important;
+  margin-left:auto !important;
+  text-align:right !important;
+  justify-self:auto !important;
+  white-space:nowrap !important;
+}
+
+.workspace-source-credit.source-left-hidden .workspace-source-right,
+.export-source.source-left-hidden .workspace-source-right{
+  margin-left:auto !important;
+}
