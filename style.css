@@ -2295,3 +2295,19 @@ body{
   .stage-top{position:relative !important;top:auto !important;left:auto !important;right:auto !important;width:100% !important;margin:0 0 10px !important;padding:0 4px 8px !important}
   .capture-shell{top:auto !important;left:auto !important;right:auto !important}
 }
+
+
+/* v34 — slot utility button on the right */
+.utility-dock{
+  left:auto !important;
+  right:12px !important;
+  bottom:14px !important;
+}
+
+@media(max-width:900px){
+  .utility-dock{
+    left:auto !important;
+    right:10px !important;
+    bottom:10px !important;
+  }
+}
