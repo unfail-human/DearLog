@@ -5275,3 +5275,65 @@ body.help-guide-open .help-guide-target *{
 .help-sections{
   display:none !important;
 }
+
+
+/* v92 — left panel merged into Body Edit */
+@media(min-width:1181px){
+  .app{
+    grid-template-columns:minmax(0,1fr) 390px !important;
+  }
+  .inspector{
+    width:390px !important;
+    min-width:390px !important;
+    max-width:390px !important;
+  }
+}
+.sidebar{
+  display:none !important;
+}
+.moved-sidebar-tools{
+  display:grid;
+  gap:14px;
+  margin-bottom:16px;
+}
+.moved-sidebar-tools .tool-section{
+  margin:0 !important;
+  padding:13px !important;
+  border:1px solid var(--line) !important;
+  border-radius:12px !important;
+  background:#fbfaf8 !important;
+}
+.moved-sidebar-tools .section-title{
+  margin-bottom:10px !important;
+}
+.moved-sidebar-tools .template-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:7px !important;
+}
+.moved-sidebar-tools .template-card{
+  min-height:58px !important;
+}
+.moved-sidebar-tools .chat-profile-grid{
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+}
+.edit-panel-divider{
+  height:1px;
+  margin:4px 0 16px;
+  background:var(--line);
+}
+
+/* With no left panel, keep the workspace genuinely centered in the remaining stage. */
+.stage{
+  grid-column:1 !important;
+  justify-content:center !important;
+}
+.inspector{
+  grid-column:2 !important;
+}
+
+/* v92 — zoom must never be overridden by older transform:none rules */
+.capture{
+  transform-origin:top center !important;
+  will-change:transform;
+}

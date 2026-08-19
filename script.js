@@ -883,8 +883,8 @@ function applyWorkspaceZoom(){
   const naturalH=capture.offsetHeight;
   const scale=workspaceZoom;
 
-  capture.style.transform=`scale(${scale})`;
-  capture.style.transformOrigin='top center';
+  capture.style.setProperty('transform',`scale(${scale})`,'important');
+  capture.style.setProperty('transform-origin','top center','important');
 
   // X only: keep it slightly higher in the stage.
   const xLift=state.template==='x' ? -22 : 0;
@@ -1489,7 +1489,7 @@ $('#addTypingBtn').addEventListener('click',()=>{
 
 
 function setWorkspaceZoom(next){
-  workspaceZoom=Math.max(.45,Math.min(1.25,next));
+  workspaceZoom=Math.max(.40,Math.min(1.40,Math.round(next*100)/100));
   applyWorkspaceZoom();
 }
 $('#zoomOutBtn')?.addEventListener('click',()=>setWorkspaceZoom(workspaceZoom-.08));
@@ -1941,7 +1941,7 @@ const HELP_GUIDE_STEPS=[
   {
     target:'#templateGrid',
     title:'템플릿 선택',
-    text:'왼쪽의 템플릿 목록에서 X, Instagram, DM, 카카오톡 화면을 선택할 수 있어요.'
+    text:'오른쪽 「본문 수정하기」의 템플릿 목록에서 X, Instagram, DM, 카카오톡 화면을 선택할 수 있어요.'
   },
   {
     target:'.stage',

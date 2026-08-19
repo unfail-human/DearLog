@@ -38,14 +38,42 @@
   </header>
 
   <main class="app">
-    <aside class="sidebar">
-      <section class="intro">
-        <div class="kicker">DEARLOG MAKER</div>
-        <h1>가상의 SNS를<br>자유롭게 만들어보세요.</h1>
-        <p>템플릿을 고른 뒤 이름, 아이디, 글, 사진을 원하는 대로 바꿀 수 있어요.</p>
-      </section>
+    
 
-      <section class="tool-section">
+    <section class="stage">
+      <div class="stage-top">
+        <div>
+          <b id="stageTitle">X 템플릿</b>
+          <span id="stageDesc">게시물과 답글을 만들어보세요.</span>
+        </div>
+      </div>
+      <div class="workspace-zoom" id="workspaceZoom" aria-label="작업화면 확대 축소">
+        <button type="button" id="zoomOutBtn" aria-label="축소">−</button>
+        <span class="zoom-value" id="zoomValue" aria-live="polite">100%</span>
+        <button type="button" id="zoomInBtn" aria-label="확대">＋</button>
+        <button type="button" id="zoomResetBtn" class="zoom-reset-btn" aria-label="배율 초기화">초기화</button>
+      </div>
+
+      <div class="capture-shell">
+        <div class="capture" id="captureArea"></div>
+      </div>
+    </section>
+
+    <aside class="inspector" id="inspector">
+      <div class="inspector-head">
+        <div><small>QUICK EDIT</small><b>게시글 수정</b></div>
+        <span id="inspectorType">선택 없음</span>
+      </div>
+
+      <div class="inspector-tabs" role="tablist">
+        <button class="inspector-tab is-active" id="editTabBtn" type="button" data-inspector-tab="edit">본문 수정하기</button>
+        <button class="inspector-tab" id="designTabBtn" type="button" data-inspector-tab="design">화면 꾸미기</button>
+        <button class="inspector-tab" id="stickerTabBtn" type="button" data-inspector-tab="sticker">스티커 스튜디오</button>
+      </div>
+
+      <div class="inspector-tab-panel is-active" id="editTabPanel" data-inspector-panel="edit">
+        <div class="moved-sidebar-tools" id="movedSidebarTools">
+          <section class="tool-section">
         <div class="section-title">
           <span>템플릿</span>
           <small>4 TYPES</small>
@@ -133,44 +161,11 @@
         <button class="btn btn-wide" id="clearChatBgBtn" type="button">배경 이미지 지우기</button>
       </section>
 
-      <div class="tip">
-        <b>TIP</b>
-        <span>미리보기 안의 글자를 클릭하면 대부분 바로 수정할 수 있어요.</span>
-      </div>
-    </aside>
-
-    <section class="stage">
-      <div class="stage-top">
-        <div>
-          <b id="stageTitle">X 템플릿</b>
-          <span id="stageDesc">게시물과 답글을 만들어보세요.</span>
+      
         </div>
-      </div>
-      <div class="workspace-zoom" id="workspaceZoom" aria-label="작업화면 확대 축소">
-        <button type="button" id="zoomOutBtn" aria-label="축소">−</button>
-        <span class="zoom-value" id="zoomValue" aria-live="polite">100%</span>
-        <button type="button" id="zoomInBtn" aria-label="확대">＋</button>
-        <button type="button" id="zoomResetBtn" class="zoom-reset-btn" aria-label="배율 초기화">초기화</button>
-      </div>
 
-      <div class="capture-shell">
-        <div class="capture" id="captureArea"></div>
-      </div>
-    </section>
+        <div class="edit-panel-divider"></div>
 
-    <aside class="inspector" id="inspector">
-      <div class="inspector-head">
-        <div><small>QUICK EDIT</small><b>게시글 수정</b></div>
-        <span id="inspectorType">선택 없음</span>
-      </div>
-
-      <div class="inspector-tabs" role="tablist">
-        <button class="inspector-tab is-active" id="editTabBtn" type="button" data-inspector-tab="edit">본문 수정하기</button>
-        <button class="inspector-tab" id="designTabBtn" type="button" data-inspector-tab="design">화면 꾸미기</button>
-        <button class="inspector-tab" id="stickerTabBtn" type="button" data-inspector-tab="sticker">스티커 스튜디오</button>
-      </div>
-
-      <div class="inspector-tab-panel is-active" id="editTabPanel" data-inspector-panel="edit">
 
       <section class="inspector-content-tools" id="contentControls">
         <div class="inspector-section-title">
