@@ -4940,3 +4940,60 @@ body{
   white-space:nowrap !important;
   font-variant-numeric:tabular-nums !important;
 }
+
+
+/* v86 — X reaction metrics in Body Edit */
+.inspect-x-metrics{
+  display:grid;
+  gap:9px;
+  padding:11px;
+  margin:2px 0 12px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfaf8;
+}
+.inspect-x-metrics[hidden]{display:none !important}
+.inspect-x-metrics-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.inspect-x-metrics-head>span{
+  font-size:10.5px;
+  font-weight:800;
+  color:var(--text);
+}
+#randomizeXMetricsBtn{
+  min-height:28px;
+  padding:5px 9px !important;
+  font-size:9px !important;
+}
+.inspect-x-metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+.inspect-x-metrics-grid label{
+  display:grid;
+  gap:5px;
+  min-width:0;
+}
+.inspect-x-metrics-grid label>span{
+  font-size:9px !important;
+  font-weight:700;
+  color:var(--muted);
+}
+.inspect-x-metrics-grid input{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  text-align:center;
+  padding:8px 5px !important;
+  font-variant-numeric:tabular-nums;
+}
+.inspect-x-metrics>small{
+  font-size:8.5px !important;
+  line-height:1.45 !important;
+  color:var(--muted);
+}

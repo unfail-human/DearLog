@@ -200,6 +200,28 @@
           </div>
         </div>
         <label class="field" id="inspectBodyField"><span>본문</span><textarea id="inspectBody" rows="7"></textarea></label>
+
+        <section class="inspect-x-metrics" id="inspectXMetrics" hidden>
+          <div class="inspect-x-metrics-head">
+            <span>반응 수치</span>
+            <button class="mini-ghost-btn" id="randomizeXMetricsBtn" type="button">랜덤 기입</button>
+          </div>
+          <div class="inspect-x-metrics-grid">
+            <label>
+              <span>답글</span>
+              <input id="inspectReplies" type="text" inputmode="numeric" autocomplete="off">
+            </label>
+            <label>
+              <span>리트윗</span>
+              <input id="inspectReposts" type="text" inputmode="numeric" autocomplete="off">
+            </label>
+            <label>
+              <span>마음</span>
+              <input id="inspectLikes" type="text" inputmode="numeric" autocomplete="off">
+            </label>
+          </div>
+          <small>최대 4자리 · 1,000 이상은 쉼표가 자동으로 표시돼요.</small>
+        </section>
         <label class="field" id="inspectSideField">
           <span>보내는 사람</span>
           <select id="inspectSide">

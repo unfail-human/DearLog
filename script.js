@@ -847,6 +847,7 @@ function updateInspector(){
   $('#inspectHandleField').hidden=!isX;
   $('#inspectPostAvatarField').hidden=!isX;
   $('#inspectBodyField').hidden=isTyping;
+  $('#inspectXMetrics').hidden=!isX;
   $('#inspectSideField').hidden=isX;
   $('#inspectTimeField').hidden=isX||isTyping;
   $('#inspectImageBgField').hidden=!(isX&&d.item.mediaEnabled);
@@ -856,6 +857,9 @@ function updateInspector(){
     $('#inspectHandle').value=d.item.authorHandle??state.handle;
     $('#inspectPostAvatarPreview').src=d.item.authorAvatar||state.avatar;
     $('#inspectBody').value=d.item.body||'';
+    $('#inspectReplies').value=formatXMetric(d.item.replies);
+    $('#inspectReposts').value=formatXMetric(d.item.reposts);
+    $('#inspectLikes').value=formatXMetric(d.item.likes);
     $('#inspectImageBg').value=d.item.imageBg||'#f5f4f1';
   }else{
     $('#inspectSide').value=d.item.side;
@@ -1964,6 +1968,65 @@ $('#inspectBody').addEventListener('input',e=>{
 
   if(typeof queueAutosave==='function')queueAutosave(500);
 });
+
+function updateXMetricFromInspector(field,inputId,buttonClass){
+  const input=$('#'+inputId);
+  if(!input)return;
+
+  input.addEventListener('input',e=>{
+    const d=selectedData();if(!d||d.kind!=='x')return;
+    const raw=normalizeXMetric(e.target.value);
+    d.item[field]=raw;
+
+    const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+    const valueEl=card?.querySelector(`${buttonClass} b`);
+    if(valueEl)valueEl.textContent=formatXMetric(raw);
+
+    e.target.value=raw;
+    queueAutosave?.(400);
+  });
+
+  input.addEventListener('blur',e=>{
+    const d=selectedData();if(!d||d.kind!=='x')return;
+    d.item[field]=normalizeXMetric(d.item[field]);
+    e.target.value=formatXMetric(d.item[field]);
+  });
+
+  input.addEventListener('focus',e=>{
+    const d=selectedData();if(!d||d.kind!=='x')return;
+    e.target.value=normalizeXMetric(d.item[field]);
+  });
+}
+
+updateXMetricFromInspector('replies','inspectReplies','.x-reply-btn');
+updateXMetricFromInspector('reposts','inspectReposts','.x-repost-btn');
+updateXMetricFromInspector('likes','inspectLikes','.x-like-btn');
+
+$('#randomizeXMetricsBtn')?.addEventListener('click',()=>{
+  const d=selectedData();if(!d||d.kind!=='x')return;
+
+  d.item.replies=randomXMetric(3,9999);
+  d.item.reposts=randomXMetric(2,9999);
+  d.item.likes=randomXMetric(10,9999);
+
+  $('#inspectReplies').value=formatXMetric(d.item.replies);
+  $('#inspectReposts').value=formatXMetric(d.item.reposts);
+  $('#inspectLikes').value=formatXMetric(d.item.likes);
+
+  const card=capture.querySelector(`.x-post[data-index="${d.index}"]`);
+  const pairs=[
+    ['.x-reply-btn b',d.item.replies],
+    ['.x-repost-btn b',d.item.reposts],
+    ['.x-like-btn b',d.item.likes]
+  ];
+  pairs.forEach(([selector,value])=>{
+    const el=card?.querySelector(selector);
+    if(el)el.textContent=formatXMetric(value);
+  });
+
+  queueAutosave?.(250);
+});
+
 $('#inspectPostAvatarInput').addEventListener('change',e=>{
   const d=selectedData();if(!d||d.kind!=='x')return;
   openProfileEditor(e.target.files[0],src=>{
