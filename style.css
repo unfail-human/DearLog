@@ -3612,3 +3612,46 @@ body{
     z-index:5;
   }
 }
+
+
+/* v65 — rebuilt design panel */
+#designTabPanel{
+  display:block;
+}
+#designTabPanel[hidden]{
+  display:none !important;
+}
+#designTabPanel .tool-section{
+  display:block !important;
+  margin:0 0 16px !important;
+  padding:12px !important;
+  border:1px solid var(--line) !important;
+  border-radius:12px !important;
+  background:#fbfaf8 !important;
+}
+#designTabPanel .section-title{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  margin-bottom:10px !important;
+}
+#designTabPanel .section-title span{
+  font-size:11px !important;
+  font-weight:800 !important;
+  color:var(--text) !important;
+}
+#designTabPanel .section-title small{
+  font-size:8px !important;
+  color:var(--muted) !important;
+}
+#designTabPanel .field,
+#designTabPanel .toggle-row,
+#designTabPanel .font-settings-card,
+#designTabPanel .palette-preview,
+#designTabPanel .color-row,
+#designTabPanel .bg-control-card,
+#designTabPanel .inspect-source-preview{
+  visibility:visible !important;
+  opacity:1 !important;
+}

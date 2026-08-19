@@ -219,106 +219,134 @@
       </div>
 
       <div class="inspector-tab-panel" id="designTabPanel" data-inspector-panel="design" hidden>
+
         <section class="tool-section inspector-appearance" id="appearanceSection">
-        <div class="section-title"><span>화면 꾸미기</span></div>
-        <label class="field">
-          <span>Dearlog 로고 기호</span>
-          <select id="brandSymbolSelect" class="symbol-select">
-            <option value="">없음</option>
-            <option value="✦" selected>✦</option>
-            <option value="✧">✧</option>
-            <option value="◆">◆</option>
-            <option value="◇">◇</option>
-            <option value="❖">❖</option>
-            <option value="❈">❈</option>
-            <option value="✿">✿</option>
-            <option value="♡">♡</option>
-            <option value="♥">♥</option>
-            <option value="☆">☆</option>
-            <option value="★">★</option>
-            <option value="☾">☾</option>
-            <option value="☼">☼</option>
-            <option value="•">•</option>
-            <option value="·">·</option>
-          </select>
-        </label>
-        <div class="font-settings-card">
-          <label class="field">
-            <span>폰트</span>
-            <select id="fontSelect">
-              <option value="Pretendard" selected>Pretendard</option>
-              <option value="Noto Sans KR">Noto Sans KR</option>
-              <option value="KoPubWorld Dotum">KoPubWorld 돋움</option>
-              <option value="KoPubWorld Batang">KoPubWorld 바탕</option>
-              <option value="system">기본 고딕</option>
-              <option value="serif">기본 명조</option>
-              <option value="rounded">둥근 고딕</option>
-              <option value="mono">고정폭</option>
-              <option value="custom">사용자 폰트</option>
-</select>
-          </label>
-          <label class="field">
-            <span>사용자 폰트</span>
-            <span class="file-button">＋ 폰트 파일 추가<input id="customFontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2"></span>
-          </label>
-          <small class="font-setting-note" id="customFontName">폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.</small>
-        </div>
-        <label class="field main-color-field">
-          <span>메인 색상</span>
-          <input id="mainColor" type="color" value="#5d5a55">
-        </label>
-        <label class="toggle-row auto-palette-row">
-          <span><b>자동 추천 팔레트</b><small>메인 색상에 맞춰 배경·카드·포인트를 자동 조정</small></span>
-          <input id="autoPaletteToggle" type="checkbox" checked>
-        </label>
-        <div class="palette-preview" id="palettePreview">
-          <span data-swatch="bg"></span>
-          <span data-swatch="card"></span>
-          <span data-swatch="accent"></span>
-          <small>추천 색상</small>
-        </div>
-        <div class="color-row">
-          <label><span>배경</span><input id="bgColor" type="color" value="#f5f4f1"></label>
-          <label><span>카드</span><input id="cardColor" type="color" value="#ffffff"></label>
-          <label><span>포인트</span><input id="accentColor" type="color" value="#5d5a55"></label>
-        </div>
-        <p class="field-note">자동 추천을 꺼도 위 색상들은 직접 자유롭게 바꿀 수 있어요.</p>
-        <label class="toggle-row">
-          <span><b>다크 모드</b><small>미리보기만 어둡게 전환</small></span>
-          <input id="darkToggle" type="checkbox">
-        </label>
-      </section>
+          <div class="section-title"><span>화면 꾸미기</span></div>
 
-        <section class="tool-section" id="templateBackgroundSection">
-        <div class="section-title"><span>템플릿 배경</span><small>현재 템플릿에만 적용</small></div>
-        <div class="bg-control-card">
-          <div class="bg-control-row">
-            <div><b>배경색</b><small>템플릿 바탕색</small></div>
-            <input id="templateBgColor" class="bg-color-chip" type="color" value="#f5f4f1">
-          </div>
-          <div class="bg-control-divider"></div>
-          <div class="bg-control-row bg-control-row--stack">
-            <div class="bg-control-copy">
-              <b>배경 이미지</b>
-              <small>이미지를 넣은 뒤 미리보기에서 휠로 확대·축소할 수 있어요.</small>
-            </div>
-            <div class="bg-image-actions">
-              <label class="mini-upload-btn">배경 사진 편집<input id="templateBgImageInput" type="file" accept="image/*"></label>
-              <button class="mini-ghost-btn" id="clearTemplateBgBtn" type="button">이미지 지우기</button>
-            </div>
-          </div>
-          <div class="bg-scale-bar">
-            <span>이미지 크기</span>
-            <div class="bg-scale-meter"><i id="bgScaleMeterFill"></i></div>
-            <b id="bgScaleValue">100%</b>
-          </div>
-        </div>
-      </section>
+          <label class="field">
+            <span>Dearlog 로고 기호</span>
+            <select id="brandSymbolSelect" class="symbol-select">
+              <option value="">없음</option>
+              <option value="✦" selected>✦</option>
+              <option value="✧">✧</option>
+              <option value="◆">◆</option>
+              <option value="◇">◇</option>
+              <option value="❖">❖</option>
+              <option value="❈">❈</option>
+              <option value="✿">✿</option>
+              <option value="♡">♡</option>
+              <option value="♥">♥</option>
+              <option value="☆">☆</option>
+              <option value="★">★</option>
+              <option value="☾">☾</option>
+              <option value="☼">☼</option>
+              <option value="•">•</option>
+              <option value="·">·</option>
+            </select>
+          </label>
 
-        <div class="inspect-source-editor">
-          <div class="inspect-label-row">
-            <b>출처 표기</b>
-            
+          <div class="font-settings-card">
+            <label class="field">
+              <span>폰트</span>
+              <select id="fontSelect">
+                <option value="Pretendard" selected>Pretendard</option>
+                <option value="Noto Sans KR">Noto Sans KR</option>
+                <option value="KoPubWorld Dotum">KoPubWorld 돋움</option>
+                <option value="KoPubWorld Batang">KoPubWorld 바탕</option>
+                <option value="system">기본 고딕</option>
+                <option value="serif">기본 명조</option>
+                <option value="rounded">둥근 고딕</option>
+                <option value="mono">고정폭</option>
+                <option value="custom">사용자 폰트</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>사용자 폰트</span>
+              <span class="file-button">＋ 폰트 파일 추가<input id="customFontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2"></span>
+            </label>
+            <small class="font-setting-note" id="customFontName">폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.</small>
+          </div>
+
+          <label class="field main-color-field">
+            <span>메인 색상</span>
+            <input id="mainColor" type="color" value="#5d5a55">
+          </label>
+
+          <label class="toggle-row auto-palette-row">
+            <span>
+              <b>자동 추천 팔레트</b>
+              <small>메인 색상에 맞춰 배경·카드·포인트를 자동 조정</small>
+            </span>
+            <input id="autoPaletteToggle" type="checkbox" checked>
+          </label>
+
+          <div class="palette-preview" id="palettePreview">
+            <span data-swatch="bg"></span>
+            <span data-swatch="card"></span>
+            <span data-swatch="accent"></span>
+            <small>추천 색상</small>
+          </div>
+
+          <div class="color-row">
+            <label><span>배경</span><input id="bgColor" type="color" value="#f5f4f1"></label>
+            <label><span>카드</span><input id="cardColor" type="color" value="#ffffff"></label>
+            <label><span>포인트</span><input id="accentColor" type="color" value="#5d5a55"></label>
+          </div>
+
+          <p class="field-note">자동 추천을 꺼도 배경·카드·포인트 색상은 직접 바꿀 수 있어요.</p>
+
+          <label class="toggle-row">
+            <span>
+              <b>다크 모드</b>
+              <small>미리보기만 어둡게 전환</small>
+            </span>
+            <input id="darkToggle" type="checkbox">
+          </label>
+        </section>
+
+        <section class="tool-section inspector-template-bg" id="templateBackgroundSection">
+          <div class="section-title">
+            <span>템플릿 배경</span>
+            <small>현재 템플릿에만 적용</small>
+          </div>
+
+          <div class="bg-control-card">
+            <div class="bg-control-row">
+              <div>
+                <b>배경색</b>
+                <small>템플릿 바탕색</small>
+              </div>
+              <input id="templateBgColor" class="bg-color-chip" type="color" value="#f5f4f1">
+            </div>
+
+            <div class="bg-control-divider"></div>
+
+            <div class="bg-control-row bg-control-row--stack">
+              <div class="bg-control-copy">
+                <b>배경 이미지</b>
+                <small>사진 편집 후 현재 템플릿 배경에 적용돼요.</small>
+              </div>
+              <div class="bg-image-actions">
+                <label class="mini-upload-btn">
+                  배경 사진 편집
+                  <input id="templateBgImageInput" type="file" accept="image/*">
+                </label>
+                <button class="mini-ghost-btn" id="clearTemplateBgBtn" type="button">이미지 지우기</button>
+              </div>
+            </div>
+
+            <div class="bg-scale-bar">
+              <span>이미지 크기</span>
+              <div class="bg-scale-meter"><i id="bgScaleMeterFill"></i></div>
+              <b id="bgScaleValue">100%</b>
+            </div>
+          </div>
+        </section>
+
+        <section class="tool-section inspect-source-editor">
+          <div class="section-title">
+            <span>출처 표기</span>
+            <small>저장 꼬리표</small>
           </div>
           <label class="field">
             <span>그림 자료 출처</span>
@@ -328,7 +356,8 @@
             <span>ⓒ <b id="inspectSourcePreview">커미션 출처를 표기합니다.</b></span>
             <span class="inspect-source-fixed">Made with Dearlog</span>
           </div>
-        </div>
+        </section>
+
       </div>
     </aside>
   </main>
