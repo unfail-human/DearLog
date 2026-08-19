@@ -885,7 +885,9 @@ function fitCaptureToStage(){
   const availableW=Math.max(260,stage.clientWidth-padX-18);
   const availableH=Math.max(320,stage.clientHeight-padY-18);
 
-  const scale=Math.min(.90,availableW/naturalW,availableH/naturalH);
+  // X is taller than the other templates, so give only X a little extra shrink.
+  const templateScaleCap=state.template==='x' ? .82 : .90;
+  const scale=Math.min(templateScaleCap,availableW/naturalW,availableH/naturalH);
   capture.style.transform=`scale(${scale})`;
   capture.style.transformOrigin='top center';
   shell.style.height=`${naturalH*scale}px`;

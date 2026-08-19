@@ -4870,3 +4870,15 @@ body{
 .button-stack{
   gap:8px !important;
 }
+
+
+/* v81 — X only: slightly smaller editor preview so the whole template stays visible */
+@media(min-width:901px){
+  .capture[data-template="x"]{
+    transform-origin:top center !important;
+  }
+  .stage,
+  .capture-shell{
+    padding-bottom:8px !important;
+  }
+}
