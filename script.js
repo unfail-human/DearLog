@@ -1661,18 +1661,68 @@ async function waitForCaptureImages(root,timeout=5000){
   })));
 }
 
-function exportRasterScale(root){
+function exportRasterScales(root){
   const w=Math.max(1,root.scrollWidth||root.offsetWidth||390);
   const h=Math.max(1,root.scrollHeight||root.offsetHeight||844);
 
-  // Chrome/canvas implementations become unstable with extremely large
-  // dimensions or pixel counts. Preserve high quality while staying safe.
-  const maxSide=14000;
-  const maxPixels=56_000_000;
-  const bySide=Math.min(maxSide/w,maxSide/h);
-  const byPixels=Math.sqrt(maxPixels/(w*h));
+  // Prefer 2x for a much more reliable browser canvas.
+  // Very long X templates automatically start lower.
+  const pixels=w*h;
+  const longest=Math.max(w,h);
 
-  return Math.max(1,Math.min(4,bySide,byPixels));
+  let first=2;
+  if(pixels>8_000_000 || longest>5000)first=1.5;
+  if(pixels>14_000_000 || longest>7500)first=1;
+
+  const candidates=[first,1.5,1].filter((v,i,a)=>v<=first && a.indexOf(v)===i);
+  return candidates;
+}
+
+async function renderCaptureWithRetry(clean,format,bgColor){
+  const scales=exportRasterScales(clean);
+  let lastError=null;
+
+  for(const scale of scales){
+    try{
+      const canvas=await html2canvas(clean,{
+        scale,
+        backgroundColor:format==='png'?null:bgColor,
+        useCORS:true,
+        allowTaint:false,
+        foreignObjectRendering:false,
+        logging:false,
+        imageTimeout:4000,
+        removeContainer:false,
+        scrollX:0,
+        scrollY:0,
+        windowWidth:Math.max(document.documentElement.clientWidth,clean.scrollWidth||390),
+        windowHeight:Math.max(document.documentElement.clientHeight,clean.scrollHeight||844),
+        onclone:doc=>{
+          const cloned=doc.querySelector('#previewCapture,.clean-output');
+          if(cloned){
+            cloned.style.transform='none';
+            cloned.style.margin='0';
+            cloned.style.boxShadow='none';
+          }
+          doc.querySelectorAll('.is-selected-item,.is-selected,.photo-edit-badge').forEach(el=>{
+            el.classList.remove('is-selected-item','is-selected');
+            if(el.classList.contains('photo-edit-badge'))el.style.display='none';
+          });
+        }
+      });
+
+      if(canvas && canvas.width>0 && canvas.height>0){
+        return {canvas,rasterScale:scale};
+      }
+      throw new Error(`empty canvas at scale ${scale}`);
+    }catch(err){
+      lastError=err;
+      console.warn(`[Dearlog export retry] scale ${scale} failed`,err);
+      await new Promise(resolve=>setTimeout(resolve,80));
+    }
+  }
+
+  throw lastError||new Error('Export rendering failed');
 }
 
 async function saveCleanCapture(format='png',sourceNode=null){
@@ -1710,21 +1760,10 @@ async function saveCleanCapture(format='png',sourceNode=null){
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 
     const bgColor=state.backgrounds?.[state.template]?.color || state.bg || '#f5f4f1';
-    const rasterScale=exportRasterScale(clean);
 
-    const canvas=await html2canvas(clean,{
-      scale:rasterScale,
-      backgroundColor:format==='png'?null:bgColor,
-      useCORS:true,
-      allowTaint:false,
-      logging:false,
-      imageTimeout:5000,
-      removeContainer:true
-    });
-
-    if(!canvas.width||!canvas.height){
-      throw new Error('Export canvas is empty');
-    }
+    const rendered=await renderCaptureWithRetry(clean,format,bgColor);
+    const canvas=rendered.canvas;
+    const rasterScale=rendered.rasterScale;
 
     const d=new Date();
     const stamp=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
@@ -1769,7 +1808,9 @@ async function saveCleanCapture(format='png',sourceNode=null){
       a.href=canvas.toDataURL('image/png',1.0);
     }
 
+    document.body.appendChild(a);
     a.click();
+    a.remove();
   }catch(err){
     console.error('[Dearlog export failed]',err);
     throw err;
@@ -2039,7 +2080,7 @@ $$('[data-save-format]').forEach(btn=>btn.addEventListener('click',async()=>{
   const trigger=$('#saveMenuBtn'),old=trigger.textContent;
   trigger.disabled=true;trigger.textContent='저장 중…';
   try{await saveCleanCapture(format)}
-  catch(err){console.error(err);alert('저장에 실패했어요.')}
+  catch(err){console.error(err);alert(`저장에 실패했어요.\n${err?.message||'렌더링 오류'}`)}
   finally{trigger.disabled=false;trigger.textContent=old}
 }));
 $$('[data-preview-save-format]').forEach(btn=>btn.addEventListener('click',async()=>{
@@ -2050,7 +2091,7 @@ $$('[data-preview-save-format]').forEach(btn=>btn.addEventListener('click',async
   try{
     const node=$('#previewMount .capture');
     if(node)await saveCleanCapture(format,node);
-  }catch(err){console.error(err);alert('저장에 실패했어요.')}
+  }catch(err){console.error(err);alert(`저장에 실패했어요.\n${err?.message||'렌더링 오류'}`)}
   finally{trigger.disabled=false;trigger.textContent=old}
 }));
 document.addEventListener('click',e=>{
