@@ -37,7 +37,7 @@ const state={
   },
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   fontMode:'system',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
-  sourceEnabled:true,sourceText:'출처 미입력',
+  sourceEnabled:true,sourceText:'커미션 출처를 표기합니다.',
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -516,12 +516,15 @@ function syncVars(){
   capture.style.setProperty('--chat-bg-image',state.chatBgImage ? `url("${state.chatBgImage}")` : 'none');
   updatePalettePreview();
   const fontMap={
-    system:'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
-    serif:'Georgia,"Times New Roman","Noto Serif KR",serif',
-    rounded:'"Arial Rounded MT Bold","NanumSquareRound",system-ui,sans-serif',
-    mono:'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-    custom:'"DearlogCustomFont",system-ui,sans-serif'
-  };
+  'Pretendard':"'Pretendard','Noto Sans KR',sans-serif",
+  'Noto Sans KR':"'Noto Sans KR',sans-serif",
+  'KoPubWorld Dotum':"'KoPubWorld Dotum','Noto Sans KR',sans-serif",
+  'KoPubWorld Batang':"'KoPubWorld Batang',serif",
+  system:"system-ui,-apple-system,'Noto Sans KR',sans-serif",
+  serif:"'KoPubWorld Batang','Noto Serif KR',serif",
+  rounded:"'Pretendard','Noto Sans KR',sans-serif",
+  mono:"ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+};
   document.documentElement.style.setProperty('--dearlog-font',fontMap[state.fontMode]||fontMap.system);
   document.documentElement.style.setProperty('--ig-photo-bg',state.backgrounds?.instagram?.color||state.bg||'#ffffff');
 
@@ -720,6 +723,7 @@ function selectItem(kind,index){
 }
 
 function ensureSelectedItem(kind,index){
+  setInspectorTab('edit');
   if(state.selected && state.selected.kind===kind && state.selected.index===index){
     updateInspector();
     document.querySelectorAll('.is-selected-item').forEach(el=>el.classList.remove('is-selected-item'));
@@ -757,8 +761,8 @@ function selectedData(){
 }
 function updateInspector(){
   if($('#inspectSourceText')){
-    $('#inspectSourceText').value=state.sourceText||'출처 미입력';
-    $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'출처 미입력';
+    $('#inspectSourceText').value=state.sourceText||'커미션 출처를 표기합니다.';
+    $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
   }
 
   const d=selectedData(), empty=$('#inspectorEmpty'), fields=$('#inspectorFields');
@@ -1517,7 +1521,7 @@ function flattenInstagramForOutput(sourceRoot,cloneRoot){
 function appendSourceCredit(root){
   root.querySelectorAll('.export-source').forEach(el=>el.remove());
 
-  const artworkSource=(state.sourceText||'').trim()||'출처 미입력';
+  const artworkSource=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
 
   const credit=document.createElement('div');
   credit.className='export-source';
@@ -1691,9 +1695,22 @@ $('#inspectUseMyAvatarBtn').addEventListener('click',()=>{
   refreshSelected();
 });
 
+
+function setInspectorTab(tab){
+  const edit=tab==='edit';
+  $('#editTabBtn')?.classList.toggle('is-active',edit);
+  $('#designTabBtn')?.classList.toggle('is-active',!edit);
+  $('#editTabPanel')?.classList.toggle('is-active',edit);
+  $('#designTabPanel')?.classList.toggle('is-active',!edit);
+  if($('#editTabPanel'))$('#editTabPanel').hidden=!edit;
+  if($('#designTabPanel'))$('#designTabPanel').hidden=edit;
+}
+$('#editTabBtn')?.addEventListener('click',()=>setInspectorTab('edit'));
+$('#designTabBtn')?.addEventListener('click',()=>setInspectorTab('design'));
+
 $('#inspectSourceText').addEventListener('input',e=>{
   state.sourceText=e.target.value;
-  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'출처 미입력';
+  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
   if(typeof queueAutosave==='function')queueAutosave(500);
 });
 
@@ -1831,7 +1848,7 @@ function restoreStateObject(saved){
   state.customFontData=state.customFontData||'';
   state.instagramPhotoBg=state.instagramPhotoBg||'#ffffff';
   state.sourceEnabled=true;
-  state.sourceText=state.sourceText||'출처 미입력';
+  state.sourceText=state.sourceText||'커미션 출처를 표기합니다.';
   applyCustomFontData();
   state.template=state.template||'x';
   state.brandSymbol=state.brandSymbol??'✦';
@@ -2046,14 +2063,24 @@ if(!restoredAutosave){
   $('#fontSelect').value=state.fontMode||'system';
   $('#customFontName').textContent=state.customFontName||'폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.';
   const customOpt=$('#fontSelect option[value="custom"]');
-  if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}  $('#inspectSourceText').value=state.sourceText||'출처 미입력';
-  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'출처 미입력';
-  $('#sourceTextInput').value=state.sourceText||'출처 미입력';  syncTemplateBackgroundControls();
+  if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}  $('#inspectSourceText').value=state.sourceText||'커미션 출처를 표기합니다.';
+  $('#inspectSourcePreview').textContent=(state.sourceText||'').trim()||'커미션 출처를 표기합니다.';
+  $('#sourceTextInput').value=state.sourceText||'커미션 출처를 표기합니다.';  syncTemplateBackgroundControls();
   render();
 }
 updateSlotUI();
 updateAutosaveStatus();
 if(!readAutosave())queueAutosave(1200);
-if(window.DEARLOG_NOTICE?.enabled && !sessionStorage.getItem(noticeSessionKey())) openNotice();
+if(window.DEARLOG_NOTICE?.enabled){
+  const noticeVersion=window.DEARLOG_NOTICE.version||'current';
+  const seenVersion=localStorage.getItem('dearlog-last-notice-version');
+  if(seenVersion!==noticeVersion){
+    sessionStorage.removeItem(noticeSessionKey());
+    localStorage.setItem('dearlog-last-notice-version',noticeVersion);
+    openNotice();
+  }else if(!sessionStorage.getItem(noticeSessionKey())){
+    openNotice();
+  }
+}
 
 try{migrateStorageV50()}catch{}

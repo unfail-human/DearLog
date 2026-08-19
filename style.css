@@ -1,3 +1,62 @@
+
+/* v63 — bundled repository fonts */
+@font-face{
+  font-family:'KoPubWorld Batang';
+  src:url('./KoPubWorld Batang Light.ttf') format('truetype');
+  font-weight:300;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'KoPubWorld Batang';
+  src:url('./KoPubWorld Batang Medium.ttf') format('truetype');
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'KoPubWorld Batang';
+  src:url('./KoPubWorld Batang Bold.ttf') format('truetype');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'KoPubWorld Dotum';
+  src:url('./KoPubWorld Dotum Light.ttf') format('truetype');
+  font-weight:300;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'KoPubWorld Dotum';
+  src:url('./KoPubWorld Dotum Medium.ttf') format('truetype');
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'KoPubWorld Dotum';
+  src:url('./KoPubWorld Dotum Bold.ttf') format('truetype');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Noto Sans KR';
+  src:url('./NotoSansKR-VariableFont_wght.ttf') format('truetype');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Pretendard';
+  src:url('./PretendardVariable.woff2') format('woff2');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
+
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
 
 *{box-sizing:border-box}
@@ -3486,4 +3545,70 @@ body{
 .ig-tile,
 .ig-tile.has-image{
   background:var(--ig-photo-bg,#ffffff) !important;
+}
+
+
+/* v62 — wider right inspector + tabbed editing */
+@media(min-width:1181px){
+  .app{
+    grid-template-columns:330px minmax(0,1fr) 330px !important;
+  }
+  .inspector{
+    width:330px !important;
+    min-width:330px !important;
+    padding:24px !important;
+  }
+}
+
+.inspector-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin:12px 0 18px;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#f5f3ef;
+}
+.inspector-tab{
+  min-height:36px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+.inspector-tab.is-active{
+  background:#fff;
+  color:var(--text);
+  box-shadow:0 2px 8px rgba(45,42,37,.08);
+}
+.inspector-tab-panel[hidden]{display:none !important}
+.inspector-tab-panel{
+  min-width:0;
+}
+.inspector-tab-panel .inspector-appearance,
+.inspector-tab-panel #templateBackgroundSection,
+.inspector-tab-panel .inspect-source-editor{
+  margin-bottom:16px;
+}
+.inspector-tab-panel #templateBackgroundSection{
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfaf8;
+}
+.inspect-label-row{
+  justify-content:flex-start !important;
+}
+
+/* On mobile both tabs stay at the top of the right-panel section. */
+@media(max-width:900px){
+  .inspector-tabs{
+    position:sticky;
+    top:0;
+    z-index:5;
+  }
 }
