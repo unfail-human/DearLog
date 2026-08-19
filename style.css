@@ -4997,3 +4997,9 @@ body{
   line-height:1.45 !important;
   color:var(--muted);
 }
+
+
+/* v87 — newly added X post remains visible after the canvas re-fits */
+.x-post.is-selected-item{
+  position:relative;
+}

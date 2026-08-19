@@ -1066,16 +1066,23 @@ function bindStickers(){
 
 function render(){
   capture.dataset.template=state.template;
-  requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
+
   if(state.template==='x')renderX();
   else if(state.template==='instagram')renderInstagram();
   else if(state.template==='dm')renderDM();
   else renderKakao();
-  syncVars();setChatControls();bindPreview();
+
+  syncVars();
+  setChatControls();
+  bindPreview();
+
   requestAnimationFrame(()=>{
     renderStickers();
     updateStickerStudioUI();
     updateWorkspaceSourceCredit();
+
+    // Measure only after the newly rendered template and source tail exist.
+    requestAnimationFrame(fitCaptureToStage);
   });
 }
 function bindNames(){
@@ -1507,9 +1514,52 @@ $('#addTypingBtn').addEventListener('click',()=>{
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:randomXMetric(20,1200),replies:randomXMetric(3,500),reposts:randomXMetric(2,420),shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.commonProfile.name,authorHandle:state.commonProfile.handle,authorAvatar:state.commonProfile.avatar,imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false});
-  else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);state.igScales.push(1);state.igXs.push(0);state.igYs.push(0);}
+  if(state.template==='x'){
+    state.xPosts.push({
+      body:'새 게시물 내용을 입력하세요.',
+      time:'now',
+      likes:randomXMetric(20,1200),
+      replies:randomXMetric(3,500),
+      reposts:randomXMetric(2,420),
+      shares:'0',
+      image:'',
+      video:false,
+      mediaEnabled:false,
+      mediaScale:1,
+      quote:false,
+      quoteName:'Original',
+      quoteHandle:'original',
+      quoteBody:'인용할 원문 내용을 입력하세요.',
+      authorName:state.commonProfile.name,
+      authorHandle:state.commonProfile.handle,
+      authorAvatar:state.commonProfile.avatar,
+      imageBg:'#f5f4f1',
+      mediaX:0,
+      mediaY:0,
+      liked:false,
+      reposted:false,
+      replied:false
+    });
+    state.selected={kind:'x',index:state.xPosts.length-1};
+  }else if(state.template==='instagram'){
+    state.igTiles.push('');
+    state.igVideos.push(false);
+    state.igScales.push(1);
+    state.igXs.push(0);
+    state.igYs.push(0);
+  }
+
   render();
+
+  if(state.template==='x'){
+    const newIndex=state.xPosts.length-1;
+    requestAnimationFrame(()=>{
+      const card=capture.querySelector(`.x-post[data-index="${newIndex}"]`);
+      card?.classList.add('is-selected-item');
+      updateInspector();
+      requestAnimationFrame(fitCaptureToStage);
+    });
+  }
 });
 $('#removeItemBtn').addEventListener('click',()=>{
   const target=state.template==='x'?state.xPosts:state.template==='instagram'?state.igTiles:state.template==='dm'?state.dm:state.kakao;
@@ -1517,6 +1567,7 @@ $('#removeItemBtn').addEventListener('click',()=>{
   target.pop();
   if(state.template==='instagram'){state.igVideos.pop();state.igScales.pop();state.igXs.pop();state.igYs.pop();}
   render();
+  requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
 });
 $('#templateBgImageInput').addEventListener('change',e=>{
   const input=e.target;
