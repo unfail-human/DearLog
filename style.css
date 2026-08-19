@@ -5003,3 +5003,100 @@ body{
 .x-post.is-selected-item{
   position:relative;
 }
+
+
+/* v88 — clean centered workspace */
+.stage{
+  position:relative !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  overflow:auto !important;
+  padding:34px 34px 42px !important;
+  box-sizing:border-box !important;
+}
+.capture-shell{
+  width:390px !important;
+  min-width:390px !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+.capture{
+  width:390px !important;
+  min-width:390px !important;
+  max-width:390px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+/* Remove old stage labels completely */
+.stage-copy,
+.stage-head,
+#stageTitle,
+#stageDesc{
+  display:none !important;
+}
+
+/* Zoom controller */
+.workspace-zoom{
+  position:sticky;
+  top:16px;
+  align-self:flex-start;
+  z-index:80;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-right:14px;
+  padding:5px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 8px 22px rgba(50,46,40,.09);
+  backdrop-filter:blur(8px);
+}
+.workspace-zoom button{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--text);
+  font-size:18px !important;
+  font-weight:700;
+  cursor:pointer;
+}
+.workspace-zoom button:hover{
+  background:#f1eee9;
+}
+.workspace-zoom .zoom-value{
+  width:54px;
+  font-size:9.5px !important;
+  font-weight:800;
+  color:var(--muted);
+}
+.workspace-zoom .zoom-value:hover{
+  color:var(--text);
+}
+
+/* Center X visually, regardless of how many posts are added */
+.capture[data-template="x"]{
+  transform-origin:top center !important;
+}
+
+/* Mobile: keep controls compact */
+@media(max-width:900px){
+  .stage{
+    padding:18px 10px 28px !important;
+  }
+  .workspace-zoom{
+    position:fixed;
+    right:12px;
+    bottom:12px;
+    top:auto;
+    margin:0;
+  }
+}

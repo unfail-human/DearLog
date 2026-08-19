@@ -660,8 +660,7 @@ function xPost(post,i){
   </article>`;
 }
 function renderX(){
-  $('#stageTitle').textContent='X 템플릿';$('#stageDesc').textContent='게시물과 답글 느낌의 화면을 만들어보세요.';
-  capture.innerHTML=`<div class="x-page">${sharedTop('Dearlog')}
+capture.innerHTML=`<div class="x-page">${sharedTop('Dearlog')}
     <section class="x-compose"><img class="avatar sync-avatar" src="${state.avatar||DEFAULT_AVATAR()}" alt=""><div class="x-compose-main">
     <div class="x-compose-text editable" contenteditable="true">무슨 일이 일어나고 있나요?</div><div class="x-post-author-note">내 프로필로 작성</div>
     <div class="x-compose-bottom"><span class="x-compose-tools" aria-hidden="true">
@@ -677,8 +676,7 @@ function renderX(){
     <div id="xFeed">${state.xPosts.map(xPost).join('')}</div></div>`;
 }
 function renderInstagram(){
-  $('#stageTitle').textContent='Instagram 템플릿';$('#stageDesc').textContent='9칸 프로필 피드와 사진을 만들어보세요.';
-  capture.innerHTML=`<div class="ig-page">${sharedTop('Dearlog')}
+capture.innerHTML=`<div class="ig-page">${sharedTop('Dearlog')}
     <section class="ig-profile">
       <label class="ig-avatar-picker"><input type="file" accept="image/*" class="avatar-local-input" hidden><img class="avatar sync-avatar" src="${state.avatar||DEFAULT_AVATAR()}" alt="" decoding="async"></label>
       <div class="ig-profile-info">
@@ -730,8 +728,7 @@ function dmTyping(m,i){
   </div>`;
 }
 function renderDM(){
-  $('#stageTitle').textContent='DM 템플릿';$('#stageDesc').textContent='양쪽 프로필과 사진 메시지까지 포함한 DM을 만들어보세요.';
-  capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
+capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
     <img class="avatar" src="${state.theirAvatar||DEFAULT_AVATAR('#8f8a81','#ece9e3')}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></div>
     <div class="chat-bio-preview editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</div></div></div><span class="dm-head-actions">●　ⓘ</span></header>
     <main class="dm-body chat-wallpaper"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
@@ -765,8 +762,7 @@ function kakaoTyping(m,i){
 }
 
 function renderKakao(){
-  $('#stageTitle').textContent='카카오톡 템플릿';$('#stageDesc').textContent='상대와 내 프로필, 텍스트·사진 메시지를 함께 만들 수 있어요.';
-  capture.innerHTML=`<div class="kakao-page">
+capture.innerHTML=`<div class="kakao-page">
     <header class="kakao-head"><button>‹</button><div><b><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
     <div class="kakao-room chat-wallpaper"><div class="kakao-date editable" contenteditable="true">2026년 8월 19일 수요일</div>
     ${state.kakao.map((m,i)=>m.type==='typing'?kakaoTyping(m,i):kakaoBubble(m,i)).join('')}</div>
@@ -876,55 +872,30 @@ function refreshSelected(){
 }
 
 
-function fitCaptureToStage(){
+let workspaceZoom=0.82;
+
+function applyWorkspaceZoom(){
   const shell=document.querySelector('.capture-shell');
   const stage=document.querySelector('.stage');
+  const valueBtn=$('#zoomResetBtn');
   if(!shell||!stage||!capture.offsetWidth||!capture.offsetHeight)return;
 
-  const naturalW=capture.offsetWidth;
   const naturalH=capture.offsetHeight;
-
-  if(window.innerWidth<=900){
-    const availableW=Math.max(280,shell.clientWidth-4);
-    const scale=Math.min(.94,availableW/naturalW);
-    capture.style.transform=`scale(${scale})`;
-    shell.style.height=`${naturalH*scale}px`;
-    shell.style.minHeight='0';
-    return;
-  }
-
-  // Desktop: always keep the complete workspace visible inside the stage.
-  // Slightly smaller than the maximum available size for breathing room.
-  const stageStyle=getComputedStyle(stage);
-  const padX=(parseFloat(stageStyle.paddingLeft)||0)+(parseFloat(stageStyle.paddingRight)||0);
-  const padY=(parseFloat(stageStyle.paddingTop)||0)+(parseFloat(stageStyle.paddingBottom)||0);
-  const availableW=Math.max(260,stage.clientWidth-padX-18);
-  const bottomBreathingRoom=state.template==='x' ? 72 : 18;
-  const availableH=Math.max(320,stage.clientHeight-padY-bottomBreathingRoom);
-
-  // X is taller than the other templates.
-  // Fit it with real top/bottom breathing room and vertically center the scaled result.
-  const isX=state.template==='x';
-  const templateScaleCap=isX ? .56 : .90;
-  const scale=Math.min(templateScaleCap,availableW/naturalW,availableH/naturalH);
-  const scaledH=naturalH*scale;
+  const scale=workspaceZoom;
 
   capture.style.transform=`scale(${scale})`;
   capture.style.transformOrigin='top center';
+  capture.style.marginTop='0px';
+  capture.style.marginBottom='0px';
 
-  if(isX){
-    // The transformed element keeps its original layout box size,
-    // so center the *visible scaled result* explicitly.
-    const centeredSpace=Math.max(24,(availableH-scaledH)/2);
-    capture.style.marginTop=`${centeredSpace}px`;
-    capture.style.marginBottom=`${centeredSpace}px`;
-    shell.style.height=`${availableH}px`;
-  }else{
-    capture.style.marginTop='0px';
-    capture.style.marginBottom='0px';
-    shell.style.height=`${scaledH}px`;
-  }
+  shell.style.height=`${naturalH*scale}px`;
   shell.style.minHeight='0';
+
+  if(valueBtn)valueBtn.textContent=`${Math.round(scale*100)}%`;
+}
+
+function fitCaptureToStage(){
+  applyWorkspaceZoom();
 }
 
 
@@ -1082,7 +1053,7 @@ function render(){
     updateWorkspaceSourceCredit();
 
     // Measure only after the newly rendered template and source tail exist.
-    requestAnimationFrame(fitCaptureToStage);
+    requestAnimationFrame(applyWorkspaceZoom);
   });
 }
 function bindNames(){
@@ -1513,6 +1484,15 @@ $('#addTypingBtn').addEventListener('click',()=>{
   requestAnimationFrame(()=>selectItem(kind,arr.length-1));
 });
 
+
+function setWorkspaceZoom(next){
+  workspaceZoom=Math.max(.45,Math.min(1.25,next));
+  applyWorkspaceZoom();
+}
+$('#zoomOutBtn')?.addEventListener('click',()=>setWorkspaceZoom(workspaceZoom-.08));
+$('#zoomInBtn')?.addEventListener('click',()=>setWorkspaceZoom(workspaceZoom+.08));
+$('#zoomResetBtn')?.addEventListener('click',()=>setWorkspaceZoom(.82));
+
 $('#addItemBtn').addEventListener('click',()=>{
   if(state.template==='x'){
     state.xPosts.push({
@@ -1557,7 +1537,7 @@ $('#addItemBtn').addEventListener('click',()=>{
       const card=capture.querySelector(`.x-post[data-index="${newIndex}"]`);
       card?.classList.add('is-selected-item');
       updateInspector();
-      requestAnimationFrame(fitCaptureToStage);
+      requestAnimationFrame(applyWorkspaceZoom);
     });
   }
 });
@@ -1567,7 +1547,7 @@ $('#removeItemBtn').addEventListener('click',()=>{
   target.pop();
   if(state.template==='instagram'){state.igVideos.pop();state.igScales.pop();state.igXs.pop();state.igYs.pop();}
   render();
-  requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
+  requestAnimationFrame(()=>requestAnimationFrame(applyWorkspaceZoom));
 });
 $('#templateBgImageInput').addEventListener('change',e=>{
   const input=e.target;
@@ -2313,7 +2293,7 @@ function restoreStateObject(saved){
 
   render();
   updateSlotUI();
-  requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
+  requestAnimationFrame(()=>requestAnimationFrame(applyWorkspaceZoom));
   return true;
 }
 
