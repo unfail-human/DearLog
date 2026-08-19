@@ -4596,3 +4596,28 @@ body{
   height:156px !important;
   aspect-ratio:5 / 6 !important;
 }
+
+
+/* v78 — background image lives inside appearance, above dark mode */
+#appearanceSection #templateBackgroundSection{
+  margin:14px 0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+#appearanceSection #templateBackgroundSection .section-title{
+  margin-bottom:8px !important;
+}
+.bg-image-only-card{
+  padding:10px !important;
+}
+.bg-image-only-card .bg-control-row--stack{
+  gap:9px !important;
+}
+
+/* Smoother color editing: avoid layout transitions on the preview while dragging color inputs */
+.capture,
+.capture *{
+  transition-property:background-color,color,border-color,box-shadow !important;
+  transition-duration:.08s !important;
+}

@@ -344,31 +344,13 @@
 
           <p class="field-note">자동 추천을 꺼도 배경·카드·포인트 색상은 직접 바꿀 수 있어요.</p>
 
-          <label class="toggle-row">
-            <span>
-              <b>다크 모드</b>
-              <small>미리보기만 어둡게 전환</small>
-            </span>
-            <input id="darkToggle" type="checkbox">
-          </label>
-        </section>
 <section class="tool-section inspector-template-bg" id="templateBackgroundSection">
           <div class="section-title">
-            <span>템플릿 배경</span>
+            <span>배경 이미지</span>
             <small>현재 템플릿에만 적용</small>
           </div>
 
-          <div class="bg-control-card">
-            <div class="bg-control-row">
-              <div>
-                <b>배경색</b>
-                <small>템플릿 바탕색</small>
-              </div>
-              <input id="templateBgColor" class="bg-color-chip" type="color" value="#f5f4f1">
-            </div>
-
-            <div class="bg-control-divider"></div>
-
+          <div class="bg-control-card bg-image-only-card">
             <div class="bg-control-row bg-control-row--stack">
               <div class="bg-control-copy">
                 <b>배경 이미지</b>
@@ -390,6 +372,16 @@
             </div>
           </div>
         </section>
+
+          <label class="toggle-row">
+            <span>
+              <b>다크 모드</b>
+              <small>미리보기만 어둡게 전환</small>
+            </span>
+            <input id="darkToggle" type="checkbox">
+          </label>
+        </section>
+
 
         <section class="tool-section inspect-source-editor">
           <div class="section-title">
@@ -441,7 +433,7 @@
       </div>
       <div class="help-sections">
         <section><b>템플릿</b><p>X, Instagram, DM, 카카오톡 중 원하는 화면을 선택해 편집할 수 있어요.</p></section>
-        <section><b>오른쪽 편집 탭</b><p>오른쪽 패널은 `본문 수정하기`와 `화면 꾸미기`로 나뉘어요. 게시물/메시지 수정은 본문 탭에서, 배경·폰트·색상·출처는 화면 꾸미기 탭에서 설정할 수 있어요.</p></section>
+        <section><b>오른쪽 편집 탭</b><p>화면 꾸미기에서는 메인 색상과 자동 추천 팔레트로 색을 정하고, 배경 이미지는 다크 모드 위의 `배경 이미지`에서 따로 설정할 수 있어요.</p></section>
         <section><b>사진 편집</b><p>사진을 넣는 모든 곳에서 먼저 편집 창이 열려요. 파란 가이드가 실제 사진 틀과 같은 비율로 표시되며, 사진은 그 안에서 확대·축소와 위치 이동만 할 수 있어요. 적용하면 가이드에 보이던 구도 그대로 들어갑니다.</p></section><section><b>Instagram 사진 편집</b><p>Instagram 사진의 남는 여백 색상은 별도 설정 없이 일반 `배경` 색상을 사용해요. 사진 편집과 동영상 표시는 사진 편집 팝업에서 설정할 수 있습니다.</p></section>
         <section><b>폰트</b><p>`화면 꾸미기 → 폰트`에서 기본 고딕·명조·둥근 고딕·고정폭을 선택할 수 있어요. 가진 TTF/OTF/WOFF/WOFF2 파일을 추가하면 사용자 폰트로도 Dearlog 전체 템플릿 글꼴을 바꿀 수 있어요.</p></section>
         <section><b>프로필 사진</b><p>프로필 이미지를 선택하면 편집 팝업에서 확대·축소와 위치 조정을 한 뒤 적용할 수 있어요.</p></section>

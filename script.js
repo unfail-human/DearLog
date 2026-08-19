@@ -161,9 +161,7 @@ function saveCurrentProfile(){
   syncCommonProfileToState();
 }
 function syncTemplateBackgroundControls(){
-  const b=state.backgrounds[state.template];
-  $('#templateBgColor').value=b.color;
-  $('#bgScaleValue').textContent=`${b.scale}%`;
+  const b=state.backgrounds[state.template];  $('#bgScaleValue').textContent=`${b.scale}%`;
   const meter=$('#bgScaleMeterFill');if(meter)meter.style.width=`${Math.max(0,Math.min(100,(b.scale-40)/2.6))}%`;
 }
 
@@ -474,7 +472,7 @@ function recommendPalette(main){
   const accent=lum>.72?mix(main,'#364152',.28):mix(main,'#ffffff',.04);
   return {bg,card,accent};
 }
-function applyRecommendedPalette(){
+function applyRecommendedPalette(shouldRender=true){
   const p=recommendPalette(state.main);
   state.bg=p.bg;state.card=p.card;state.accent=p.accent;
   $('#bgColor').value=p.bg;$('#cardColor').value=p.card;$('#accentColor').value=p.accent;
@@ -530,7 +528,7 @@ function contrastText(hex){
 
 function syncVars(){
   const tb=state.backgrounds[state.template];
-  capture.style.setProperty('--template-bg-color',tb.color);
+  capture.style.setProperty('--template-bg-color',state.bg);
   capture.style.setProperty('--template-bg-image',tb.image?`url("${tb.image}")`:'none');
   capture.style.setProperty('--template-bg-size',`${tb.scale}%`);
   capture.style.setProperty('--preview-bg',state.bg);
@@ -560,7 +558,7 @@ function syncVars(){
   capture.style.setProperty('--kakao-their-text',kakaoTheirText);
 
   if(state.template==='kakao'){
-    capture.style.setProperty('--chat-bg',tb.color||'#dfe8ef');
+    capture.style.setProperty('--chat-bg',state.bg||'#dfe8ef');
     capture.style.setProperty('--chat-bg-image',tb.image?`url("${tb.image}")`:'none');
     capture.style.setProperty('--chat-bg-size',`${tb.scale||100}%`);
   }
@@ -1386,10 +1384,9 @@ $('#customFontInput').addEventListener('change',async e=>{
 
 $('#mainColor').addEventListener('input',e=>{
   state.main=e.target.value;
-  if(state.autoPalette)
-applyRecommendedPalette();
-  else{state.accent=state.main;$('#accentColor').value=state.accent}
+  if(state.autoPalette)applyRecommendedPalette(false);
   syncVars();
+  if(typeof queueAutosave==='function')queueAutosave(400);
 });
 $('#autoPaletteToggle').addEventListener('change',e=>{
   state.autoPalette=e.target.checked;
@@ -1398,14 +1395,19 @@ $('#autoPaletteToggle').addEventListener('change',e=>{
 });
 $('#bgColor').addEventListener('input',e=>{
   state.bg=e.target.value;
-  const current=state.backgrounds[state.template]||(state.backgrounds[state.template]={color:e.target.value,image:'',scale:100});
-  current.color=e.target.value;
   syncVars();
-  render();
-  if(typeof queueAutosave==='function')queueAutosave(250);
+  if(typeof queueAutosave==='function')queueAutosave(400);
 });
-$('#cardColor').addEventListener('input',e=>{state.card=e.target.value;syncVars()});
-$('#accentColor').addEventListener('input',e=>{state.accent=e.target.value;syncVars()});
+$('#cardColor').addEventListener('input',e=>{
+  state.card=e.target.value;
+  syncVars();
+  if(typeof queueAutosave==='function')queueAutosave(400);
+});
+$('#accentColor').addEventListener('input',e=>{
+  state.accent=e.target.value;
+  syncVars();
+  if(typeof queueAutosave==='function')queueAutosave(400);
+});
 $('#darkToggle').addEventListener('change',e=>{state.dark=e.target.checked;syncVars()});
 
 function nextSide(arr){return arr.length&&arr[arr.length-1].side==='mine'?'theirs':'mine'}
@@ -1470,15 +1472,6 @@ $('#removeItemBtn').addEventListener('click',()=>{
   if(state.template==='instagram'){state.igVideos.pop();state.igScales.pop();state.igXs.pop();state.igYs.pop();}
   render();
 });
-
-
-$('#templateBgColor').addEventListener('input',e=>{
-  const bg=state.backgrounds[state.template]||(state.backgrounds[state.template]={color:'#f5f4f1',image:'',scale:100});
-  bg.color=e.target.value;
-  syncVars();
-  render();
-  if(typeof queueAutosave==='function')queueAutosave(250);
-});
 $('#templateBgImageInput').addEventListener('change',e=>{
   const input=e.target;
   const spec=getFrameSpec(capture,390/844,1800);
@@ -1486,7 +1479,7 @@ $('#templateBgImageInput').addEventListener('change',e=>{
     aspect:spec.aspect,
     outputW:spec.outputW,
     outputH:spec.outputH,
-    bg:state.backgrounds[state.template].color||'#f5f4f1'
+    bg:state.bg||'#f5f4f1'
   },src=>{
     state.backgrounds[state.template].image=src;
     state.backgrounds[state.template].scale=100;
