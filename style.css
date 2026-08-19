@@ -3127,3 +3127,74 @@ body{
   line-height:1.5;
   color:var(--muted);
 }
+
+
+/* v55 — source credit as a separate tail below the original */
+.clean-output{
+  background:transparent !important;
+}
+.export-source{
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding:7px 12px 8px !important;
+  margin:0 !important;
+  text-align:right !important;
+  font-family:var(--dearlog-font,system-ui,sans-serif) !important;
+  font-size:8px !important;
+  line-height:1.2 !important;
+  color:#8f8a81 !important;
+  background:#f7f5f1 !important;
+  border-top:1px solid #ece8e1 !important;
+  border-radius:0 0 12px 12px !important;
+}
+
+/* Ensure original template keeps its own bottom edge */
+.capture.clean-output > .x-page,
+.capture.clean-output > .ig-page,
+.capture.clean-output > .dm-page,
+.capture.clean-output > .kakao-page{
+  border-radius:inherit !important;
+}
+
+
+/* Instagram drag sorting */
+.ig-tile[draggable="true"]{
+  cursor:grab !important;
+}
+.ig-tile.ig-dragging{
+  opacity:.45 !important;
+}
+.ig-tile.ig-drag-over{
+  box-shadow:inset 0 0 0 3px rgba(93,90,85,.45) !important;
+}
+
+
+/* Photo editor guide is strictly the editable frame */
+.profile-editor-canvas-wrap{
+  position:relative !important;
+  overflow:hidden !important;
+}
+.profile-editor-canvas-wrap::after{
+  inset:0 !important;
+  border:3px solid #2498e8 !important;
+  border-radius:8px !important;
+  box-sizing:border-box !important;
+  pointer-events:none !important;
+}
+
+
+/* v56 — Instagram preview/export automatically fits the number of photos */
+.clean-output .ig-grid{
+  grid-template-columns:repeat(3,1fr) !important;
+  height:auto !important;
+  min-height:0 !important;
+}
+.clean-output .ig-grid .ig-tile{
+  aspect-ratio:4 / 5 !important;
+  min-height:0 !important;
+}
+/* A final incomplete row remains left-aligned like a real profile grid. */
+.clean-output .ig-page{
+  height:auto !important;
+  min-height:0 !important;
+}

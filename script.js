@@ -196,6 +196,29 @@ function getFrameSpec(el,fallbackAspect=1,outputLong=1600){
   return {aspect,outputW,outputH};
 }
 
+
+function clampEditorOffset(){
+  if(!profileEditor.img)return;
+
+  const canvas=$('#profileEditorCanvas');
+  if(!canvas)return;
+
+  const img=profileEditor.img;
+  const w=canvas.width;
+  const h=canvas.height;
+
+  const base=Math.max(w/img.naturalWidth,h/img.naturalHeight);
+  const scale=base*profileEditor.zoom;
+  const dw=img.naturalWidth*scale;
+  const dh=img.naturalHeight*scale;
+
+  const maxX=Math.max(0,(dw-w)/2);
+  const maxY=Math.max(0,(dh-h)/2);
+
+  profileEditor.offsetX=Math.max(-maxX,Math.min(maxX,profileEditor.offsetX));
+  profileEditor.offsetY=Math.max(-maxY,Math.min(maxY,profileEditor.offsetY));
+}
+
 const profileEditor={
   img:null,
   zoom:1,
@@ -250,6 +273,7 @@ function drawProfileEditor(){
   const pctx=preview.getContext('2d');
   const img=profileEditor.img;
   const w=canvas.width,h=canvas.height;
+  clampEditorOffset();
 
   ctx.clearRect(0,0,w,h);
   ctx.fillStyle=profileEditor.bg||'#ffffff';
@@ -355,6 +379,7 @@ function exportEditedProfile(){
 
 $('#profileEditorZoom').addEventListener('input',e=>{
   profileEditor.zoom=Number(e.target.value)||1;
+  clampEditorOffset();
   drawProfileEditor();
 });
 
@@ -398,6 +423,7 @@ profileCanvasWrap?.addEventListener('pointermove',e=>{
   const scaleY=canvas.height/rect.height;
   profileEditor.offsetX=profileEditor.baseX+(e.clientX-profileEditor.startX)*scaleX;
   profileEditor.offsetY=profileEditor.baseY+(e.clientY-profileEditor.startY)*scaleY;
+  clampEditorOffset();
   drawProfileEditor();
 });
 function endProfileDrag(e){
@@ -583,7 +609,7 @@ function renderInstagram(){
       </div>
     </section>
     <div class="ig-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
-    <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}" >
+    <div class="ig-grid">${state.igTiles.map((src,i)=>`<label class="ig-tile image-picker ${src?'has-image':''}" data-index="${i}" draggable="${src?'true':'false'}" >
       <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
       ${src?`<div class="photo-edit-badge">사진 편집</div>`:''}
@@ -947,6 +973,53 @@ function bindPreview(){
   }else if(state.template==='instagram'){
     $$('.ig-tile',capture).forEach(tile=>{
       const i=+tile.dataset.index;
+      tile.addEventListener('dragstart',e=>{
+        if(!state.igTiles[i]){
+          e.preventDefault();
+          return;
+        }
+        e.dataTransfer.effectAllowed='move';
+        e.dataTransfer.setData('text/plain',String(i));
+        tile.classList.add('ig-dragging');
+      });
+
+      tile.addEventListener('dragend',()=>{
+        tile.classList.remove('ig-dragging');
+        $$('.ig-tile',capture).forEach(t=>t.classList.remove('ig-drag-over'));
+      });
+
+      tile.addEventListener('dragover',e=>{
+        e.preventDefault();
+        e.dataTransfer.dropEffect='move';
+        tile.classList.add('ig-drag-over');
+      });
+
+      tile.addEventListener('dragleave',()=>{
+        tile.classList.remove('ig-drag-over');
+      });
+
+      tile.addEventListener('drop',e=>{
+        e.preventDefault();
+        tile.classList.remove('ig-drag-over');
+        const from=Number(e.dataTransfer.getData('text/plain'));
+        const to=i;
+        if(!Number.isInteger(from)||from===to)return;
+
+        const move=(arr)=>{
+          if(!Array.isArray(arr))return;
+          const [item]=arr.splice(from,1);
+          arr.splice(to,0,item);
+        };
+
+        move(state.igTiles);
+        move(state.igVideos);
+        move(state.igScales);
+        move(state.igXs);
+        move(state.igYs);
+
+        render();
+        if(typeof queueAutosave==='function')queueAutosave(250);
+      });
       $('.ig-image-input',tile).addEventListener('change',e=>{
         const input=e.target;
         const spec=getFrameSpec(tile,4/5,1500);
@@ -1200,6 +1273,7 @@ async function saveCleanCapture(format='png',sourceNode=null){
       clean.querySelectorAll('input').forEach(el=>el.remove());
       flattenXMediaForOutput(sourceNode,clean);
       flattenInstagramForOutput(sourceNode,clean);
+      if(state.template==='instagram')compactInstagramForOutput(clean);
       appendSourceCredit(clean);
     }else{
       clean=createCleanPreviewClone();
@@ -1323,6 +1397,32 @@ function flattenXMediaForOutput(sourceRoot,cloneRoot){
 }
 
 
+
+function compactInstagramForOutput(root){
+  const page=root.querySelector('.ig-page');
+  const grid=root.querySelector('.ig-grid');
+  if(!page||!grid)return;
+
+  const tiles=[...grid.querySelectorAll('.ig-tile')];
+  const filled=tiles.filter(tile=>tile.classList.contains('has-image'));
+
+  // Empty photo slots are editing UI only. Saved/preview output uses actual photos only.
+  tiles.forEach(tile=>{
+    if(!tile.classList.contains('has-image'))tile.remove();
+  });
+
+  const count=filled.length;
+  page.dataset.outputPhotoCount=String(count);
+  grid.dataset.outputPhotoCount=String(count);
+
+  // No photos: keep the profile/header only and hide the empty grid.
+  if(count===0){
+    grid.style.display='none';
+    const tabs=page.querySelector('.ig-tabs');
+    if(tabs)tabs.style.display='none';
+  }
+}
+
 function flattenInstagramForOutput(sourceRoot,cloneRoot){
   const sourceTiles=[...sourceRoot.querySelectorAll('.ig-tile.has-image')];
   const cloneTiles=[...cloneRoot.querySelectorAll('.ig-tile.has-image')];
@@ -1375,6 +1475,8 @@ function appendSourceCredit(root){
   const credit=document.createElement('div');
   credit.className='export-source';
   credit.textContent='Made with Dearlog';
+
+  // Keep the original template untouched and append a separate tail below it.
   root.appendChild(credit);
 }
 
@@ -1388,6 +1490,7 @@ function createCleanPreviewClone(){
   clone.querySelectorAll('input').forEach(el=>el.remove());
   flattenXMediaForOutput(capture,clone);
   flattenInstagramForOutput(capture,clone);
+  if(state.template==='instagram')compactInstagramForOutput(clone);
   appendSourceCredit(clone);
   return clone;
 }
