@@ -2974,3 +2974,42 @@ body{
 #profileEditorReset{
   white-space:nowrap;
 }
+
+
+/* v49 — selected item outline: all four edges always visible */
+.x-post,
+.bubble-row,
+.kakao-message,
+.typing-row{
+  position:relative;
+}
+
+.is-selected-item{
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+.is-selected-item::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  z-index:30;
+  border:2px solid rgba(93,90,85,.55);
+  border-radius:inherit;
+  box-sizing:border-box;
+  pointer-events:none;
+}
+
+/* X cards sometimes have no explicit radius on inner posts */
+.x-post.is-selected-item::after{
+  inset:3px !important;
+  border-radius:10px !important;
+}
+
+/* Keep edit focus visible without changing selection state */
+.x-post [contenteditable="true"]:focus{
+  outline:none !important;
+}
+.x-post [contenteditable="true"]:focus-visible{
+  box-shadow:inset 0 -1px 0 rgba(93,90,85,.32);
+}

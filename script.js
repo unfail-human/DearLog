@@ -654,6 +654,26 @@ function selectItem(kind,index){
   if(sel)document.querySelector(sel)?.classList.add('is-selected-item');
 }
 
+function ensureSelectedItem(kind,index){
+  if(state.selected && state.selected.kind===kind && state.selected.index===index){
+    updateInspector();
+    document.querySelectorAll('.is-selected-item').forEach(el=>el.classList.remove('is-selected-item'));
+    const sel=kind==='x'?`.x-post[data-index="${index}"]`:
+              kind==='dm'?`.dm-page [data-index="${index}"]`:
+              kind==='kakao'?`.kakao-page [data-index="${index}"]`:null;
+    if(sel)document.querySelector(sel)?.classList.add('is-selected-item');
+    return;
+  }
+  state.selected={kind,index};
+  updateInspector();
+  document.querySelectorAll('.is-selected-item').forEach(el=>el.classList.remove('is-selected-item'));
+  const sel=kind==='x'?`.x-post[data-index="${index}"]`:
+            kind==='dm'?`.dm-page [data-index="${index}"]`:
+            kind==='kakao'?`.kakao-page [data-index="${index}"]`:null;
+  if(sel)document.querySelector(sel)?.classList.add('is-selected-item');
+}
+
+
 function clearSelection(){
   state.selected=null;
   document.querySelectorAll('.is-selected-item').forEach(el=>el.classList.remove('is-selected-item'));
@@ -768,7 +788,7 @@ function bindChat(listName){
     row.addEventListener('click',e=>{
       if(!e.target.closest('input,button,[contenteditable="true"]'))selectItem(state.template==='kakao'?'kakao':'dm',i);
     });
-    row.querySelector('[contenteditable="true"]')?.addEventListener('focus',()=>selectItem(state.template==='kakao'?'kakao':'dm',i));
+    row.querySelector('[contenteditable="true"]')?.addEventListener('focus',()=>ensureSelectedItem(state.template==='kakao'?'kakao':'dm',i));
     if(m.type==='typing')return;
     $('.chat-text',row)?.addEventListener('input',e=>m.text=e.target.textContent);
     $('.chat-time',row)?.addEventListener('input',e=>m.time=e.target.textContent);
@@ -819,7 +839,7 @@ function bindPreview(){
       card.addEventListener('click',e=>{
         if(!e.target.closest('button,input,label,[contenteditable="true"]'))selectItem('x',i);
       });
-      $('.x-body-edit',card).addEventListener('focus',()=>selectItem('x',i));
+      $('.x-body-edit',card).addEventListener('focus',()=>ensureSelectedItem('x',i));
       $('.x-body-edit',card).addEventListener('input',e=>{p.body=e.target.textContent;updateInspector()});
       $('.x-author-edit-toggle',card)?.addEventListener('click',e=>{
         e.stopPropagation();
@@ -856,7 +876,7 @@ function bindPreview(){
         requestAnimationFrame(()=>selectItem('x',i));
       });
       $('.x-time',card).addEventListener('input',e=>p.time=e.target.textContent);
-      $('.x-author-name',card)?.addEventListener('focus',()=>selectItem('x',i));
+      $('.x-author-name',card)?.addEventListener('focus',()=>ensureSelectedItem('x',i));
       $('.x-author-name',card)?.addEventListener('input',e=>{p.authorName=e.target.textContent.trim();updateInspector()});
       $('.x-author-handle',card)?.addEventListener('input',e=>{p.authorHandle=safeHandle(e.target.textContent);updateInspector()});
       const bump=(key,flag)=>{
@@ -924,6 +944,28 @@ function bindPreview(){
   }else if(state.template==='dm') bindChat('dm');
   else bindChat('kakao');
 }
+
+
+capture.addEventListener('pointerdown',e=>{
+  const editable=e.target.closest('[contenteditable="true"]');
+  if(!editable)return;
+  e.stopPropagation();
+},true);
+
+
+capture.addEventListener('focusin',e=>{
+  const editable=e.target.closest('[contenteditable="true"]');
+  if(!editable)return;
+  const post=editable.closest('.x-post');
+  if(post){
+    ensureSelectedItem('x',Number(post.dataset.index));
+    return;
+  }
+  const chat=editable.closest('.bubble-row,.kakao-message,.typing-row');
+  if(chat){
+    ensureSelectedItem(state.template==='kakao'?'kakao':'dm',Number(chat.dataset.index));
+  }
+});
 
 document.addEventListener('click',e=>{
   if(e.target.closest('.x-more-wrap'))return;
