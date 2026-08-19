@@ -916,10 +916,144 @@ $('#deleteSelectedBtn').addEventListener('click',()=>{
 });
 
 window.addEventListener('resize',()=>requestAnimationFrame(fitCaptureToStage));
+
+const SLOT_PREFIX='dearlog-slot-v1-';
+
+function serializeState(){
+  saveCurrentProfile();
+  return JSON.stringify({
+    version:1,
+    savedAt:new Date().toISOString(),
+    data:state
+  });
+}
+
+function restoreStateObject(saved){
+  if(!saved||!saved.data)return false;
+  const incoming=saved.data;
+
+  // Replace top-level values while preserving the same state object reference.
+  Object.keys(state).forEach(k=>delete state[k]);
+  Object.assign(state,incoming);
+
+  // compatibility defaults for older/missing values
+  state.template=state.template||'x';
+  state.brandSymbol=state.brandSymbol??'✦';
+  state.selected=null;
+  state.igTiles=Array.isArray(state.igTiles)?state.igTiles:Array(9).fill('');
+  state.igVideos=Array.isArray(state.igVideos)?state.igVideos:Array(state.igTiles.length).fill(false);
+  state.xPosts=Array.isArray(state.xPosts)?state.xPosts:[];
+  state.dm=Array.isArray(state.dm)?state.dm:[];
+  state.kakao=Array.isArray(state.kakao)?state.kakao:[];
+  state.backgrounds=state.backgrounds||{
+    x:{color:'#f5f4f1',image:'',scale:100},
+    instagram:{color:'#f5f4f1',image:'',scale:100},
+    dm:{color:'#f5f4f1',image:'',scale:100},
+    kakao:{color:'#f5f4f1',image:'',scale:100}
+  };
+
+  loadTemplateProfile();
+  $('#brandSymbolSelect').value=state.brandSymbol||'';
+  $('#mainColor').value=state.main||'#5d5a55';
+  $('#bgColor').value=state.bg||'#f5f4f1';
+  $('#cardColor').value=state.card||'#ffffff';
+  $('#accentColor').value=state.accent||'#5d5a55';
+  $('#autoPaletteToggle').checked=!!state.autoPalette;
+  $('#darkToggle').checked=!!state.dark;
+  $('#chatBgColor').value=state.chatBg||'#dfe8ef';
+  syncTemplateBackgroundControls();
+
+  $$('.template-card').forEach(b=>b.classList.toggle('active',b.dataset.template===state.template));
+
+  render();
+  updateSlotUI();
+  requestAnimationFrame(()=>requestAnimationFrame(fitCaptureToStage));
+  return true;
+}
+
+function slotKey(n){return SLOT_PREFIX+n}
+
+function readSlot(n){
+  try{
+    const raw=localStorage.getItem(slotKey(n));
+    return raw?JSON.parse(raw):null;
+  }catch(err){
+    console.error(err);
+    return null;
+  }
+}
+
+function formatSlotTime(iso){
+  if(!iso)return '저장됨';
+  try{
+    const d=new Date(iso);
+    return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }catch{
+    return '저장됨';
+  }
+}
+
+function updateSlotUI(){
+  $$('.slot-row').forEach(row=>{
+    const n=row.dataset.slot;
+    const saved=readSlot(n);
+    const status=$('.slot-status',row);
+    const load=$('.slot-load',row);
+    const del=$('.slot-delete',row);
+    if(saved){
+      status.textContent=formatSlotTime(saved.savedAt);
+      load.disabled=false;
+      del.disabled=false;
+    }else{
+      status.textContent='비어 있음';
+      load.disabled=true;
+      del.disabled=true;
+    }
+  });
+}
+
+function saveToSlot(n){
+  try{
+    localStorage.setItem(slotKey(n),serializeState());
+    updateSlotUI();
+    return true;
+  }catch(err){
+    console.error(err);
+    alert('슬롯 저장에 실패했어요. 이미지가 너무 많으면 브라우저 저장 공간이 부족할 수 있어요.');
+    return false;
+  }
+}
+
+function loadFromSlot(n){
+  const saved=readSlot(n);
+  if(!saved)return;
+  if(!confirm(`슬롯 ${n}의 내용을 불러올까요?\n현재 편집 중인 내용은 덮어씌워집니다.`))return;
+  restoreStateObject(saved);
+}
+
+function deleteSlot(n){
+  if(!readSlot(n))return;
+  if(!confirm(`슬롯 ${n}의 저장 내용을 삭제할까요?`))return;
+  localStorage.removeItem(slotKey(n));
+  updateSlotUI();
+}
+
+$$('.slot-row').forEach(row=>{
+  const n=row.dataset.slot;
+  $('.slot-save',row).addEventListener('click',()=>{
+    const existing=readSlot(n);
+    if(existing&&!confirm(`슬롯 ${n}에 이미 저장된 내용이 있어요.\n덮어쓸까요?`))return;
+    saveToSlot(n);
+  });
+  $('.slot-load',row).addEventListener('click',()=>loadFromSlot(n));
+  $('.slot-delete',row).addEventListener('click',()=>deleteSlot(n));
+});
+
 applyRecommendedPalette();
 loadTemplateProfile();
 $('#sidebarAvatarPreview').src=state.template==='x'||state.template==='instagram'?state.avatar:state.theirAvatar;
 $('#brandSymbolSelect').value=state.brandSymbol;
 syncTemplateBackgroundControls();
 render();
+updateSlotUI();
 if(window.DEARLOG_NOTICE?.enabled && !sessionStorage.getItem('dearlogNoticeHidden')) openNotice();

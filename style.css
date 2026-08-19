@@ -2189,3 +2189,76 @@ body{
     height:52px !important;
   }
 }
+
+
+/* v30 — local slot save */
+.inspector-slots{
+  margin-bottom:18px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--line);
+}
+.slot-list{
+  display:grid;
+  gap:7px;
+}
+.slot-row{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fbfaf8;
+  padding:9px;
+  display:grid;
+  gap:7px;
+}
+.slot-info{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.slot-info b{
+  font-size:10px;
+  color:var(--text);
+}
+.slot-info small{
+  font-size:8px;
+  color:var(--muted);
+  text-align:right;
+}
+.slot-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:5px;
+}
+.slot-actions button{
+  min-height:28px;
+  border:1px solid var(--line-strong);
+  border-radius:7px;
+  background:#fff;
+  color:var(--text);
+  font-size:8px;
+  cursor:pointer;
+}
+.slot-actions button:hover{
+  background:#f5f4f1;
+}
+.slot-actions .slot-delete{
+  color:#9a6464;
+}
+.slot-actions button:disabled{
+  opacity:.42;
+  cursor:not-allowed;
+}
+.slot-note{
+  margin:8px 1px 0;
+  color:var(--muted);
+  font-size:8px;
+  line-height:1.5;
+}
+@media(max-width:900px){
+  .slot-list{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:520px){
+  .slot-list{grid-template-columns:1fr}
+}
