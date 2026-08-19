@@ -66,13 +66,13 @@ window.DEARLOG_NOTICE={enabled:true,version:"v101",title:"Dearlog 업데이트",
   }
 })();
 
-// X-only layout refinement: reduce excess top gap and reaction-row whitespace.
+// X-only layout refinement: keep a modest top breathing room and compact reaction-row whitespace.
 (()=>{
   const style=document.createElement('style');
   style.id='dearlog-x-layout-refine';
   style.textContent=`
     .stage:has(.capture[data-template="x"]){
-      padding-top:16px !important;
+      padding-top:34px !important;
     }
     .stage:has(.capture[data-template="x"]) .capture-shell{
       top:0 !important;
