@@ -37,7 +37,7 @@ const state={
   },
   main:'#5d5a55',bg:'#f5f4f1',card:'#ffffff',accent:'#5d5a55',autoPalette:true,dark:false,
   fontMode:'system',customFontName:'',customFontData:'',instagramPhotoBg:'#ffffff',
-  sourceEnabled:true,sourceText:'Made with Dearlog',
+  sourceEnabled:true,sourceText:'출처 미입력',
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
     {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
@@ -234,7 +234,9 @@ const profileEditor={
   outputW:1024,
   outputH:1024,
   profileMode:false,
-  bg:'#ffffff'
+  bg:'#ffffff',
+  supportsVideo:false,
+  video:false
 };
 
 function configureEditorCanvas(){
@@ -318,6 +320,10 @@ function openPhotoEditor(file,options={},callback){
       profileEditor.aspect=aspect;
       profileEditor.profileMode=!!options.profile;
       profileEditor.bg=options.bg||'#ffffff';
+      profileEditor.supportsVideo=!!options.supportsVideo;
+      profileEditor.video=!!options.video;
+      $('#profileEditorVideoRow').hidden=!profileEditor.supportsVideo;
+      $('#profileEditorVideoToggle').checked=profileEditor.video;
 
       const defaultOutputW=options.profile?1024:1600;
       profileEditor.outputW=options.outputW||defaultOutputW;
@@ -377,6 +383,10 @@ function exportEditedProfile(){
   return output.toDataURL('image/png',1);
 }
 
+$('#profileEditorVideoToggle').addEventListener('change',e=>{
+  profileEditor.video=e.target.checked;
+});
+
 $('#profileEditorZoom').addEventListener('input',e=>{
   profileEditor.zoom=Number(e.target.value)||1;
   clampEditorOffset();
@@ -394,8 +404,9 @@ $('#profileEditorReset').addEventListener('click',()=>{
 $('#profileEditorApply').addEventListener('click',()=>{
   const result=exportEditedProfile();
   const cb=profileEditor.callback;
+  const meta={video:!!profileEditor.video};
   closeProfileEditor();
-  if(result&&cb)cb(result);
+  if(result&&cb)cb(result,meta);
 });
 
 $('#profileEditorCancel').addEventListener('click',closeProfileEditor);
@@ -570,7 +581,6 @@ function xPost(post,i){
       ${post.image?`<img src="${post.image}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${post.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
       ${post.image?`<div class="photo-edit-badge">사진 편집</div>`:''}
-      <button class="media-play-toggle x-video-toggle" type="button">${post.video?'동영상 표시 ON':'동영상 표시'}</button>
     </label>`:''}
     <div class="x-actions">
       <button class="x-action-btn x-reply-btn ${post.replied?'is-active':''}" type="button"><span>◌</span><b>${fmt(post.replies)}</b></button>
@@ -613,7 +623,6 @@ function renderInstagram(){
       <input type="file" accept="image/*" class="ig-image-input">${src?`<img src="${src}" alt="">`:`<div class="image-placeholder"><b>＋</b><span>사진 추가</span></div>`}
       ${state.igVideos?.[i]?`<div class="video-play-overlay"><span>▶</span></div>`:''}
       ${src?`<div class="photo-edit-badge">사진 편집</div>`:''}
-      <button class="media-play-toggle ig-video-toggle" type="button">${state.igVideos?.[i]?'ON':'▶'}</button>
     </label>`).join('')}</div></div>`;
 }
 function chatMedia(m, cls){
@@ -621,7 +630,6 @@ function chatMedia(m, cls){
   return `<label class="${cls} chat-photo image-picker ${m.image?'has-image':''}"><input type="file" accept="image/*" class="chat-photo-input">
     ${m.image?`<img src="${m.image}" alt="메시지 사진"><div class="photo-edit-badge">사진 편집</div>`:`<div class="image-placeholder"><b>＋</b><span>사진 메시지</span></div>`}
     ${m.video?`<div class="video-play-overlay"><span>▶</span></div>`:''}
-    <button class="media-play-toggle chat-video-toggle" type="button">${m.video?'동영상 ON':'▶'}</button>
   </label>`;
 }
 function dmBubble(m,i){
@@ -859,15 +867,17 @@ function bindChat(listName){
         aspect:spec.aspect,
         outputW:spec.outputW,
         outputH:spec.outputH,
-        bg:'#ffffff'
-      },src=>{
+        bg:'#ffffff',
+        supportsVideo:true,
+        video:!!m.video
+      },(src,meta)=>{
         m.image=src;
+        m.video=!!meta.video;
         render();
         if(typeof queueAutosave==='function')queueAutosave(250);
       });
       input.value='';
     });
-    $('.chat-video-toggle',row)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();m.video=!m.video;render()});
     const toggle=()=>{
       m.read=!m.read;
       render();
@@ -959,16 +969,18 @@ function bindPreview(){
           aspect:spec.aspect,
           outputW:spec.outputW,
           outputH:spec.outputH,
-          bg:p.imageBg||'#f5f4f1'
-        },src=>{
+          bg:p.imageBg||'#f5f4f1',
+          supportsVideo:true,
+          video:!!p.video
+        },(src,meta)=>{
           p.image=src;
+          p.video=!!meta.video;
           p.mediaScale=1;p.mediaX=0;p.mediaY=0;
           render();
           if(typeof queueAutosave==='function')queueAutosave(250);
         });
         input.value='';
       });
-      $('.x-video-toggle',card)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();p.video=!p.video;render()});
     });
   }else if(state.template==='instagram'){
     $$('.ig-tile',capture).forEach(tile=>{
@@ -991,6 +1003,10 @@ function bindPreview(){
       tile.addEventListener('dragover',e=>{
         e.preventDefault();
         e.dataTransfer.dropEffect='move';
+        tile.classList.add('ig-drag-over');
+      });
+      tile.addEventListener('dragenter',e=>{
+        e.preventDefault();
         tile.classList.add('ig-drag-over');
       });
 
@@ -1020,23 +1036,33 @@ function bindPreview(){
         render();
         if(typeof queueAutosave==='function')queueAutosave(250);
       });
-      $('.ig-image-input',tile).addEventListener('change',e=>{
+
+      tile.addEventListener('click',e=>{
+        if(e.target.closest('button'))return;
+        if(state.igTiles[i])return;
+        const input=tile.querySelector('.ig-image-input');
+        input?.click();
+      });
+
+            $('.ig-image-input',tile).addEventListener('change',e=>{
         const input=e.target;
         const spec=getFrameSpec(tile,4/5,1500);
         openPhotoEditor(input.files[0],{
           aspect:spec.aspect,
           outputW:spec.outputW,
           outputH:spec.outputH,
-          bg:state.instagramPhotoBg||'#ffffff'
-        },src=>{
+          bg:state.instagramPhotoBg||'#ffffff',
+          supportsVideo:true,
+          video:!!state.igVideos[i]
+        },(src,meta)=>{
           state.igTiles[i]=src;
+          state.igVideos[i]=!!meta.video;
           state.igScales[i]=1;state.igXs[i]=0;state.igYs[i]=0;
           render();
           if(typeof queueAutosave==='function')queueAutosave(250);
         });
         input.value='';
       });
-      $('.ig-video-toggle',tile)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.igVideos[i]=!state.igVideos[i];render()});
     });
   }else if(state.template==='dm') bindChat('dm');
   else bindChat('kakao');
@@ -1116,6 +1142,11 @@ $('#myAvatarInput').addEventListener('change',e=>{
 
 
 
+$('#sourceTextInput').addEventListener('input',e=>{
+  state.sourceText=e.target.value;
+  if(typeof queueAutosave==='function')queueAutosave(500);
+});
+
 $('#fontSelect').addEventListener('change',e=>{
   state.fontMode=e.target.value;
   syncVars();
@@ -1164,7 +1195,14 @@ $('#autoPaletteToggle').addEventListener('change',e=>{
   if(state.autoPalette)applyRecommendedPalette();
   syncVars();
 });
-$('#bgColor').addEventListener('input',e=>{state.bg=e.target.value;syncVars()});
+$('#bgColor').addEventListener('input',e=>{
+  state.bg=e.target.value;
+  const bg=state.backgrounds[state.template]||(state.backgrounds[state.template]={color:e.target.value,image:'',scale:100});
+  bg.color=e.target.value;
+  syncVars();
+  render();
+  if(typeof queueAutosave==='function')queueAutosave(250);
+});
 $('#cardColor').addEventListener('input',e=>{state.card=e.target.value;syncVars()});
 $('#accentColor').addEventListener('input',e=>{state.accent=e.target.value;syncVars()});
 $('#darkToggle').addEventListener('change',e=>{state.dark=e.target.checked;syncVars()});
@@ -1201,8 +1239,11 @@ $('#removeItemBtn').addEventListener('click',()=>{
 
 
 $('#templateBgColor').addEventListener('input',e=>{
-  state.backgrounds[state.template].color=e.target.value;
+  const bg=state.backgrounds[state.template]||(state.backgrounds[state.template]={color:'#f5f4f1',image:'',scale:100});
+  bg.color=e.target.value;
   syncVars();
+  render();
+  if(typeof queueAutosave==='function')queueAutosave(250);
 });
 $('#templateBgImageInput').addEventListener('change',e=>{
   const input=e.target;
@@ -1387,6 +1428,12 @@ function flattenXMediaForOutput(sourceRoot,cloneRoot){
     flat.alt='';
     flat.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;transform:none!important;max-width:none!important;max-height:none!important;';
     target.replaceChildren(flat);
+    if(media.querySelector('.video-play-overlay')){
+      const overlay=document.createElement('div');
+      overlay.className='video-play-overlay';
+      overlay.innerHTML='<span>▶</span>';
+      target.appendChild(overlay);
+    }
 
     // The frame stays identical; only editing UI disappears.
     target.classList.add('is-flattened-output');
@@ -1464,6 +1511,12 @@ function flattenInstagramForOutput(sourceRoot,cloneRoot){
     flat.alt='';
     flat.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;transform:none!important;max-width:none!important;max-height:none!important;';
     target.replaceChildren(flat);
+    if(tile.querySelector('.video-play-overlay')){
+      const overlay=document.createElement('div');
+      overlay.className='video-play-overlay';
+      overlay.innerHTML='<span>▶</span>';
+      target.appendChild(overlay);
+    }
     target.classList.add('is-flattened-output');
   });
 }
@@ -1472,11 +1525,12 @@ function flattenInstagramForOutput(sourceRoot,cloneRoot){
 function appendSourceCredit(root){
   root.querySelectorAll('.export-source').forEach(el=>el.remove());
 
+  const artworkSource=(state.sourceText||'').trim()||'출처 미입력';
+
   const credit=document.createElement('div');
   credit.className='export-source';
-  credit.textContent='Made with Dearlog';
+  credit.innerHTML=`<span class="export-source-label"><span class="export-source-copy">ⓒ</span><span>${esc(artworkSource)}</span></span><b>Made with Dearlog</b>`;
 
-  // Keep the original template untouched and append a separate tail below it.
   root.appendChild(credit);
 }
 
@@ -1772,7 +1826,7 @@ function restoreStateObject(saved){
   state.customFontData=state.customFontData||'';
   state.instagramPhotoBg=state.instagramPhotoBg||'#ffffff';
   state.sourceEnabled=true;
-  state.sourceText='Made with Dearlog';
+  state.sourceText=state.sourceText||'출처 미입력';
   applyCustomFontData();
   state.template=state.template||'x';
   state.brandSymbol=state.brandSymbol??'✦';
@@ -1988,7 +2042,8 @@ if(!restoredAutosave){
   $('#customFontName').textContent=state.customFontName||'폰트 파일을 추가하면 이 브라우저에서 사용할 수 있어요.';
   const customOpt=$('#fontSelect option[value="custom"]');
   if(customOpt&&state.customFontData){customOpt.disabled=false;customOpt.textContent=`사용자 폰트 · ${state.customFontName||'Custom'}`;}
-  $('#instagramPhotoBgColor').value=state.instagramPhotoBg||'#ffffff';  syncTemplateBackgroundControls();
+  $('#instagramPhotoBgColor').value=state.instagramPhotoBg||'#ffffff';
+  $('#sourceTextInput').value=state.sourceText||'출처 미입력';  syncTemplateBackgroundControls();
   render();
 }
 updateSlotUI();

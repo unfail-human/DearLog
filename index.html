@@ -159,8 +159,15 @@
       <section class="tool-section" id="sourceSection">
         <div class="section-title"><span>저장 출처</span><small>필수 표시</small></div>
         <div class="source-required-card">
-          <b>Made with Dearlog</b>
-          <small>미리보기와 저장 파일에 항상 표시됩니다.</small>
+          <div class="source-required-label"><span class="source-copyright">ⓒ</span><span>출처 표기</span></div>
+          <label class="field">
+            <span>그림 자료 출처</span>
+            <input id="sourceTextInput" type="text" value="출처 미입력" maxlength="80">
+          </label>
+          <div class="source-site-fixed">
+            <small>사이트 출처</small>
+            <b>Made with Dearlog</b>
+          </div>
         </div>
       </section>
 
@@ -346,14 +353,14 @@
       <div class="help-sections">
         <section><b>템플릿</b><p>X, Instagram, DM, 카카오톡 중 원하는 화면을 선택해 편집할 수 있어요.</p></section>
         <section><b>게시글 수정</b><p>작업화면의 게시물이나 메시지를 선택하면 오른쪽에서 이름, 아이디, 본문, 시간, 보내는 사람 등을 수정할 수 있어요.</p></section>
-        <section><b>사진 편집</b><p>사진을 넣는 모든 곳에서 먼저 편집 창이 열려요. 파란 가이드가 실제 사진 틀과 같은 비율로 표시되며, 사진은 그 안에서 확대·축소와 위치 이동만 할 수 있어요. 적용하면 가이드에 보이던 구도 그대로 들어갑니다.</p></section><section><b>Instagram 사진 편집</b><p>사진은 9칸을 전부 채우지 않아도 돼요. 작업 화면에서는 빈 슬롯을 계속 보여주지만, 미리보기와 저장 시에는 사진이 들어간 칸만 남기고 템플릿 높이가 자동으로 줄어듭니다. 사진은 드래그해서 순서를 바꿀 수 있고, 편집 가이드 안에서 확대·축소와 위치를 조절할 수 있어요.</p></section>
+        <section><b>사진 편집</b><p>사진을 넣는 모든 곳에서 먼저 편집 창이 열려요. 파란 가이드가 실제 사진 틀과 같은 비율로 표시되며, 사진은 그 안에서 확대·축소와 위치 이동만 할 수 있어요. 적용하면 가이드에 보이던 구도 그대로 들어갑니다.</p></section><section><b>Instagram 사진 편집</b><p>사진 편집 팝업에서 확대·위치 조정과 함께 `동영상 표시`를 켜고 끌 수 있어요. 사진 칸에는 작은 동영상 버튼을 따로 두지 않고, 설정한 재생 표시는 미리보기와 저장본에도 유지됩니다.</p></section>
         <section><b>폰트</b><p>`화면 꾸미기 → 폰트`에서 기본 고딕·명조·둥근 고딕·고정폭을 선택할 수 있어요. 가진 TTF/OTF/WOFF/WOFF2 파일을 추가하면 사용자 폰트로도 Dearlog 전체 템플릿 글꼴을 바꿀 수 있어요.</p></section>
         <section><b>프로필 사진</b><p>프로필 이미지를 선택하면 편집 팝업에서 확대·축소와 위치 조정을 한 뒤 적용할 수 있어요.</p></section>
         <section><b>슬롯</b><p>슬롯에는 텍스트와 설정값만 저장돼요. 프로필·게시물·피드·메시지·배경 사진 등 업로드한 이미지 파일은 전혀 저장하지 않습니다. 슬롯을 불러온 뒤 사진만 다시 넣어 주세요.</p></section>
         <section><b>자동 저장</b><p>작업 내용은 브라우저에 자동 저장되고, 새로고침하거나 다시 접속하면 마지막 작업을 자동으로 복원해요.</p></section>
         <section><b>미리보기</b><p>편집용 버튼을 숨긴 실제 저장 화면을 확인할 수 있고, 미리보기에서도 바로 저장할 수 있어요.</p></section>
         <section><b>저장</b><p>PNG는 바깥 영역을 투명하게 저장하고, JPG/PDF는 현재 템플릿 배경색으로 채워 저장해요.</p></section>
-        <section><b>저장 출처</b><p>미리보기와 PNG/JPG/PDF 저장본에는 `Made with Dearlog` 출처가 항상 표시됩니다. 출처는 끄거나 수정할 수 없습니다.</p></section>
+        <section><b>저장 출처</b><p>`ⓒ 출처 표기`의 그림 자료 출처 문구는 직접 수정할 수 있어요. 오른쪽의 `Made with Dearlog` 사이트 출처는 항상 고정으로 표시됩니다.</p></section>
       </div>
     </section>
   </div>
@@ -445,6 +452,10 @@
           </label>
           <button class="mini-ghost-btn" id="profileEditorReset" type="button">위치 초기화</button>
         </div>
+        <label class="profile-editor-video-row" id="profileEditorVideoRow" hidden>
+          <span><b>동영상 표시</b><small>사진 위에 재생 표시를 넣어요.</small></span>
+          <input id="profileEditorVideoToggle" type="checkbox">
+        </label>
 
         <div class="profile-editor-preview-row">
           <span>편집 결과 미리보기</span>
