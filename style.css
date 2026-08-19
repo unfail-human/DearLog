@@ -4621,3 +4621,101 @@ body{
   transition-property:background-color,color,border-color,box-shadow !important;
   transition-duration:.08s !important;
 }
+
+
+/* v79 — keep the editor canvas at real 390px size on desktop */
+@media(min-width:901px){
+  .stage{
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+  }
+  .capture-shell{
+    min-width:390px !important;
+    overflow:visible !important;
+    align-items:flex-start !important;
+  }
+  .capture{
+    transform:none !important;
+    width:390px !important;
+    min-width:390px !important;
+    max-width:390px !important;
+  }
+}
+
+/* v79 — slightly larger, easier-to-read template typography */
+.preview-brand,
+.preview-brand span{
+  font-size:17px !important;
+}
+.x-compose-text{
+  font-size:13px !important;
+  line-height:1.55 !important;
+}
+.x-user-name,
+.x-author-name{
+  font-size:12px !important;
+}
+.x-meta,
+.ig-meta{
+  font-size:9px !important;
+}
+.x-body{
+  font-size:13px !important;
+  line-height:1.55 !important;
+}
+.x-actions{
+  font-size:9px !important;
+}
+
+.ig-handle{
+  font-size:13px !important;
+}
+.ig-counts{
+  font-size:10px !important;
+}
+.ig-counts b{
+  font-size:11px !important;
+}
+.ig-bio{
+  font-size:10px !important;
+  line-height:1.45 !important;
+}
+.ig-tabs{
+  font-size:11px !important;
+}
+
+.dm-name,
+.kakao-head b{
+  font-size:12px !important;
+}
+.chat-bio-preview,
+.kakao-head small{
+  font-size:9px !important;
+}
+.dm-page .bubble,
+.kakao-message .bubble{
+  font-size:12px !important;
+  line-height:1.45 !important;
+}
+.dm-time,
+.dm-read,
+.kakao-time,
+.kakao-sender{
+  font-size:8px !important;
+}
+.dm-input,
+.kakao-input{
+  font-size:11px !important;
+}
+
+/* Keep source tail readable without making it visually heavy */
+.workspace-source-credit,
+.export-source{
+  font-size:8.5px !important;
+}
+
+.preview-icon-btn,
+.dm-head-actions,
+.kakao-head>span{
+  font-size:14px !important;
+}

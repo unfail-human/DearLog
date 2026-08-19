@@ -875,11 +875,10 @@ function fitCaptureToStage(){
     return;
   }
 
-  shell.style.minHeight='';
-  const availableW=Math.max(100,shell.clientWidth);
-  const availableH=Math.max(100,shell.clientHeight);
-  const scale=Math.min(1,availableW/naturalW,availableH/naturalH);
-  capture.style.transform=`scale(${scale})`;
+  // Desktop: keep the 390px working canvas at its real size.
+  // Do not shrink it just because the template is tall.
+  capture.style.transform='scale(1)';
+  shell.style.minHeight=`${naturalH}px`;
 }
 
 
