@@ -11,6 +11,18 @@ const $$=(s,p=document)=>[...p.querySelectorAll(s)];
 
 const DEFAULT_AVATAR=(fill='#8f8a81',bg='#ece9e3')=>'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="${bg}"/><circle cx="32" cy="22" r="10.5" fill="${fill}"/><path d="M7 64C8.6 45.5 18.2 34 32 34s23.4 11.5 25 30H7Z" fill="${fill}"/></svg>`);
 
+
+function randomXMetric(min=12,max=9999){
+  return String(Math.floor(Math.random()*(max-min+1))+min);
+}
+function normalizeXMetric(value){
+  const digits=String(value??'').replace(/\D/g,'').slice(0,4);
+  return digits ? String(Math.min(9999,Number(digits))) : '0';
+}
+function formatXMetric(value){
+  return Number(normalizeXMetric(value)).toLocaleString('en-US');
+}
+
 const state={
   template:'x',brandSymbol:'✦',selected:null,
   name:'Dearlog',handle:'dearlog',chatBio:'너와의 추억을 기록하는 중',
@@ -41,8 +53,8 @@ const state={
   stickerLayers:{x:[],instagram:[],dm:[],kakao:[]},selectedSticker:null,stickerStudioActive:false,
   chatBg:'#dfe8ef',chatBgImage:'',
   xPosts:[
-    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:'128',replies:'024',reposts:'016',shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
-    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:'086',replies:'011',reposts:'007',shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false}
+    {body:'오늘의 작은 이야기를 이곳에 적어보세요. ✦',time:'2m',likes:randomXMetric(80,1800),replies:randomXMetric(10,850),reposts:randomXMetric(8,700),shares:'3',image:'',video:false,mediaEnabled:true,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false},
+    {body:'무언가를 기록한다는 건, 사라지기 전에 한 번 더 바라보는 일 같아.',time:'1h',likes:randomXMetric(50,1400),replies:randomXMetric(5,620),reposts:randomXMetric(4,480),shares:'2',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:'Dearlog',authorHandle:'dearlog',authorAvatar:DEFAULT_AVATAR(),imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false}
   ],
   igTiles:Array(9).fill(''),
   igVideos:Array(9).fill(false),
@@ -602,7 +614,7 @@ function sharedTop(title='Dearlog'){
 function xPost(post,i){
   const authorName=post.authorName??state.name;
   const authorHandle=post.authorHandle??state.handle;
-  const fmt=v=>String(Math.max(0,Number(String(v).replace(/\D/g,''))||0)).padStart(3,'0').slice(-3);
+  const fmt=v=>formatXMetric(v);
   return `<article class="x-post" data-index="${i}">
     <div class="x-post-header"><div class="x-user"><img class="x-post-avatar" src="${post.authorAvatar||state.avatar||DEFAULT_AVATAR()}" alt="" decoding="async"><div>
     <div class="x-user-name"><span class="x-author-name">${esc(authorName)}</span></div>
@@ -889,7 +901,7 @@ function fitCaptureToStage(){
   // X is taller than the other templates.
   // Fit it with real top/bottom breathing room and vertically center the scaled result.
   const isX=state.template==='x';
-  const templateScaleCap=isX ? .66 : .90;
+  const templateScaleCap=isX ? .56 : .90;
   const scale=Math.min(templateScaleCap,availableW/naturalW,availableH/naturalH);
   const scaledH=naturalH*scale;
 
@@ -897,11 +909,15 @@ function fitCaptureToStage(){
   capture.style.transformOrigin='top center';
 
   if(isX){
-    const centeredSpace=Math.max(0,(availableH-scaledH)/2);
+    // The transformed element keeps its original layout box size,
+    // so center the *visible scaled result* explicitly.
+    const centeredSpace=Math.max(24,(availableH-scaledH)/2);
     capture.style.marginTop=`${centeredSpace}px`;
+    capture.style.marginBottom=`${centeredSpace}px`;
     shell.style.height=`${availableH}px`;
   }else{
     capture.style.marginTop='0px';
+    capture.style.marginBottom='0px';
     shell.style.height=`${scaledH}px`;
   }
   shell.style.minHeight='0';
@@ -1125,6 +1141,7 @@ function bindChat(listName){
     $('.kakao-read-one',row)?.addEventListener('click',toggle);
   });
 }
+
 function bindPreview(){
   bindNames();
   $$('.avatar-local-input',capture).forEach(inp=>inp.addEventListener('change',e=>{
@@ -1177,9 +1194,9 @@ function bindPreview(){
         requestAnimationFrame(()=>selectItem('x',i));
       });
       const bump=(key,flag)=>{
-        const current=Math.max(0,Number(String(p[key]).replace(/\D/g,''))||0);
+        const current=Math.max(0,Math.min(9999,Number(String(p[key]).replace(/\D/g,''))||0));
         p[flag]=!p[flag];
-        p[key]=String(Math.max(0,current+(p[flag]?1:-1))).padStart(3,'0').slice(-3);
+        p[key]=String(Math.max(0,Math.min(9999,current+(p[flag]?1:-1))));
         render();
       };
       $('.x-reply-btn',card)?.addEventListener('click',()=>bump('replies','replied'));
@@ -1486,7 +1503,7 @@ $('#addTypingBtn').addEventListener('click',()=>{
 });
 
 $('#addItemBtn').addEventListener('click',()=>{
-  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:'000',replies:'000',reposts:'000',shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.commonProfile.name,authorHandle:state.commonProfile.handle,authorAvatar:state.commonProfile.avatar,imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false});
+  if(state.template==='x')state.xPosts.push({body:'새 게시물 내용을 입력하세요.',time:'now',likes:randomXMetric(20,1200),replies:randomXMetric(3,500),reposts:randomXMetric(2,420),shares:'0',image:'',video:false,mediaEnabled:false,mediaScale:1,quote:false,quoteName:'Original',quoteHandle:'original',quoteBody:'인용할 원문 내용을 입력하세요.',authorName:state.commonProfile.name,authorHandle:state.commonProfile.handle,authorAvatar:state.commonProfile.avatar,imageBg:'#f5f4f1',mediaX:0,mediaY:0,liked:false,reposted:false,replied:false});
   else if(state.template==='instagram'){state.igTiles.push('');state.igVideos.push(false);state.igScales.push(1);state.igXs.push(0);state.igYs.push(0);}
   render();
 });

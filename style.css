@@ -4911,3 +4911,32 @@ body{
     transform-origin:top center !important;
   }
 }
+
+
+/* v84 — X editor visibly smaller and centered */
+@media(min-width:901px){
+  .capture-shell{
+    position:relative !important;
+  }
+  .capture[data-template="x"]{
+    transform-origin:top center !important;
+  }
+}
+
+/* X metric values: normal digit spacing, no padded-zero look */
+.x-actions .editable{
+  min-width:0 !important;
+  letter-spacing:0 !important;
+  font-variant-numeric:tabular-nums;
+}
+
+
+/* v85 — X engagement numbers support up to 9,999 */
+.x-actions .editable{
+  min-width:26px !important;
+  max-width:42px !important;
+  display:inline-block !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+  font-variant-numeric:tabular-nums !important;
+}
