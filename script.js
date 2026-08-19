@@ -666,9 +666,9 @@ function renderDM(){
   $('#stageTitle').textContent='DM 템플릿';$('#stageDesc').textContent='양쪽 프로필과 사진 메시지까지 포함한 DM을 만들어보세요.';
   capture.innerHTML=`<div class="dm-page"><header class="dm-head"><div class="dm-user">
     <img class="avatar" src="${state.theirAvatar||DEFAULT_AVATAR('#8f8a81','#ece9e3')}" alt=""><div><div class="dm-name"><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></div>
-    <div class="chat-bio-preview editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</div></div></div><span>☎　ⓘ</span></header>
+    <div class="chat-bio-preview editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</div></div></div><span class="dm-head-actions">●　ⓘ</span></header>
     <main class="dm-body chat-wallpaper"><div class="dm-day editable" contenteditable="true">오늘</div>${state.dm.map(dmBubble).join('')}</main>
-    <footer class="dm-compose"><span>＋</span><div class="dm-input editable" contenteditable="true">메시지 입력...</div><button class="dm-send">보내기</button></footer></div>`;
+    <footer class="dm-compose"><span class="dm-plus">＋</span><div class="dm-input editable" contenteditable="true">iMessage</div><button class="dm-send" aria-label="보내기">↑</button></footer></div>`;
 }
 function kakaoBubble(m,i){
   const mine=m.side==='mine', avatar=mine?state.myAvatar:state.theirAvatar;
@@ -701,7 +701,7 @@ function renderKakao(){
   $('#stageTitle').textContent='카카오톡 템플릿';$('#stageDesc').textContent='상대와 내 프로필, 텍스트·사진 메시지를 함께 만들 수 있어요.';
   capture.innerHTML=`<div class="kakao-page">
     <header class="kakao-head"><button>‹</button><div><b><span class="editable their-name" contenteditable="true">${esc(state.theirName)}</span></b><small class="editable chat-bio-edit" contenteditable="true">${esc(state.chatBio)}</small></div><span>⌕　☰</span></header>
-    <div class="kakao-room"><div class="kakao-date editable" contenteditable="true">2026년 8월 19일 수요일</div>
+    <div class="kakao-room chat-wallpaper"><div class="kakao-date editable" contenteditable="true">2026년 8월 19일 수요일</div>
     ${state.kakao.map((m,i)=>m.type==='typing'?kakaoTyping(m,i):kakaoBubble(m,i)).join('')}</div>
     <footer class="kakao-compose"><span>＋</span><div class="kakao-input editable" contenteditable="true">메시지 입력</div><span>☺　♯</span></footer>
   </div>`;
